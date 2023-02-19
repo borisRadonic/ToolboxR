@@ -78,6 +78,24 @@
     <ClCompile Include="FuzzyControllerSugeno.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FisFileImport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SigmoidalFuzzySet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PiShapedFuzzySet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SShapedFuzzySet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZShapedFuzzySet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FuzzySet.h">
@@ -141,6 +159,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FuzzyControllerSugeno.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FisFileImport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SigmoidalFuzzySet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PiShapedFuzzySet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SShapedFuzzySet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZShapedFuzzySet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

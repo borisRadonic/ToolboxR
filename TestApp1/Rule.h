@@ -84,7 +84,7 @@ public:
 
 	std::double_t getCoefficient(const std::uint32_t i);
 	
-	inline std::uint32_t getnumberOfInputs() const
+	inline std::size_t getnumberOfInputs() const
 	{
 		return _inputTerms.size();
 	}

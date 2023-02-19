@@ -24,8 +24,3 @@ std::double_t TrapezoidalIFuzzySetInfR::getMembership(std::double_t y)
 	return ((y-m_a) / (m_b - m_a));
 
 }
-
-std::double_t TrapezoidalIFuzzySetInfR::getFirstCore()
-{
-	return m_b;
-}

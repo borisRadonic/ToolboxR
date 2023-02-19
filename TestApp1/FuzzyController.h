@@ -55,6 +55,16 @@ public:
 		 return _agregationmethod;
 	}
 
+	inline void setFuzzyImplicationMethod(const FuzzyImplicationMethod& method)
+	{
+		_implicationmethod = method;
+	}
+
+	inline FuzzyImplicationMethod getFuzzyImplicationMethod() const
+	{
+		return _implicationmethod;
+	}
+
 	const std::double_t getOutputValue(const std::string & outputName);
 
 	virtual void addRule(	BooleanOperation booleanType,
@@ -106,6 +116,8 @@ protected:
 	FuzzyControllerType _controllerType = FuzzyControllerType::Mamdani;
 
 	FuzzyAggregationMethod _agregationmethod = FuzzyAggregationMethod::Maximum;
+
+	FuzzyImplicationMethod _implicationmethod = FuzzyImplicationMethod::Min;
 	
 	std::unique_ptr<Rules> _ptrRules;
 

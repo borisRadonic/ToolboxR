@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <cmath>
+#include <memory>
 
 class FuzzyHedge
 {

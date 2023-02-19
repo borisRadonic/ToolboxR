@@ -110,7 +110,6 @@ std::double_t Rule::process()
 				{
 					throw new std::exception("Not existing boolean operation.");
 				}
-
 			}
 		}
 		//

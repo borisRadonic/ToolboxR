@@ -18,10 +18,5 @@ std::double_t BellShapedFuzzySet::getMembership(std::double_t y)
 	{
 		return std::double_t(0.0);
 	}
-	return (1.0 / ( 1+ pow( abs( (y - m_midpoint) / m_a), 2.0*m_b)));
-}
-
-std::double_t BellShapedFuzzySet::getFirstCore()
-{
-	return m_midpoint;
+	return (1.0 / ( 1.0 + pow( abs( (y - m_midpoint) / m_a), 2.0*m_b)));
 }

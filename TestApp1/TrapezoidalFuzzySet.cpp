@@ -46,8 +46,3 @@ std::double_t TrapezoidalFuzzySet::getMembership(std::double_t y)
 	
 	return ((m_d - y) / (m_d - m_c));
 }
-
-std::double_t TrapezoidalFuzzySet::getFirstCore()
-{
-	return m_b + ((m_c - m_b) / std::double_t(2.0));
-}

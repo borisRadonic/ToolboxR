@@ -13,8 +13,6 @@ public:
 
 	virtual std::double_t getMembership(std::double_t y) final;
 
-	virtual std::double_t getFirstCore() final;
-
 private:
 	std::double_t m_a;
 	std::double_t m_b;

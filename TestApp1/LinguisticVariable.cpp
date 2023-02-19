@@ -18,6 +18,17 @@ FuzzySet* LinguisticVariable::getFuzzySet(const std::string & name)
 	return nullptr;
 }
 
+FuzzySet* LinguisticVariable::getFuzzySet(const std::uint32_t index)
+{
+	if (_lingvisticValues.size() > index)
+	{
+		auto it = _lingvisticValues.begin();
+		std::advance(it, index);
+		return it->second.get();		
+	}
+	return nullptr;
+}
+
 void LinguisticVariable::addFuzzySet(std::unique_ptr<FuzzySet> set)
 {
 	if (nullptr != set)

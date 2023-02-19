@@ -156,16 +156,13 @@ std::double_t MamdaniRules::process()
 	}	   	 
 	
 	std::uint32_t resolution = _ptrController->getResolution();
-	std::vector<std::double_t> vecNetwork;
-	std::uint32_t i = 0;
-	for (i = 0; i < resolution; i++)
-	{
-		vecNetwork.push_back(0.0);
-	}
+	
 	std::double_t min = 0.00;
 	std::double_t max = 0.00;
 			
 	count = 0U;
+
+	std::map<std::string,std::vector<std::double_t>> vecNetOfNets;
 	for (const auto& fop: vecOutputsUniqueRules)
 	{				
 		min = fop->getMinimum();
@@ -177,28 +174,64 @@ std::double_t MamdaniRules::process()
 		std::string name = vecOutputsUniqueTerms[count];
 		FuzzySet* fsp = fop->getFuzzySet( name );
 
-		for (std::uint32_t i = 0; i < resolution; i++)
+		std::vector<std::double_t> vecNetwork;
+		std::uint32_t i = 0;
+		for (i = 0; i < resolution; i++)
 		{
-			if (_ptrController->getFuzzyAggregationMethod() == FuzzyAggregationMethod::Sum)
+			vecNetwork.push_back(0.0);
+		}
+
+		//implication process
+		for (std::uint32_t i = 0; i < resolution; i++)
+		{						
+			//implication		
+			if (_ptrController->getFuzzyImplicationMethod() == FuzzyImplicationMethod::Min)
 			{
 				//Sugeno systems always use the sum aggregation method.
-				vecNetwork[i] = std::fmax( vecDegOfAcivationUnique[count] * fsp->getMembership(x), vecNetwork[i]);
+				vecNetwork[i] = std::fmin(vecDegOfAcivationUnique[count], fsp->getMembership(x) );
 			}
-			else if (_ptrController->getFuzzyAggregationMethod() == FuzzyAggregationMethod::Maximum)
+			else if (_ptrController->getFuzzyImplicationMethod() == FuzzyImplicationMethod::Prod)
 			{
-				vecNetwork[i] = std::fmax(vecDegOfAcivationUnique[count] * fsp->getMembership(x), vecNetwork[i]);
+				vecNetwork[i] = vecDegOfAcivationUnique[count] * fsp->getMembership(x);
+			}					
+			x += step;
+		}
+		vecNetOfNets[name] = vecNetwork;
+		count++;
+	}
+	std::vector<std::double_t> vecOutput;
+	std::uint32_t i = 0;
+	for (i = 0; i < resolution; i++)
+	{
+		vecOutput.push_back(0.0);
+	}
+	//agregation process
+	
+	count = 0U;
+	for (i = 0; i < resolution; i++)
+	{		
+		for (const auto& net : vecNetOfNets)
+		{
+			if (_ptrController->getFuzzyAggregationMethod() == FuzzyAggregationMethod::Maximum)
+			{
+				//Sugeno systems always use the sum aggregation method.
+				vecOutput[i] = std::fmax( net.second[count], vecOutput[i]);
+			}
+			else if (_ptrController->getFuzzyAggregationMethod() == FuzzyAggregationMethod::Sum)
+			{
+				//Sugeno systems always use the sum aggregation method.
+				vecOutput[i] = net.second[count] + vecOutput[i];
 			}
 			else if (_ptrController->getFuzzyAggregationMethod() == FuzzyAggregationMethod::Probor)
 			{
-				std::double_t a = std::fmax(vecDegOfAcivationUnique[count] * fsp->getMembership(x), vecNetwork[i]);
-				std::double_t b = vecNetwork[i];
-				vecNetwork[i] = a + b - a * b;
+				std::double_t a = std::fmax(net.second[count], vecOutput[i]);
+				std::double_t b = vecOutput[i];
+				vecOutput[i] = a + b - a * b;
 			}
-			x += step;
 		}
 		count++;
-	}
-	
+	}	
+
 	switch (_ptrController->getDefuzzificationMethod())
 	{
 		case DefuzzificationMethod::Centroid:
@@ -211,8 +244,8 @@ std::double_t MamdaniRules::process()
 
 			for (std::uint32_t i = 0; i < resolution; i++)
 			{
-				num += vecNetwork[i] * x;
-				denum += vecNetwork[i];
+				num += vecOutput[i] * x;
+				denum += vecOutput[i];
 				x += step;;
 			}
 			if (denum > 0.00)
@@ -294,13 +327,9 @@ std::double_t SugenoRules::process()
 		sigA += vecDegOfAcivation[key];
 
 		FuzzySet* fsp = fop->getFuzzySet(key); //output singleton Fuzzy set
-		if (fsp->getMSFType() == FuzzyMembershipFunctionType::Singleton)
+		if( fsp->getMSFType() == FuzzyMembershipFunctionType::SingletonSugeno)
 		{
-			sigYA += (fsp->getFirstCore() * vecDegOfAcivation[key]);			
-		}
-		else if( fsp->getMSFType() == FuzzyMembershipFunctionType::SingletonSugeno)
-		{
-			std::uint32_t inMax = rule->getnumberOfInputs();
+			std::size_t inMax = rule->getnumberOfInputs();
 			y = rule->getoffsetC0();
 			for (std::uint32_t i = 0U; i < inMax; i++)
 			{
@@ -309,6 +338,10 @@ std::double_t SugenoRules::process()
 
 			sigYA += y * vecDegOfAcivation[key];
 		}			
+		else if (fsp->getMSFType() == FuzzyMembershipFunctionType::Singleton)
+		{
+			throw new std::exception("Not supported MembershipFunction in Sugeno system.");
+		}
 	}
 	if (sigA > 0.00)
 	{

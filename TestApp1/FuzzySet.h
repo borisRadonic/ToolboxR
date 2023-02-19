@@ -1,11 +1,10 @@
 ﻿
 #pragma once
 
-
-
 #include <string>
 
 #include "FuzzyTypes.h"
+#include <cmath>
 
 //Operations between two fuzzy sets:
 //UNION, INTERSECTION, COMPLEMENT
@@ -28,10 +27,6 @@ public:
 
 	//returns degree of membership of y
 	virtual std::double_t getMembership(std::double_t y) = 0;
-
-	//The core of a membership function is that region of universe that is characterize by full membership in the set. 
-	//Hence, core consists of all those elements y of the universe of information such that, μA˜(y) = 1
-	virtual std::double_t getFirstCore() = 0;
 
 	const std::string& getName()
 	{

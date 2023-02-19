@@ -18,8 +18,3 @@ std::double_t SmallFuzzySet::getMembership(std::double_t y)
 	}
 	return std::double_t(0.0);
 }
-
-std::double_t SmallFuzzySet::getFirstCore()
-{
-	return (m_midpoint - m_spread); //!!!!!not correct
-}
