@@ -18,11 +18,6 @@ std::double_t SingletonFuzzySet::getMembership(std::double_t y)
 	return std::double_t(0.0);;
 }
 
-std::double_t SingletonFuzzySet::getFirstCore()
-{
-	return m_c;
-}
-
 FuzzyMembershipFunctionType SingletonSugenoFuzzySet::getMSFType()
 {
 	return FuzzyMembershipFunctionType::SingletonSugeno;
@@ -31,9 +26,4 @@ FuzzyMembershipFunctionType SingletonSugenoFuzzySet::getMSFType()
 std::double_t SingletonSugenoFuzzySet::getMembership(std::double_t y)
 {
 	return std::double_t(1.00);
-}
-
-std::double_t SingletonSugenoFuzzySet::getFirstCore()
-{
-	return std::double_t(0.00);
 }

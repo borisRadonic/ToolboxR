@@ -42,9 +42,3 @@ std::double_t TriangularFuzzySet::getMembership(std::double_t y)
 	//y is inside b and c
 	return ((m_c - y) / (m_c - m_b));
 }
-
-std::double_t TriangularFuzzySet::getFirstCore()
-{
-	return m_b;
-}
-

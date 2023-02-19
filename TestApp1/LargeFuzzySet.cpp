@@ -18,8 +18,3 @@ std::double_t LargeFuzzySet::getMembership(std::double_t y)
 	}
 	return std::double_t(0.0);
 }
-
-std::double_t LargeFuzzySet::getFirstCore()
-{
-	return m_midpoint;//not correct!!!
-}

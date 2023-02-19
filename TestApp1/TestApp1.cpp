@@ -2,6 +2,8 @@
 //
 
 #include <iostream>
+#include <memory>
+
 #include "FuzzyController.h"
 #include "FuzzyControllerFactory.h"
 #include "TriangularFuzzySet.h"
@@ -10,12 +12,29 @@
 
 #include "FuzzyInput.h"
 #include "FuzzyOutput.h"
+#include "FisFileImport.h"
+
+#include <sstream>
 
 
-#include <memory>
+
 
 int main()
 {
+	std::ostringstream ossErrors;
+	FisFileImport fis("C:/Users/Boris/Documents/MATLAB/Examples/R2021a/fuzzy/fuzzytankdemo/test2.fis");
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+
+
 	/*define input variables */
 
 	std::unique_ptr<FuzzyInput> temperature = std::make_unique<FuzzyInput>(-80.00, 80.00, "Temperature" );

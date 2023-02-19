@@ -24,8 +24,3 @@ std::double_t TrapezoidalIFuzzySetInfL::getMembership(std::double_t y)
 	//y is outside of the region of universe located on the right side
 	return std::double_t(0.0);
 }
-
-std::double_t TrapezoidalIFuzzySetInfL::getFirstCore()
-{
-	return m_a;
-}
