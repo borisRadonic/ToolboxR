@@ -112,10 +112,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>..\CntrLibrary\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\$(IntermediateOutputPath)\CntrLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,71 +150,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\CntrLibrary\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\$(IntermediateOutputPath)\CntrLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BellShapedFuzzySet.cpp" />
-    <ClCompile Include="FisFileImport.cpp" />
-    <ClCompile Include="FuzzyController.cpp" />
-    <ClCompile Include="FuzzyControllerFactory.cpp" />
-    <ClCompile Include="FuzzyControllerMamdani.cpp" />
-    <ClCompile Include="FuzzyControllerSugeno.cpp" />
-    <ClCompile Include="FuzzyHedges.cpp" />
-    <ClCompile Include="FuzzyInput.cpp" />
-    <ClCompile Include="FuzzyOutput.cpp" />
-    <ClCompile Include="FuzzySet.cpp" />
-    <ClCompile Include="LargeFuzzySet.cpp" />
-    <ClCompile Include="GaussianFuzzySet.cpp" />
-    <ClCompile Include="LinguisticVariable.cpp" />
-    <ClCompile Include="PiShapedFuzzySet.cpp" />
-    <ClCompile Include="Rule.cpp" />
-    <ClCompile Include="Rules.cpp" />
-    <ClCompile Include="SigmoidalFuzzySet.cpp" />
-    <ClCompile Include="SingletonFuzzySet.cpp" />
-    <ClCompile Include="SmallFuzzySet.cpp" />
-    <ClCompile Include="SShapedFuzzySet.cpp" />
-    <ClCompile Include="StringUtil.cpp" />
     <ClCompile Include="TestApp1.cpp" />
-    <ClCompile Include="TrapezoidalFuzzySet.cpp" />
-    <ClCompile Include="TrapezoidalIFuzzySetInfL.cpp" />
-    <ClCompile Include="TrapezoidalIFuzzySetInfR.cpp" />
-    <ClCompile Include="TriangularFuzzySet.cpp" />
-    <ClCompile Include="ZShapedFuzzySet.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BellShapedFuzzySet.h" />
-    <ClInclude Include="FisFileImport.h" />
-    <ClInclude Include="FuzzyController.h" />
-    <ClInclude Include="FuzzyControllerFactory.h" />
-    <ClInclude Include="FuzzyControllerMamdani.h" />
-    <ClInclude Include="FuzzyControllerSugeno.h" />
-    <ClInclude Include="FuzzyHedges.h" />
-    <ClInclude Include="FuzzyInput.h" />
-    <ClInclude Include="FuzzyOutput.h" />
-    <ClInclude Include="FuzzySet.h" />
-    <ClInclude Include="FuzzyTypes.h" />
-    <ClInclude Include="LargeFuzzySet.h" />
-    <ClInclude Include="GaussianFuzzySet.h" />
-    <ClInclude Include="LinguisticVariable.h" />
-    <ClInclude Include="PiShapedFuzzySet.h" />
-    <ClInclude Include="Rule.h" />
-    <ClInclude Include="Rules.h" />
-    <ClInclude Include="SigmoidalFuzzySet.h" />
-    <ClInclude Include="SingletonFuzzySet.h" />
-    <ClInclude Include="SmallFuzzySet.h" />
-    <ClInclude Include="SShapedFuzzySet.h" />
-    <ClInclude Include="StringUtil.h" />
-    <ClInclude Include="TrapezoidalFuzzySet.h" />
-    <ClInclude Include="TrapezoidalIFuzzySetInfL.h" />
-    <ClInclude Include="TrapezoidalIFuzzySetInfR.h" />
-    <ClInclude Include="TriangularFuzzySet.h" />
-    <ClInclude Include="ZShapedFuzzySet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
