@@ -22,6 +22,7 @@ struct FisRule
 
 struct FisMF
 {
+	std::uint32_t num;
 	std::string mf;
 	std::string mfName;
 	std::string mfType; 
@@ -46,7 +47,7 @@ struct FisMF
 // ...					Not supported: customs MATLAB...	No
 
 struct FisInputOutput
-{
+{	
 	std::string								name;
 	std::string								strRange;
 	std::uint32_t							numMFs;

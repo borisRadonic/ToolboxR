@@ -235,6 +235,10 @@ bool FisFileImport::readFisFile(std::ostringstream& ossErrors)
 					std::int32_t num = std::stoul(s);
 					rule.inputs.push_back(num);
 				}
+				else if (StringUtil::is_number(s) && std::stoul(s) == 0)
+				{
+					//do nothing
+				}
 				else
 				{
 					ossErrors << "Sysntax error in rules. NaN or = Input in Rule " << r << std::endl;
@@ -253,6 +257,10 @@ bool FisFileImport::readFisFile(std::ostringstream& ossErrors)
 
 					std::int32_t num = std::stoul(s);
 					rule.outputs.push_back(num);
+				}
+				else if (StringUtil::is_number(s) && std::stoul(s) == 0)
+				{
+					//do nothing
 				}
 				else
 				{
@@ -302,12 +310,15 @@ void FisFileImport::readSectionInOut(std::map<std::string, std::string>& key, st
 			for (std::uint32_t i = 0; i < fisIO.numMFs; i++)
 			{
 				std::string ms = "MF" + std::to_string(i+1);
+				
 				FisMF mf;
 				if (key[ms].size() > 0U)
 				{
 					mf.mf = key[ms];
 					std::istringstream iss1(mf.mf);
 					std::getline(std::getline( iss1, mf.mfName, ':'), mf.mfType, ',');
+
+					mf.num = i + 1;
 
 					std::string mf_params_str;
 					std::getline(iss1, mf_params_str, '[');
@@ -713,14 +724,34 @@ FuzzyController* FisFileImport::toFuzzyController()
 
 		for (auto& input : rule.inputs)
 		{
-			std::string in = "input" + std::to_string(count);
+			std::string in = _inputs[count - 1].name;
+
 
 			FuzzyInput* fi = pController->getInput(in);
 			if (nullptr == fi)
 			{
 				throw new std::exception("Can not find input!");
 			}
-			FuzzySet* fz = fi->getFuzzySet(abs(input) - 1);
+			
+			
+			
+			std::string inpName = "";
+			for (auto& inp : _inputs)
+			{
+				if (inp.name == in)
+				{
+					for (auto& f : inp.msFuncs)
+					{
+						if (f.num == (abs(input)))
+						{
+							inpName = f.mfName;
+						}
+					}
+				}
+			}
+
+			FuzzySet* fz = fi->getFuzzySet(inpName);
+
 			if (nullptr == fz)
 			{
 				throw new std::exception("Can not find Fuzzy Set!");
@@ -736,7 +767,7 @@ FuzzyController* FisFileImport::toFuzzyController()
 			}
 			else
 			{
-				vecHedges.push_back("is not");
+				vecHedges.push_back("is");
 				vecHedgesVec.push_back(vecHedges);
 			}
 			count++;
@@ -749,7 +780,23 @@ FuzzyController* FisFileImport::toFuzzyController()
 		FuzzyOutput* fo = pController->getOutput();
 		if (fo != nullptr)
 		{
-			FuzzySet* fz = fo->getFuzzySet(rule.outputs[0] - 1);
+			std::string outpName = "";
+			for (auto& outp : _outputs)
+			{
+				for (auto& f : outp.msFuncs)
+				{
+					if (f.num == (abs(rule.outputs[0])))
+					{
+						outpName = f.mfName;
+						break;
+					}
+				}
+				if (outpName.size() > 0U)
+				{
+					break;
+				}
+			}			
+			FuzzySet* fz = fo->getFuzzySet(outpName);
 			if (fz != nullptr)
 			{
 				outVariable = fo->getName();

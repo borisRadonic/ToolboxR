@@ -26,8 +26,6 @@ public:
 
 	FuzzySet* getFuzzySet(const std::string& name);
 
-	FuzzySet* getFuzzySet(const std::uint32_t index);
-
 	void addFuzzySet(std::unique_ptr<FuzzySet> set);
 
 	void setValue(const std::double_t value);
