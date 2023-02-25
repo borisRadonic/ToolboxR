@@ -13,6 +13,9 @@ class FuzzyController
 {
 public:
 
+	using MapInputsPtr = std::map<std::string, std::unique_ptr<FuzzyInput>>;
+	using MapOutputPtr = std::unique_ptr<FuzzyOutput>;
+
 	FuzzyController();
 
 	virtual ~FuzzyController();
@@ -41,9 +44,23 @@ public:
 
 	bool setInputValue(const std::string & inputName, const std::double_t value);
 	
+	inline std::size_t getNumberOfInputs() const
+	{
+		return _inputs.size();
+	}
+
+	std::vector<std::string> getInputs();
+	
+	inline std::size_t getNumberOfOutputs() const
+	{
+		return 1U;
+	}
+
 	FuzzyOutput* getOutput();
 
 	void addOutput(std::unique_ptr<FuzzyOutput> output);
+
+	std::vector<std::string> getOutputs();
 	
 	inline void setFuzzyAggregationMethod( const FuzzyAggregationMethod& method )
 	{
@@ -102,12 +119,41 @@ public:
 	{
 		return _defuzzificationMethod;
 	}
+
+	inline size_t getNumberOfRules() const
+	{
+		return _ptrRules->getNumberOfRules();
+	}
+
+	Rules* getRules()
+	{
+		return _ptrRules.get();
+	}
+
+	inline void setBooleanOperationAnd(BooleanOperation andOperation)
+	{
+		_boolAndOperation = andOperation;
+	}
+
+	inline void setBooleanOperationOr(BooleanOperation orOperation)
+	{
+		_boolOrOperation = orOperation;
+	}
+
+	inline BooleanOperation getBooleanOperationAnd() const
+	{
+		return _boolAndOperation;
+	}
+
+	inline BooleanOperation getBooleanOperationOr() const
+	{
+		return _boolOrOperation;
+	}
+
+
 	
 protected:
-
-	using MapInputsPtr	= std::map<std::string, std::unique_ptr<FuzzyInput>>;
-	using MapOutputPtr = std::unique_ptr<FuzzyOutput>;
-
+		
 	MapInputsPtr	_inputs;
 	MapOutputPtr	_output;
 
@@ -124,5 +170,9 @@ protected:
 	std::uint32_t _resolution = 512U;
 	
 	DefuzzificationMethod _defuzzificationMethod = DefuzzificationMethod::Centroid;
+
+	BooleanOperation _boolOrOperation = BooleanOperation::OrMax;
+	BooleanOperation _boolAndOperation = BooleanOperation::AndMin;
+
 };
 

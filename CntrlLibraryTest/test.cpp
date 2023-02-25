@@ -14,6 +14,8 @@
 #include "FuzzyInput.h"
 #include "FuzzyOutput.h"
 #include "FisFileImport.h"
+#include "FisFileExport.h"
+
 #include "StringUtil.h"
 
 
@@ -142,4 +144,40 @@ TEST(CompareWithReference, TestTank)
 	}
 }
 
+TEST(TestImportExport, TestTankImportExport)
+{
+	std::ostringstream ossErrors;
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+
+	std::string fileName1 = strpath + "test/tank.fis";
+	std::string fileName2 = strpath + "test/tank_exported.fis";
+
+	FisFileImport fis(fileName1);
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+	std::ofstream file(fileName2);
+
+	if (!file)
+	{
+		ossErrors << "Error creating file " << std::endl;
+	}
+
+	FisFileExport fexp(controllerFromFis, file);
+	fexp.exportToFIS();
+
+
+	
+}
 

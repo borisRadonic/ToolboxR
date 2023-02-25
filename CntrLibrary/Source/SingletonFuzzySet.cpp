@@ -1,8 +1,19 @@
 #include "SingletonFuzzySet.h"
+#include <format>
 
 FuzzyMembershipFunctionType SingletonFuzzySet::getMSFType()
 {
 	return FuzzyMembershipFunctionType::Singleton;
+}
+
+std::string SingletonFuzzySet::getMSFTypeNameFIS()
+{
+	return std::string("singleton");
+}
+
+std::string SingletonFuzzySet::getMSFParamExportFISString()
+{
+	return ("[" + std::format("{}", m_c) + "]");
 }
 
 std::double_t SingletonFuzzySet::getMembership(std::double_t y)

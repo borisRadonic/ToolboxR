@@ -96,6 +96,12 @@ public:
 		return _offsetC0;
 	}
 
+	inline const std::vector<std::string>& getInputTerms() const
+	{
+		return _inputTerms;
+	}
+		
+
 private:
 
 	std::string _name;

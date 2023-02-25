@@ -1,5 +1,6 @@
 #include "GaussianFuzzySet.h"
 #include <math.h>
+#include <format>
 
 
 GaussianFuzzySet::GaussianFuzzySet(std::double_t midpoint, std::double_t spread, const std::string & name)
@@ -10,6 +11,16 @@ GaussianFuzzySet::GaussianFuzzySet(std::double_t midpoint, std::double_t spread,
 FuzzyMembershipFunctionType GaussianFuzzySet::getMSFType()
 {
 	return FuzzyMembershipFunctionType::Gaussian;
+}
+
+std::string GaussianFuzzySet::getMSFTypeNameFIS()
+{
+	return std::string("gaussmf");
+}
+
+std::string GaussianFuzzySet::getMSFParamExportFISString()
+{
+	return ("[" + std::format("{}", m_spread) + " " + std::to_string(m_midpoint) + "]");
 }
 
 std::double_t GaussianFuzzySet::getMembership(std::double_t y)

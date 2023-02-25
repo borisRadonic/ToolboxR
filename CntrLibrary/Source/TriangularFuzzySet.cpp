@@ -1,5 +1,5 @@
 #include "TriangularFuzzySet.h"
-
+#include <format>
 
 TriangularFuzzySet::TriangularFuzzySet(std::double_t a, std::double_t b, std::double_t c, const std::string & name)
 	:m_a(a), m_b(b), m_c(c), FuzzySet(name)
@@ -9,6 +9,16 @@ TriangularFuzzySet::TriangularFuzzySet(std::double_t a, std::double_t b, std::do
 FuzzyMembershipFunctionType TriangularFuzzySet::getMSFType()
 {
 	return FuzzyMembershipFunctionType::Triangular;
+}
+
+std::string TriangularFuzzySet::getMSFTypeNameFIS()
+{
+	return std::string("trimf");
+}
+
+std::string TriangularFuzzySet::getMSFParamExportFISString()
+{
+	return ("[" + std::format("{}", m_a) + " " + std::format("{}", m_b) + " " + std::format("{}", m_c) + "]");
 }
 
 std::double_t TriangularFuzzySet::getMembership(std::double_t y)

@@ -15,6 +15,10 @@ public:
 
 	virtual FuzzyMembershipFunctionType getMSFType() final;
 
+	virtual std::string getMSFTypeNameFIS() final;
+
+	virtual std::string getMSFParamExportFISString() final;
+
 	virtual std::double_t getMembership(std::double_t y) final;
 
 private:

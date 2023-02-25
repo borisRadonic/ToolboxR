@@ -318,6 +318,8 @@ void FisFileImport::readSectionInOut(std::map<std::string, std::string>& key, st
 					std::istringstream iss1(mf.mf);
 					std::getline(std::getline( iss1, mf.mfName, ':'), mf.mfType, ',');
 
+					StringUtil::remove_substring(mf.mfName, "'");
+
 					mf.num = i + 1;
 
 					std::string mf_params_str;
@@ -351,6 +353,7 @@ void FisFileImport::readSectionSystem(std::map<std::string, std::string>& key)
 	if (key["Name"] != "")
 	{
 		_sysName = key["Name"];
+		StringUtil::remove_substring(_sysName, "'");
 	}
 	if (key["Type"] != "")
 	{
@@ -424,6 +427,10 @@ void FisFileImport::fuzzyInputsToController(FuzzyController* pController)
 				}
 				std::unique_ptr<FuzzySet> fs = std::make_unique<TrapezoidalFuzzySet>(func.mfParameters[0], func.mfParameters[1], func.mfParameters[2], func.mfParameters[3], func.mfName);
 				input->addFuzzySet(std::move(fs));
+			}
+			else if (func.mfType.find("gbellmf") < func.mfType.size())
+			{
+				throw new std::exception("Not supported MF function.");
 			}
 			else if (func.mfType.find("gaussmf") < func.mfType.size())
 			{
@@ -526,6 +533,10 @@ void FisFileImport::fuzzyOutputsToController(FuzzyController* pController)
 				}
 				std::unique_ptr<FuzzySet> fs = std::make_unique<TrapezoidalFuzzySet>(func.mfParameters[0], func.mfParameters[1], func.mfParameters[2], func.mfParameters[3], func.mfName);
 				output->addFuzzySet(std::move(fs));
+			}
+			else if (func.mfType.find("gbellmf") < func.mfType.size())
+			{
+				throw new std::exception("Not supported MF function.");
 			}
 			else if (func.mfType.find("gaussmf") < func.mfType.size())
 			{
@@ -674,10 +685,12 @@ FuzzyController* FisFileImport::toFuzzyController()
 	if (_sysOrMethod.find("max") < _sysOrMethod.size() )
 	{
 		booleanTypeOr = BooleanOperation::OrMax;
+		pController->setBooleanOperationOr(BooleanOperation::OrMax);
 	}
 	else if (_sysOrMethod.find("probor") < _sysOrMethod.size())
 	{
 		booleanTypeOr = BooleanOperation::OrProbor;
+		pController->setBooleanOperationOr(BooleanOperation::OrProbor);
 	}
 	else
 	{
@@ -689,10 +702,12 @@ FuzzyController* FisFileImport::toFuzzyController()
 	if (_sysAndMethod.find("min") < _sysAndMethod.size())
 	{
 		booleanTypeAnd = BooleanOperation::AndMin;
+		pController->setBooleanOperationAnd(BooleanOperation::AndMin);
 	}
 	else if (_sysAndMethod.find("prod") < _sysAndMethod.size())
 	{
 		booleanTypeAnd = BooleanOperation::AndProduct;
+		pController->setBooleanOperationAnd(BooleanOperation::AndProduct);
 	}
 	else
 	{

@@ -34,6 +34,16 @@ std::size_t Rules::getNumberOfRules() const
 	return _rules.size();
 }
 
+std::vector<std::string> Rules::getNames()
+{
+	std::vector<std::string> vec;
+	for (const auto& [key, rule] : _rules)
+	{
+		vec.push_back(key);
+	}
+	return vec;
+}
+
 std::double_t Rules::process()
 {	
 	return 0.0;
@@ -102,6 +112,15 @@ Rule* Rules::getRule(size_t i)
 	auto it = _rules.begin();
 	std::advance(it, i);
 	return _rules[it->first].get();
+}
+
+Rule* Rules::getRule(std::string name)
+{
+	if (_rules[name] != nullptr)
+	{
+		return _rules[name].get();
+	}
+	return nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////////
