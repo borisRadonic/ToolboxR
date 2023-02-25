@@ -20,7 +20,7 @@ std::string GaussianFuzzySet::getMSFTypeNameFIS()
 
 std::string GaussianFuzzySet::getMSFParamExportFISString()
 {
-	return ("[" + std::format("{}", m_spread) + " " + std::to_string(m_midpoint) + "]");
+	return ("[" + std::format("{}", m_spread) + " " + std::format("{}", m_midpoint) + "]");
 }
 
 std::double_t GaussianFuzzySet::getMembership(std::double_t y)

@@ -19,7 +19,6 @@
 #include "StringUtil.h"
 
 
-
 TEST(TestCaseFuzzySet, FuzzySet1)
 {
 	std::unique_ptr<FuzzyInput> temperature = std::make_unique<FuzzyInput>(-80.00, 80.00, "Temperature");
@@ -174,10 +173,73 @@ TEST(TestImportExport, TestTankImportExport)
 		ossErrors << "Error creating file " << std::endl;
 	}
 
+	std::ifstream file1(fileName1);
+
 	FisFileExport fexp(controllerFromFis, file);
-	fexp.exportToFIS();
 
+	EXPECT_TRUE(fexp.exportToFIS());
+	//to do compare two files
 
-	
+	file.close();
+
+	std::ifstream file2(fileName2);
+
+	file2.seekg(0, std::ifstream::beg);
+	file1.seekg(0, std::ifstream::beg);
+	bool equ =  std::equal(std::istreambuf_iterator<char>(file2.rdbuf()),
+		std::istreambuf_iterator<char>(),
+		std::istreambuf_iterator<char>(file1.rdbuf()));
+
+	EXPECT_TRUE(equ);
 }
 
+
+TEST(TestImportExport, TestInput1)
+{
+	std::ostringstream ossErrors;
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+
+	std::string fileName1 = strpath + "test/test_input1.fis";
+	std::string fileName2 = strpath + "test/test_input1_exported.fis";
+
+	FisFileImport fis(fileName1);
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+	std::ofstream file(fileName2);
+
+	if (!file)
+	{
+		ossErrors << "Error creating file " << std::endl;
+	}
+
+	std::ifstream file1(fileName1);
+
+	FisFileExport fexp(controllerFromFis, file);
+
+	EXPECT_TRUE(fexp.exportToFIS());
+	//to do compare two files
+
+	file.close();
+
+	std::ifstream file2(fileName2);
+
+	file2.seekg(0, std::ifstream::beg);
+	file1.seekg(0, std::ifstream::beg);
+	bool equ = std::equal(std::istreambuf_iterator<char>(file2.rdbuf()),
+		std::istreambuf_iterator<char>(),
+		std::istreambuf_iterator<char>(file1.rdbuf()));
+
+	EXPECT_TRUE(equ);
+}

@@ -300,6 +300,5 @@ bool FisFileExport::writeRulesSection()
             }
         }        
     }
-    _file << std::endl;
-    return false;
+    return true;
 }
