@@ -11,20 +11,12 @@ LinguisticVariable::~LinguisticVariable()
 
 FuzzySet* LinguisticVariable::getFuzzySet(const std::string & name)
 {
-	if (_lingvisticValues.count(name) > 0U)
+	for (auto& lv : _lingvisticValues)
 	{
-		return _lingvisticValues[name].get();
-	}
-	return nullptr;
-}
-
-FuzzySet* LinguisticVariable::getFuzzySet(const std::uint32_t index)
-{
-	if (_lingvisticValues.size() > index)
-	{
-		auto it = _lingvisticValues.begin();
-		std::advance(it, index);
-		return it->second.get();		
+		if (lv.get()->getName() == name)
+		{
+			return lv.get();
+		}
 	}
 	return nullptr;
 }
@@ -34,11 +26,15 @@ void LinguisticVariable::addFuzzySet(std::unique_ptr<FuzzySet> set)
 	if (nullptr != set)
 	{
 		std::string name = set->getName();
-		if (_lingvisticValues.count(name) > 0U)
+
+		for (auto& lv : _lingvisticValues)
 		{
-			throw new std::exception("Already defined rule!");
+			if (lv.get()->getName() == name)
+			{
+				throw new std::exception("Already defined rule!");
+			}
 		}
-		_lingvisticValues[name] = std::move(set); //rule will be set to nullptr
+		_lingvisticValues.push_back(std::move(set));
 	}
 }
 
@@ -64,4 +60,14 @@ void LinguisticVariable::setValue(const std::double_t value)
 std::double_t LinguisticVariable::getValue()
 {
 	return _value;
+}
+
+std::vector<std::string> LinguisticVariable::getLingvisticValues()
+{
+	std::vector<std::string> vec;
+	for (auto& lv : _lingvisticValues)
+	{
+		vec.push_back(lv->getName());
+	}
+	return vec;
 }

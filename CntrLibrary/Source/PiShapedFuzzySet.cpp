@@ -1,4 +1,5 @@
 #include "PiShapedFuzzySet.h"
+#include <format>
 
 PiShapedFuzzySet::PiShapedFuzzySet(std::double_t a, std::double_t b, std::double_t c, std::double_t d, const std::string& name)
 	:m_a(a), m_b(b), m_c(c), m_d(d), FuzzySet(name)
@@ -8,6 +9,16 @@ PiShapedFuzzySet::PiShapedFuzzySet(std::double_t a, std::double_t b, std::double
 FuzzyMembershipFunctionType PiShapedFuzzySet::getMSFType()
 {
 	return FuzzyMembershipFunctionType::PiShaped;
+}
+
+std::string PiShapedFuzzySet::getMSFTypeNameFIS()
+{
+	return std::string("pimf");
+}
+
+std::string PiShapedFuzzySet::getMSFParamExportFISString()
+{
+	return ("[" + std::format("{}", m_a) + " " + std::format("{}", m_b) + " " + std::format("{}", m_c) + " " + std::format("{}", m_d) + "]");
 }
 
 std::double_t PiShapedFuzzySet::getMembership(std::double_t y)

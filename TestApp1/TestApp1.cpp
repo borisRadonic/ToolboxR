@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include "FuzzyController.h"
 #include "FuzzyControllerFactory.h"
@@ -13,25 +14,14 @@
 #include "FuzzyInput.h"
 #include "FuzzyOutput.h"
 #include "FisFileImport.h"
+#include "StringUtil.h"
 
 #include <sstream>
 
 
 int main()
 {
-	std::ostringstream ossErrors;
-	FisFileImport fis("C:/Users/Boris/Documents/MATLAB/Examples/R2021a/fuzzy/fuzzytankdemo/test2.fis");
-	FuzzyController* controllerFromFis = nullptr;
-	if (false == fis.readFisFile(ossErrors))
-	{
-		std::cout << ossErrors.str();
-	}
-	else
-	{
-		controllerFromFis = fis.toFuzzyController();
-	}
-
-
+	
 
 	/*define input variables */
 

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <memory>
 #include <filesystem>
+#include <sstream>
+#include <vector>
 
 #include "FuzzyController.h"
 #include "FuzzyControllerFactory.h"
@@ -12,9 +14,9 @@
 #include "FuzzyInput.h"
 #include "FuzzyOutput.h"
 #include "FisFileImport.h"
-#include "StringUtil.h"
+#include "FisFileExport.h"
 
-#include <sstream>
+#include "StringUtil.h"
 
 
 TEST(TestCaseFuzzySet, FuzzySet1)
@@ -64,4 +66,180 @@ TEST(TestCaseName, TestName)
 	}
 
 	EXPECT_EQ(1.0, 1.0);
+}
+
+
+
+TEST(CompareWithReference, TestTank)
+{
+
+	std::ostringstream ossErrors;
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+
+	std::string fileName1 = strpath + "test/tank.fis";
+	std::string fileName2 = strpath + "test/tank.txt";
+
+	FisFileImport fis(fileName1);
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+	FuzzyInput* level = controllerFromFis->getInput("level");
+	FuzzyInput* rate = controllerFromFis->getInput("rate");
+	FuzzyOutput* valve = controllerFromFis->getOutput();
+
+	controllerFromFis->compile();
+
+	std::ifstream file(fileName2);
+
+	if (!file)
+	{
+		ossErrors << "Error opening file " << std::endl;
+	}
+	std::string line;
+
+	std::vector<std::double_t> in1;
+	std::vector<std::double_t> in2;
+	std::vector<std::double_t> ref;
+	std::vector<std::double_t> is;
+
+	while (std::getline(file, line))
+	{
+		std::vector<std::string> tokens = StringUtil::split(line, "\t");
+		if (tokens.size() == 3U)
+		{
+			std::double_t i1 = std::stod(tokens[0]);
+			std::double_t i2 = std::stod(tokens[1]);
+			std::double_t r1 = std::stod(tokens[2]);
+			
+			in1.push_back(i1);
+			in2.push_back(i2);
+			level->setValue(i1);
+			rate->setValue(i2);
+
+			ref.push_back(r1);
+
+			controllerFromFis->process();
+
+			std::double_t o1 = valve->getValue();
+			is.push_back(o1);
+			
+			std::double_t diff = abs( o1 - r1 );
+			if (diff > 0.0002)
+			{
+				EXPECT_FLOAT_EQ(diff, 0);
+			}
+		}
+	}
+}
+
+TEST(TestImportExport, TestTankImportExport)
+{
+	std::ostringstream ossErrors;
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+
+	std::string fileName1 = strpath + "test/tank.fis";
+	std::string fileName2 = strpath + "test/tank_exported.fis";
+
+	FisFileImport fis(fileName1);
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+	std::ofstream file(fileName2);
+
+	if (!file)
+	{
+		ossErrors << "Error creating file " << std::endl;
+	}
+
+	std::ifstream file1(fileName1);
+
+	FisFileExport fexp(controllerFromFis, file);
+
+	EXPECT_TRUE(fexp.exportToFIS());
+	//to do compare two files
+
+	file.close();
+
+	std::ifstream file2(fileName2);
+
+	file2.seekg(0, std::ifstream::beg);
+	file1.seekg(0, std::ifstream::beg);
+	bool equ =  std::equal(std::istreambuf_iterator<char>(file2.rdbuf()),
+		std::istreambuf_iterator<char>(),
+		std::istreambuf_iterator<char>(file1.rdbuf()));
+
+	EXPECT_TRUE(equ);
+}
+
+
+TEST(TestImportExport, TestInput1)
+{
+	std::ostringstream ossErrors;
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+
+	std::string fileName1 = strpath + "test/test_input1.fis";
+	std::string fileName2 = strpath + "test/test_input1_exported.fis";
+
+	FisFileImport fis(fileName1);
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+	std::ofstream file(fileName2);
+
+	if (!file)
+	{
+		ossErrors << "Error creating file " << std::endl;
+	}
+
+	std::ifstream file1(fileName1);
+
+	FisFileExport fexp(controllerFromFis, file);
+
+	EXPECT_TRUE(fexp.exportToFIS());
+	//to do compare two files
+
+	file.close();
+
+	std::ifstream file2(fileName2);
+
+	file2.seekg(0, std::ifstream::beg);
+	file1.seekg(0, std::ifstream::beg);
+	bool equ = std::equal(std::istreambuf_iterator<char>(file2.rdbuf()),
+		std::istreambuf_iterator<char>(),
+		std::istreambuf_iterator<char>(file1.rdbuf()));
+
+	EXPECT_TRUE(equ);
 }

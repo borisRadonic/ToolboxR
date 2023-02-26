@@ -50,12 +50,30 @@ bool FuzzyController::setInputValue(const std::string & inputName, const std::do
 	return false;
 }
 
+std::vector<std::string> FuzzyController::getInputs()
+{
+	std::vector<std::string> vec;
+
+	for (auto& in : _inputs)
+	{
+		vec.push_back( in.first );
+	}
+	return vec;
+}
+
 void FuzzyController::addOutput(std::unique_ptr<FuzzyOutput> output)
 {
 	if (nullptr != output)
 	{
 		_output = std::move(output);
 	}
+}
+
+std::vector<std::string> FuzzyController::getOutputs()
+{
+	std::vector<std::string> vec;
+	vec.push_back(_output->getName());
+	return vec;
 }
 
 FuzzyOutput * FuzzyController::getOutput()

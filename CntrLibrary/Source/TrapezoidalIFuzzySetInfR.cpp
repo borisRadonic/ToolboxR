@@ -1,4 +1,5 @@
 #include "TrapezoidalIFuzzySetInfR.h"
+#include <format>
 
 TrapezoidalIFuzzySetInfR::TrapezoidalIFuzzySetInfR(std::double_t a, std::double_t b, const std::string & name)
 	:m_a(a), m_b(b), FuzzySet(name)
@@ -8,6 +9,16 @@ TrapezoidalIFuzzySetInfR::TrapezoidalIFuzzySetInfR(std::double_t a, std::double_
 FuzzyMembershipFunctionType TrapezoidalIFuzzySetInfR::getMSFType()
 {
 	return FuzzyMembershipFunctionType::TrapezoidalInfR;
+}
+
+std::string TrapezoidalIFuzzySetInfR::getMSFTypeNameFIS()
+{
+	return ("[" + std::format("{}", m_a) + " " + std::format("{}", m_b) + "]");
+}
+
+std::string TrapezoidalIFuzzySetInfR::getMSFParamExportFISString()
+{
+	return std::string();
 }
 
 std::double_t TrapezoidalIFuzzySetInfR::getMembership(std::double_t y)

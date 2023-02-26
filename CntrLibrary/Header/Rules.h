@@ -26,7 +26,11 @@ public:
 	
 	std::size_t getNumberOfRules() const;
 
+	std::vector<std::string> getNames();
+
 	Rule* getRule(size_t i);
+
+	Rule* getRule(std::string name);
 
 	virtual std::double_t process();
 

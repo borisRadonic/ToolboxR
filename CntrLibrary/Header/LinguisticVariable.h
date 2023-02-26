@@ -2,12 +2,15 @@
 #include <string>
 #include <map>
 #include <memory>
+#include "vector"
 
 #include "FuzzySet.h"
 
 class LinguisticVariable
 {
 public:
+
+	using LingvisticValuesPtr = std::vector<std::unique_ptr<FuzzySet>>;
 
 	LinguisticVariable() = delete;
 
@@ -26,8 +29,6 @@ public:
 
 	FuzzySet* getFuzzySet(const std::string& name);
 
-	FuzzySet* getFuzzySet(const std::uint32_t index);
-
 	void addFuzzySet(std::unique_ptr<FuzzySet> set);
 
 	void setValue(const std::double_t value);
@@ -43,13 +44,14 @@ public:
 	{
 		return _maximum;
 	}
+	
+	std::vector<std::string> getLingvisticValues();
+		
 
 protected:
 
-	using MapRLingvisticValuesPtr = std::map<std::string, std::unique_ptr<FuzzySet>>;
-
-	MapRLingvisticValuesPtr _lingvisticValues;
-
+	LingvisticValuesPtr _lingvisticValues;
+	
 	std::string _variableName;
 
 	std::double_t _minimum;

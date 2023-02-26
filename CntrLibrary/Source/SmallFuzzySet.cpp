@@ -1,4 +1,5 @@
 #include "SmallFuzzySet.h"
+#include <format>
 
 SmallFuzzySet::SmallFuzzySet(std::double_t midpoint, std::double_t spread, const std::string & name)
 :m_midpoint(midpoint), m_spread(spread), FuzzySet(name)
@@ -8,6 +9,16 @@ SmallFuzzySet::SmallFuzzySet(std::double_t midpoint, std::double_t spread, const
 FuzzyMembershipFunctionType SmallFuzzySet::getMSFType()
 {
 	return FuzzyMembershipFunctionType::FuzzySmall;
+}
+
+std::string SmallFuzzySet::getMSFTypeNameFIS()
+{
+	return std::string("small");
+}
+
+std::string SmallFuzzySet::getMSFParamExportFISString()
+{
+	return ("[" + std::format("{}", m_midpoint) + " " + std::format("{}", m_spread) + "]");
 }
 
 std::double_t SmallFuzzySet::getMembership(std::double_t y)

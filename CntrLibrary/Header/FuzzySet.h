@@ -15,8 +15,7 @@
 class FuzzySet
 {
 public:
-		
-
+	
 	FuzzySet() = delete;
 
 	FuzzySet(const std::string& name = "");
@@ -24,6 +23,10 @@ public:
 	virtual ~FuzzySet();
 
 	virtual FuzzyMembershipFunctionType getMSFType() = 0;
+
+	virtual std::string getMSFTypeNameFIS() = 0;
+
+	virtual std::string getMSFParamExportFISString() = 0;
 
 	//returns degree of membership of y
 	virtual std::double_t getMembership(std::double_t y) = 0;
@@ -33,7 +36,6 @@ public:
 		return m_FuzzySetName;
 	}
 	
-
 private:
 
 	std::string m_FuzzySetName;

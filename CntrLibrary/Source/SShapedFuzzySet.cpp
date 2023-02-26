@@ -1,4 +1,5 @@
 #include "SShapedFuzzySet.h"
+#include <format>
 
 SShapedFuzzySet::SShapedFuzzySet(std::double_t a, std::double_t b, const std::string& name)
 	:m_a(a), m_b(b), FuzzySet(name)
@@ -8,6 +9,16 @@ SShapedFuzzySet::SShapedFuzzySet(std::double_t a, std::double_t b, const std::st
 FuzzyMembershipFunctionType SShapedFuzzySet::getMSFType()
 {
 	return FuzzyMembershipFunctionType::SShaped;
+}
+
+std::string SShapedFuzzySet::getMSFTypeNameFIS()
+{
+	return std::string("smf");
+}
+
+std::string SShapedFuzzySet::getMSFParamExportFISString()
+{
+	return ("[" + std::format("{}", m_a) + " " + std::format("{}", m_b) + "]");
 }
 
 std::double_t SShapedFuzzySet::getMembership(std::double_t y)

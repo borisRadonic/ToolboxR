@@ -22,6 +22,7 @@ struct FisRule
 
 struct FisMF
 {
+	std::uint32_t num;
 	std::string mf;
 	std::string mfName;
 	std::string mfType; 
@@ -32,21 +33,21 @@ struct FisMF
 // -------------------------------------------------------------- 
 // trimf	3 params	Triangular 							yes
 // trapmf	4 params	Trapezoidal 						yes
-// gbellmf	3 params	Generalized bell-shaped				Yes
+// gbellmf	3 params	Generalized bell-shaped				No
 // gaussmf	2 params	Gaussian							Yes
 // gauss2mf 4 params	Gaussian combination				No
 // sigmf	2 params	Sigmoidal							Yes
 // dsigmf	4 params	Difference between two sigmoidal	No
 // psigmf	4 params	Product of two sigmoidals			No 
-// pimf		4 params	Pi-shaped membership function		No
-// smf		2 params	S-shaped membership function		No
-// zmf		2 params	Z-shaped membership function		No
-// constant	1 params	Sugeno								Yes
+// pimf		4 params	Pi-shaped membership function		Yes
+// smf		2 params	S-shaped membership function		Yes
+// zmf		2 params	Z-shaped membership function		Yes
+// constant	1 params	Sugeno								Yes? TODO
 // linear				Sugeno 								No
 // ...					Not supported: customs MATLAB...	No
 
 struct FisInputOutput
-{
+{	
 	std::string								name;
 	std::string								strRange;
 	std::uint32_t							numMFs;
