@@ -6,88 +6,91 @@
 
 #include "Rule.h"
 
-class FuzzyController;
-
-class Rules
+namespace CntrlLibrary
 {
-public:
 
-	Rules();
-	
-	Rules(const Rules&) = delete;
+	class FuzzyController;
 
-	Rules& operator=(Rules&) = delete;
+	class Rules
+	{
+	public:
 
-	virtual ~Rules();
-	
-	void setFuzzyController(FuzzyController* ptrController);
+		Rules();
 
-	void AddRule(std::unique_ptr<Rule> rule);
-	
-	std::size_t getNumberOfRules() const;
+		Rules(const Rules&) = delete;
 
-	std::vector<std::string> getNames();
+		Rules& operator=(Rules&) = delete;
 
-	Rule* getRule(size_t i);
+		virtual ~Rules();
 
-	Rule* getRule(std::string name);
+		void setFuzzyController(FuzzyController* ptrController);
 
-	virtual std::double_t process();
+		void AddRule(std::unique_ptr<Rule> rule);
 
-	virtual void compile();
-	
-protected:
+		std::size_t getNumberOfRules() const;
 
-	using MapRulePtr = std::map<std::string, std::unique_ptr<Rule>>;
+		std::vector<std::string> getNames();
 
-	MapRulePtr _rules;
+		Rule* getRule(size_t i);
 
-	std::vector <Rule*> _rulesOrderByOutTerm; //after compile
+		Rule* getRule(std::string name);
 
-	std::vector<std::double_t> _vecDegOfActOrderByOutTerm; //for grupped rules
-		
-	FuzzyController* _ptrController = nullptr;
+		virtual std::double_t process();
 
-	bool _compiled = false;
+		virtual void compile();
 
-	std::map<std::string, std::double_t> _vecOutTermDegOfAcivation; //for grupped rules
+	protected:
+
+		using MapRulePtr = std::map<std::string, std::unique_ptr<Rule>>;
+
+		MapRulePtr _rules;
+
+		std::vector <Rule*> _rulesOrderByOutTerm; //after compile
+
+		std::vector<std::double_t> _vecDegOfActOrderByOutTerm; //for grupped rules
+
+		FuzzyController* _ptrController = nullptr;
+
+		bool _compiled = false;
+
+		std::map<std::string, std::double_t> _vecOutTermDegOfAcivation; //for grupped rules
+	};
+
+	class MamdaniRules final : public Rules
+	{
+	public:
+
+		MamdaniRules();
+
+		MamdaniRules(const MamdaniRules&) = delete;
+
+		MamdaniRules& operator=(MamdaniRules&) = delete;
+
+		virtual ~MamdaniRules();
+
+		virtual std::double_t process() override;
+
+		virtual void compile() override;
+
+	};
+
+
+	class SugenoRules final : public Rules
+	{
+	public:
+
+		SugenoRules();
+
+		SugenoRules(const SugenoRules&) = delete;
+
+		SugenoRules& operator=(SugenoRules&) = delete;
+
+		virtual ~SugenoRules();
+
+		virtual std::double_t process() override;
+
+		virtual void compile() override;
+
+	};
 };
-
-class MamdaniRules final : public Rules
-{
-public:
-
-	MamdaniRules();
-
-	MamdaniRules(const MamdaniRules&) = delete;
-
-	MamdaniRules& operator=(MamdaniRules&) = delete;
-
-	virtual ~MamdaniRules();
-
-	virtual std::double_t process() override;
-
-	virtual void compile() override;
-
-};
-
-
-class SugenoRules final : public Rules
-{
-public:
-
-	SugenoRules();
-
-	SugenoRules(const SugenoRules&) = delete;
-
-	SugenoRules& operator=(SugenoRules&) = delete;
-
-	virtual ~SugenoRules();
-
-	virtual std::double_t process() override;
-	
-	virtual void compile() override;
-
-};
-
 

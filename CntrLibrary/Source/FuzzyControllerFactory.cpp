@@ -1,10 +1,11 @@
 #include "FuzzyControllerFactory.h"
 
-
-FuzzyController * FuzzyControllerFactory::createController(const FuzzyControllerType & type, const std::string & name)
+namespace CntrlLibrary
 {
-	switch (type)
+	FuzzyController* FuzzyControllerFactory::createController(const FuzzyControllerType& type, const std::string& name)
 	{
+		switch (type)
+		{
 		case FuzzyControllerType::Mamdani:
 		{
 			return new FuzzyControllerMamdani(name);
@@ -15,6 +16,7 @@ FuzzyController * FuzzyControllerFactory::createController(const FuzzyController
 		}
 		default:
 			throw new std::exception("Unknown FuzzyControllerType.");
+		}
+		return nullptr;
 	}
-	return nullptr;
 }

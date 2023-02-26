@@ -6,29 +6,33 @@
 #include <sstream>
 #include <map>
 #include <vector>
-class FisFileExport
+
+namespace CntrlLibrary
 {
-public:
 
-	FisFileExport() = delete;
+	class FisFileExport
+	{
+	public:
 
-	FisFileExport(FuzzyController* fuzzyController, std::ofstream& file);
+		FisFileExport() = delete;
 
-	virtual ~FisFileExport();
-	
-	bool exportToFIS();
+		FisFileExport(FuzzyController* fuzzyController, std::ofstream& file);
 
-protected:
+		virtual ~FisFileExport();
 
-	bool writeSectionSystem();
-	bool writeInputSections();
-	bool writeOutputSections();
-	bool writeRulesSection();
+		bool exportToFIS();
 
-private:
+	protected:
 
-	std::ofstream& _file;
-	FuzzyController* _fuzzyController;
+		bool writeSectionSystem();
+		bool writeInputSections();
+		bool writeOutputSections();
+		bool writeRulesSection();
 
+	private:
+
+		std::ofstream& _file;
+		FuzzyController* _fuzzyController;
+
+	};
 };
-

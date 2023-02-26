@@ -182,9 +182,6 @@
     <ClInclude Include="Header\ZShapedFuzzySet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FisFileExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\FisFileExport.h">
       <Filter>Header Files</Filter>
     </ClInclude>

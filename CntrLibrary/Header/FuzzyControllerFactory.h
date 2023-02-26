@@ -3,9 +3,12 @@
 #include "FuzzyControllerSugeno.h"
 #include "FuzzyTypes.h"
 
-class FuzzyControllerFactory
+namespace CntrlLibrary
 {
-public:
-	static FuzzyController* createController(const FuzzyControllerType& type, const std::string & name);
+	class FuzzyControllerFactory
+	{
+	public:
+		static FuzzyController* createController(const FuzzyControllerType& type, const std::string& name);
+	};
 };
 
