@@ -1,0 +1,48 @@
+[System]
+Name='sugeno1'
+Type='sugeno'
+Version=2.0
+NumInputs=2
+NumOutputs=1
+NumRules=8
+AndMethod='min'
+OrMethod='max'
+ImpMethod='prod'
+AggMethod='sum'
+DefuzzMethod='wtaver'
+
+[Input1]
+Name='voltage'
+Range=[0 1]
+NumMFs=3
+MF1='S':'trimf',[-0.416666666666667 0 0.416666666666667]
+MF2='N':'trimf',[0.0833333333333333 0.5 0.916666666666667]
+MF3='H':'trimf',[0.583333333333333 1 1.41666666666667]
+
+[Input2]
+Name='temperature'
+Range=[-1 1]
+NumMFs=5
+MF1='VC':'zmf',[-0.913508465608466 -0.380178465608466]
+MF2='C':'trimf',[-0.791 -0.423 -0.0714285714285715]
+MF3='N':'trimf',[-0.373 -0.00529 0.367724867724868]
+MF4='H':'trimf',[0.082 0.444 0.801587301587301]
+MF5='VH':'smf',[0.437 0.85978835978836]
+
+[Output1]
+Name='output1'
+Range=[-1 1]
+NumMFs=3
+MF1='H':'constant',[1]
+MF2='N':'constant',[0.5]
+MF3='S':'linear',[0.2 0.2 0.1]
+
+[Rules]
+1 1, 3 (1) : 1
+1 2, 3 (1) : 1
+1 3, 3 (1) : 1
+2 1, 1 (1) : 1
+2 2, 2 (1) : 1
+2 3, 3 (1) : 1
+3 1, 1 (1) : 1
+3 3, 3 (1) : 1

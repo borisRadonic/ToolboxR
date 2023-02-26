@@ -9,170 +9,171 @@
 #include "Rules.h"
 #include "FuzzyTypes.h"
 
-class FuzzyController
+namespace CntrlLibrary
 {
-public:
 
-	using MapInputsPtr = std::map<std::string, std::unique_ptr<FuzzyInput>>;
-	using MapOutputPtr = std::unique_ptr<FuzzyOutput>;
-
-	FuzzyController();
-
-	virtual ~FuzzyController();
-
-	FuzzyController(const FuzzyControllerType& type, const std::string& name );
-
-	void setControllerName(const std::string& name)
+	class FuzzyController
 	{
-		_controllerName = name;
-	}
+	public:
 
-	const std::string& getControllerName()
-	{
-		return _controllerName;
-	}
+		using VecInputsPtr = std::vector<std::unique_ptr<FuzzyInput>>;
+		using OutputPtr = std::unique_ptr<FuzzyOutput>;
 
-	const FuzzyControllerType& getControllerType()
-	{
-		return _controllerType;
-	}
+		FuzzyController();
 
-	/*returns Inputs identifier*/
-	void addInput(std::unique_ptr<FuzzyInput> input);
+		virtual ~FuzzyController();
 
-	FuzzyInput* getInput(const std::string & inputName);
+		FuzzyController(const FuzzyControllerType& type, const std::string& name);
 
-	bool setInputValue(const std::string & inputName, const std::double_t value);
-	
-	inline std::size_t getNumberOfInputs() const
-	{
-		return _inputs.size();
-	}
+		void setControllerName(const std::string& name)
+		{
+			_controllerName = name;
+		}
 
-	std::vector<std::string> getInputs();
-	
-	inline std::size_t getNumberOfOutputs() const
-	{
-		return 1U;
-	}
+		const std::string& getControllerName()
+		{
+			return _controllerName;
+		}
 
-	FuzzyOutput* getOutput();
+		const FuzzyControllerType& getControllerType()
+		{
+			return _controllerType;
+		}
 
-	void addOutput(std::unique_ptr<FuzzyOutput> output);
+		/*returns Inputs identifier*/
+		void addInput(std::unique_ptr<FuzzyInput> input);
 
-	std::vector<std::string> getOutputs();
-	
-	inline void setFuzzyAggregationMethod( const FuzzyAggregationMethod& method )
-	{
-		_agregationmethod = method;
-	}
+		FuzzyInput* getInput(const std::string& inputName);
 
-	inline FuzzyAggregationMethod getFuzzyAggregationMethod() const
-	{
-		 return _agregationmethod;
-	}
+		bool setInputValue(const std::string& inputName, const std::double_t value);
 
-	inline void setFuzzyImplicationMethod(const FuzzyImplicationMethod& method)
-	{
-		_implicationmethod = method;
-	}
+		inline std::size_t getNumberOfInputs() const
+		{
+			return _inputs.size();
+		}
 
-	inline FuzzyImplicationMethod getFuzzyImplicationMethod() const
-	{
-		return _implicationmethod;
-	}
+		std::vector<std::string> getInputs();
 
-	const std::double_t getOutputValue(const std::string & outputName);
+		inline std::size_t getNumberOfOutputs() const
+		{
+			return 1U;
+		}
 
-	virtual void addRule(	BooleanOperation booleanType,
-							const std::string & name,
-							const std::string & description, const std::vector<std::string>& inVariables,
-							const std::vector<std::vector<std::string>>& hedges,
-							const std::vector<std::string>& inLingValues,
-							const std::string & outVariable,
-							const std::string & outLingValue,
-							const std::vector<double_t>& thenCoefsC, //THEN C1...Cr for Sugeno system
-							const std::double_t & offset, //THEN C0 for Sugeno system  y = c0 + C1*X1 + c2*X2...Cn*Xn
-							const std::double_t & weight) = 0; //Optional weight for Mamdani system
-	
+		FuzzyOutput* getOutput();
 
-	inline void setResolution(std::uint32_t resolution)
-	{
-		_resolution = resolution;
-	}
+		void addOutput(std::unique_ptr<FuzzyOutput> output);
 
-	inline std::uint32_t getResolution() const
-	{
-		return _resolution;
-	}
-	
-	virtual void process();
+		std::vector<std::string> getOutputs();
 
-	virtual void compile();
+		inline void setFuzzyAggregationMethod(const FuzzyAggregationMethod& method)
+		{
+			_agregationmethod = method;
+		}
 
-	inline void setDefuzzificationMethod(DefuzzificationMethod defuzzificationMethod)
-	{
-		_defuzzificationMethod = _defuzzificationMethod;
-	}
+		inline FuzzyAggregationMethod getFuzzyAggregationMethod() const
+		{
+			return _agregationmethod;
+		}
 
-	inline DefuzzificationMethod getDefuzzificationMethod() const
-	{
-		return _defuzzificationMethod;
-	}
+		inline void setFuzzyImplicationMethod(const FuzzyImplicationMethod& method)
+		{
+			_implicationmethod = method;
+		}
 
-	inline size_t getNumberOfRules() const
-	{
-		return _ptrRules->getNumberOfRules();
-	}
+		inline FuzzyImplicationMethod getFuzzyImplicationMethod() const
+		{
+			return _implicationmethod;
+		}
 
-	Rules* getRules()
-	{
-		return _ptrRules.get();
-	}
+		const std::double_t getOutputValue(const std::string& outputName);
 
-	inline void setBooleanOperationAnd(BooleanOperation andOperation)
-	{
-		_boolAndOperation = andOperation;
-	}
-
-	inline void setBooleanOperationOr(BooleanOperation orOperation)
-	{
-		_boolOrOperation = orOperation;
-	}
-
-	inline BooleanOperation getBooleanOperationAnd() const
-	{
-		return _boolAndOperation;
-	}
-
-	inline BooleanOperation getBooleanOperationOr() const
-	{
-		return _boolOrOperation;
-	}
+		virtual void addRule(BooleanOperation booleanType,
+			const std::string& name,
+			const std::string& description, const std::vector<std::string>& inVariables,
+			const std::vector<std::vector<std::string>>& hedges,
+			const std::vector<std::string>& inLingValues,
+			const std::string& outVariable,
+			const std::string& outLingValue,
+			const std::double_t& weight) = 0; //Optional weight for Mamdani system
 
 
-	
-protected:
-		
-	MapInputsPtr	_inputs;
-	MapOutputPtr	_output;
+		inline void setResolution(std::uint32_t resolution)
+		{
+			_resolution = resolution;
+		}
 
-	std::string _controllerName;
+		inline std::uint32_t getResolution() const
+		{
+			return _resolution;
+		}
 
-	FuzzyControllerType _controllerType = FuzzyControllerType::Mamdani;
+		virtual void process();
 
-	FuzzyAggregationMethod _agregationmethod = FuzzyAggregationMethod::Maximum;
+		virtual void compile();
 
-	FuzzyImplicationMethod _implicationmethod = FuzzyImplicationMethod::Min;
-	
-	std::unique_ptr<Rules> _ptrRules;
+		inline void setDefuzzificationMethod(DefuzzificationMethod defuzzificationMethod)
+		{
+			_defuzzificationMethod = defuzzificationMethod;
+		}
 
-	std::uint32_t _resolution = 512U;
-	
-	DefuzzificationMethod _defuzzificationMethod = DefuzzificationMethod::Centroid;
+		inline DefuzzificationMethod getDefuzzificationMethod() const
+		{
+			return _defuzzificationMethod;
+		}
 
-	BooleanOperation _boolOrOperation = BooleanOperation::OrMax;
-	BooleanOperation _boolAndOperation = BooleanOperation::AndMin;
+		inline size_t getNumberOfRules() const
+		{
+			return _ptrRules->getNumberOfRules();
+		}
 
+		Rules* getRules()
+		{
+			return _ptrRules.get();
+		}
+
+		inline void setBooleanOperationAnd(BooleanOperation andOperation)
+		{
+			_boolAndOperation = andOperation;
+		}
+
+		inline void setBooleanOperationOr(BooleanOperation orOperation)
+		{
+			_boolOrOperation = orOperation;
+		}
+
+		inline BooleanOperation getBooleanOperationAnd() const
+		{
+			return _boolAndOperation;
+		}
+
+		inline BooleanOperation getBooleanOperationOr() const
+		{
+			return _boolOrOperation;
+		}
+
+
+
+	protected:
+
+		VecInputsPtr	_inputs;
+		OutputPtr	_output;
+
+		std::string _controllerName;
+
+		FuzzyControllerType _controllerType = FuzzyControllerType::Mamdani;
+
+		FuzzyAggregationMethod _agregationmethod = FuzzyAggregationMethod::Maximum;
+
+		FuzzyImplicationMethod _implicationmethod = FuzzyImplicationMethod::Min;
+
+		std::unique_ptr<Rules> _ptrRules;
+
+		std::uint32_t _resolution = 512U;
+
+		DefuzzificationMethod _defuzzificationMethod = DefuzzificationMethod::Centroid;
+
+		BooleanOperation _boolOrOperation = BooleanOperation::OrMax;
+		BooleanOperation _boolAndOperation = BooleanOperation::AndMin;
+
+	};
 };
-

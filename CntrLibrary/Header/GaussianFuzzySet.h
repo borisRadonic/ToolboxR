@@ -1,25 +1,29 @@
 #pragma once
 #include "FuzzySet.h"
 
-class GaussianFuzzySet final : public FuzzySet
+namespace CntrlLibrary
 {
-public:
-	GaussianFuzzySet() = delete;
 
-	GaussianFuzzySet(std::double_t midpoint, std::double_t spread, const std::string& name = "");
+	class GaussianFuzzySet final : public FuzzySet
+	{
+	public:
+		GaussianFuzzySet() = delete;
 
-	virtual ~GaussianFuzzySet() {}
+		GaussianFuzzySet(std::double_t midpoint, std::double_t spread, const std::string& name = "");
 
-	virtual FuzzyMembershipFunctionType getMSFType() final;
+		virtual ~GaussianFuzzySet() {}
 
-	virtual std::string getMSFTypeNameFIS() final;
+		virtual FuzzyMembershipFunctionType getMSFType() final;
 
-	virtual std::string getMSFParamExportFISString() final;
+		virtual std::string getMSFTypeNameFIS() final;
 
-	virtual std::double_t getMembership(std::double_t y) final;
+		virtual std::string getMSFParamExportFISString() final;
 
-private:
-	std::double_t m_midpoint;
-	std::double_t m_spread;
-};
+		virtual std::double_t getMembership(std::double_t y) final;
+
+	private:
+		std::double_t m_midpoint;
+		std::double_t m_spread;
+	};
+}
 

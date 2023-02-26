@@ -1,28 +1,30 @@
 #pragma once
 #include "FuzzySet.h"
 
-class SigmoidalFuzzySet final : public FuzzySet
+namespace CntrlLibrary
 {
-public:
-	SigmoidalFuzzySet() = delete;
+	class SigmoidalFuzzySet final : public FuzzySet
+	{
+	public:
+		SigmoidalFuzzySet() = delete;
 
-	SigmoidalFuzzySet(std::double_t a, std::double_t c, const std::string& name = "");
+		SigmoidalFuzzySet(std::double_t a, std::double_t c, const std::string& name = "");
 
-	virtual ~SigmoidalFuzzySet() {}
+		virtual ~SigmoidalFuzzySet() {}
 
-	virtual FuzzyMembershipFunctionType getMSFType() final;
+		virtual FuzzyMembershipFunctionType getMSFType() final;
 
-	virtual std::string getMSFTypeNameFIS() final;
+		virtual std::string getMSFTypeNameFIS() final;
 
-	virtual std::string getMSFParamExportFISString() final;
+		virtual std::string getMSFParamExportFISString() final;
 
-	virtual std::double_t getMembership(std::double_t y) final;
+		virtual std::double_t getMembership(std::double_t y) final;
 
-private:
+	private:
 
-	std::double_t m_a;
-	std::double_t m_c;
+		std::double_t m_a;
+		std::double_t m_c;
+	};
 };
-
 
 

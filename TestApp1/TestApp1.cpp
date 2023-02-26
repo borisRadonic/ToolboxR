@@ -4,24 +4,23 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <sstream>
 
 #include "FuzzyController.h"
 #include "FuzzyControllerFactory.h"
 #include "TriangularFuzzySet.h"
 #include "TrapezoidalIFuzzySetInfL.h"
 #include "TrapezoidalIFuzzySetInfR.h"
-
 #include "FuzzyInput.h"
 #include "FuzzyOutput.h"
 #include "FisFileImport.h"
 #include "StringUtil.h"
 
-#include <sstream>
 
+using namespace CntrlLibrary;
 
 int main()
 {
-	
 
 	/*define input variables */
 
@@ -87,9 +86,7 @@ int main()
 	std::vector<std::string> rl6 = { "Normal",			"Normal" };
 	std::vector<std::string> rl7 = { "High",			"Normal" };
 
-	std::vector<std::double_t> thenCoefsC; //empty for Mamdani controller
-
-	controller->addRule(BooleanOperation::AndMin, "R1", "", rv, vecHedgesR1, rl1, "PWM", "Low", thenCoefsC, 0.0, 1.00);
+	controller->addRule(BooleanOperation::AndMin, "R1", "", rv, vecHedgesR1, rl1, "PWM", "Low",1.00);
 	
 	// if (Temperature is VeryLow) and (Voltage is Normal) then PWM is High
 	std::vector<std::vector<std::string>> vecHedgesR2;
@@ -100,17 +97,17 @@ int main()
 	vecHedgesR2.push_back(vecHedgesR2T);
 	vecHedgesR2.push_back(vecHedgesR2V);
 	
-	controller->addRule(BooleanOperation::AndMin, "R2", "", rv, vecHedgesR2, rl2, "PWM", "Low",	thenCoefsC, 0.0, 1.00 );
+	controller->addRule(BooleanOperation::AndMin, "R2", "", rv, vecHedgesR2, rl2, "PWM", "Low",	1.00 );
 
-	controller->addRule(BooleanOperation::AndMin, "R4", "", rv, vecHedgesR2, rl4, "PWM", "High", thenCoefsC, 0.0, 1.00);
+	controller->addRule(BooleanOperation::AndMin, "R4", "", rv, vecHedgesR2, rl4, "PWM", "High", 1.00);
 
-	controller->addRule(BooleanOperation::AndMin, "R3", "", rv, vecHedgesR2, rl3, "PWM", "Low", thenCoefsC, 0.0, 1.00);
+	controller->addRule(BooleanOperation::AndMin, "R3", "", rv, vecHedgesR2, rl3, "PWM", "Low", 1.00);
 
-	controller->addRule(BooleanOperation::AndMin, "R5", "", rv, vecHedgesR2, rl5, "PWM", "High", thenCoefsC, 0.0, 1.00);
+	controller->addRule(BooleanOperation::AndMin, "R5", "", rv, vecHedgesR2, rl5, "PWM", "High", 1.00);
 
-	controller->addRule(BooleanOperation::AndMin, "R7", "", rv, vecHedgesR2, rl7, "PWM", "Normal", thenCoefsC, 0.0, 1.00);
+	controller->addRule(BooleanOperation::AndMin, "R7", "", rv, vecHedgesR2, rl7, "PWM", "Normal", 1.00);
 
-	controller->addRule(BooleanOperation::AndMin, "R6", "", rv, vecHedgesR2, rl6, "PWM", "High", thenCoefsC, 0.0, 1.00);
+	controller->addRule(BooleanOperation::AndMin, "R6", "", rv, vecHedgesR2, rl6, "PWM", "High", 1.00);
 	   	
 		
 	FuzzyInput* inTemp = controller->getInput("Temperature");

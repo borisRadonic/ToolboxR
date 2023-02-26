@@ -129,7 +129,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FisFileExport.h" />
     <ClInclude Include="Header\BellShapedFuzzySet.h" />
     <ClInclude Include="Header\FisFileExport.h" />
     <ClInclude Include="Header\FisFileImport.h" />

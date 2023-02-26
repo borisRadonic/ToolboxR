@@ -1,59 +1,62 @@
 #include "TrapezoidalFuzzySet.h"
 #include <format>
 
-TrapezoidalFuzzySet::TrapezoidalFuzzySet(std::double_t a, std::double_t b, std::double_t c, std::double_t d, const std::string & name)
-:m_a(a), m_b(b), m_c(c), m_d(d), FuzzySet(name)
+namespace CntrlLibrary
 {
-}
-
-FuzzyMembershipFunctionType TrapezoidalFuzzySet::getMSFType()
-{
-	return FuzzyMembershipFunctionType::Trapezoidal;
-}
-
-std::string TrapezoidalFuzzySet::getMSFTypeNameFIS()
-{
-	return std::string("trapmf");
-}
-
-std::string TrapezoidalFuzzySet::getMSFParamExportFISString()
-{
-	return ("[" + std::format("{}", m_a) + " " + std::format("{}", m_b) + " " + std::format("{}", m_c) + " " + std::format("{}", m_d) + "]");
-}
-
-std::double_t TrapezoidalFuzzySet::getMembership(std::double_t y)
-{
-	if (y <= m_a || y >= m_d)
+	TrapezoidalFuzzySet::TrapezoidalFuzzySet(std::double_t a, std::double_t b, std::double_t c, std::double_t d, const std::string& name)
+		:m_a(a), m_b(b), m_c(c), m_d(d), FuzzySet(name)
 	{
-		return std::double_t(0.0);
 	}
 
-	//y is inside a and d
-
-	if (y < m_b)
+	FuzzyMembershipFunctionType TrapezoidalFuzzySet::getMSFType()
 	{
-		//y is inside a and b
-		if ((m_b - m_a) > 0.0)
+		return FuzzyMembershipFunctionType::Trapezoidal;
+	}
+
+	std::string TrapezoidalFuzzySet::getMSFTypeNameFIS()
+	{
+		return std::string("trapmf");
+	}
+
+	std::string TrapezoidalFuzzySet::getMSFParamExportFISString()
+	{
+		return ("[" + std::format("{}", m_a) + " " + std::format("{}", m_b) + " " + std::format("{}", m_c) + " " + std::format("{}", m_d) + "]");
+	}
+
+	std::double_t TrapezoidalFuzzySet::getMembership(std::double_t y)
+	{
+		if (y <= m_a || y >= m_d)
 		{
-			return((y - m_a) / (m_b - m_a));
+			return std::double_t(0.0);
 		}
-		else
+
+		//y is inside a and d
+
+		if (y < m_b)
 		{
-			if (abs(m_b - m_a) <= MIN_DOUBLE_DIFF)
+			//y is inside a and b
+			if ((m_b - m_a) > 0.0)
 			{
-				//a = b
-				return std::double_t(0.0);
+				return((y - m_a) / (m_b - m_a));
 			}
+			else
+			{
+				if (abs(m_b - m_a) <= MIN_DOUBLE_DIFF)
+				{
+					//a = b
+					return std::double_t(0.0);
+				}
+				return std::double_t(1.0);
+			}
+		}
+
+		// y must be inside b and d
+		if (y <= m_c)
+		{
 			return std::double_t(1.0);
 		}
-	}
+		// y must be inside c and d
 
-	// y must be inside b and d
-	if (y <= m_c)
-	{
-		return std::double_t(1.0);
+		return ((m_d - y) / (m_d - m_c));
 	}
-	// y must be inside c and d
-	
-	return ((m_d - y) / (m_d - m_c));
 }
