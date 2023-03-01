@@ -47,10 +47,10 @@ y(n) = -SUM(from k= 1 to N) (a(k) * y(n-k)   + SUM(from k=0 to m= M) b(k) * x(n-
 double IIRFilter::process(std::double_t u)
 {
 	//the number of numerator coefficients
-	std::uint32_t N = _numerator.size();
+	std::size_t N = _numerator.size();
 
 	//the number of denominator coefficients
-	std::uint32_t M = _denominator.size();
+	std::size_t M = _denominator.size();
 	/*
 	The current output sample is computed from the past M inputs and the current input
 	sample plus the previous N output samples. 
