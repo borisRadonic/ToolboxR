@@ -123,6 +123,9 @@
     <ClCompile Include="Source\PIDController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DCMotor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BellShapedFuzzySet.h">
@@ -240,6 +243,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\StateSpace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DCMotor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

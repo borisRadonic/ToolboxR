@@ -27,6 +27,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\DCMotor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\Derivative.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -167,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="Header\BellShapedFuzzySet.h" />
     <ClInclude Include="Header\Block.h" />
+    <ClInclude Include="Header\DCMotor.h" />
     <ClInclude Include="Header\Derivative.h" />
     <ClInclude Include="Header\Difference.h" />
     <ClInclude Include="Header\FIRFilter.h" />

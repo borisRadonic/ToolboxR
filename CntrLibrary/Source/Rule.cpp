@@ -136,22 +136,14 @@ namespace CntrlLibrary
 			FuzzySet* ptrfs = _ptrOutput->getFuzzySet(_outputTerm);
 			if (ptrfs != nullptr)
 			{
-				if (ptrfs->getMSFType() != FuzzyMembershipFunctionType::Singleton)
+
+
+				if( (ptrfs->getMSFType() != FuzzyMembershipFunctionType::LinearSugeno) && (ptrfs->getMSFType() != FuzzyMembershipFunctionType::SingletonSugeno) )
 				{
 					throw new std::exception("Takagi-Sugeno-Kang fuzzy inference must use singleton output membership functions!");
 				}
 			}
-			else
-			{
-				//no output fuzyset
-			}
-
-			if (_boleanType == BooleanOperation::AndMin)
-			{
-				//Sugeno systems always use the product implication method.
-				//overwrite it 
-				_boleanType = BooleanOperation::AndProduct;
-			}
+						
 		}
 	}
 
