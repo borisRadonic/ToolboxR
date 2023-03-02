@@ -70,7 +70,6 @@ TEST(TestCaseName, TestName)
 }
 
 
-
 TEST(CompareWithReference, TestTank)
 {
 
@@ -219,6 +218,49 @@ TEST(TestImportExport, TestSugenoImportExport1)
 		controllerFromFis = fis.toFuzzyController();
 	}
 
+	//test controller
+
+	FuzzyInput* voltage = controllerFromFis->getInput("voltage");
+	FuzzyInput* temperature = controllerFromFis->getInput("temperature");
+	FuzzyOutput* output1 = controllerFromFis->getOutput();
+
+	std::double_t out1;
+
+	controllerFromFis->compile();
+		
+	//compare wit expected values
+	
+	voltage->setValue(0.5);
+	temperature->setValue(0.0);
+	controllerFromFis->process();
+	out1 = output1->getValue();
+	EXPECT_FLOAT_EQ(out1, 0.20);
+
+	voltage->setValue(0.33);
+	temperature->setValue(-0.228);
+	controllerFromFis->process();
+	out1 = output1->getValue();
+	EXPECT_FLOAT_EQ(out1, 0.255031349);
+
+	voltage->setValue(0.756);
+	temperature->setValue(-0.45);
+	controllerFromFis->process();
+	out1 = output1->getValue();
+	EXPECT_FLOAT_EQ(out1, 0.575476455646493);
+
+	voltage->setValue(0.87);
+	temperature->setValue(-0.609);
+	controllerFromFis->process();
+	out1 = output1->getValue();
+	EXPECT_FLOAT_EQ(out1, 0.90543030856040529);
+
+	voltage->setValue(0.365);
+	temperature->setValue(-0.609);
+	controllerFromFis->process();
+	out1 = output1->getValue();
+	EXPECT_FLOAT_EQ(out1, 0.56552098940765594);
+
+
 	std::ofstream file(fileName2);
 
 	if (!file)
@@ -233,6 +275,8 @@ TEST(TestImportExport, TestSugenoImportExport1)
 	EXPECT_TRUE(fexp.exportToFIS());
 	//to do compare two files
 
+
+
 	file.close();
 
 	std::ifstream file2(fileName2);
@@ -244,6 +288,9 @@ TEST(TestImportExport, TestSugenoImportExport1)
 		std::istreambuf_iterator<char>(file1.rdbuf()));
 
 	EXPECT_TRUE(equ);
+
+
+
 }
 
 
@@ -421,6 +468,78 @@ TEST(TestCreateAndExport, TestCreate)
 		res.value = val;
 		results.push_back(res);
 	}
-
-
 }
+/*
+TEST(CompareWithReference, TestTank2)
+{
+	
+	std::ostringstream ossErrors;
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+
+	std::string fileName1 = strpath + "test/tank2.fis";
+	std::string fileName2 = strpath + "test/tank.txt";
+
+	FisFileImport fis(fileName1);
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+	FuzzyInput* level = controllerFromFis->getInput("level");
+	FuzzyInput* rate = controllerFromFis->getInput("rate");
+	FuzzyOutput* valve = controllerFromFis->getOutput();
+
+	controllerFromFis->compile();
+
+	std::ifstream file(fileName2);
+
+	if (!file)
+	{
+		ossErrors << "Error opening file " << std::endl;
+	}
+	std::string line;
+
+	std::vector<std::double_t> in1;
+	std::vector<std::double_t> in2;
+	std::vector<std::double_t> ref;
+	std::vector<std::double_t> is;
+
+	while (std::getline(file, line))
+	{
+		std::vector<std::string> tokens = StringUtil::split(line, "\t");
+		if (tokens.size() == 3U)
+		{
+			std::double_t i1 = std::stod(tokens[0]);
+			std::double_t i2 = std::stod(tokens[1]);
+			std::double_t r1 = std::stod(tokens[2]);
+
+			in1.push_back(i1);
+			in2.push_back(i2);
+			level->setValue(i1);
+			rate->setValue(i2);
+
+			ref.push_back(r1);
+
+			controllerFromFis->process();
+
+			std::double_t o1 = valve->getValue();
+			is.push_back(o1);
+
+			std::double_t diff = abs(o1 - r1);
+			if (diff > 0.0002)
+			{
+				EXPECT_FLOAT_EQ(diff, 0);
+			}
+		}
+	}
+}
+*/

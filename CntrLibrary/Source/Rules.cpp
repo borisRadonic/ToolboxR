@@ -182,6 +182,9 @@ namespace CntrlLibrary
 		std::double_t min = 0.00;
 		std::double_t max = 0.00;
 
+		std::double_t mmin = 0.00;
+		std::double_t mmax = 0.00;
+
 		count = 0U;
 
 		std::map<std::string, std::vector<std::double_t>> vecNetOfNets;
@@ -190,6 +193,14 @@ namespace CntrlLibrary
 			min = fop->getMinimum();
 			max = fop->getMaximum();
 
+			if (min < mmin)
+			{
+				mmin = min;
+			}
+			if (max > mmax)
+			{
+				mmax = max;
+			}
 			std::double_t len = max - min;
 			std::double_t step = len / ((std::double_t)resolution);
 			std::double_t x = min;
@@ -209,7 +220,6 @@ namespace CntrlLibrary
 				//implication		
 				if (_ptrController->getFuzzyImplicationMethod() == FuzzyImplicationMethod::Min)
 				{
-					//Sugeno systems always use the sum aggregation method.
 					vecNetwork[i] = std::fmin(vecDegOfAcivationUnique[count], fsp->getMembership(x));
 				}
 				else if (_ptrController->getFuzzyImplicationMethod() == FuzzyImplicationMethod::Prod)
@@ -257,10 +267,10 @@ namespace CntrlLibrary
 		switch (_ptrController->getDefuzzificationMethod())
 		{
 		case DefuzzificationMethod::Centroid:
-		{
-			std::double_t len = max - min;
+		{			
+			std::double_t len = mmax - mmin;
 			std::double_t step = len / ((std::double_t)resolution);
-			std::double_t x = min;
+			std::double_t x = mmin;
 			std::double_t num = 0.0;
 			std::double_t denum = 0.00;
 
@@ -268,7 +278,7 @@ namespace CntrlLibrary
 			{
 				num += vecOutput[i] * x;
 				denum += vecOutput[i];
-				x += step;;
+				x += step;
 			}
 			if (denum > 0.00)
 			{
@@ -278,14 +288,43 @@ namespace CntrlLibrary
 		}
 		case DefuzzificationMethod::Bisector:
 		{
-			throw new std::exception("DefuzzificationMethod is not implemented!");
+			std::double_t len = mmax - mmin;
+			std::double_t step = len / ((std::double_t)resolution);
+			std::double_t x = mmin;
+			std::double_t y = mmax;
+			std::double_t left = 0.00;
+			std::double_t right = 0.00;
+
+			for (std::uint32_t i = 0; i < resolution; i++)
+			{
+				if (left > right)
+				{
+					right += vecOutput[resolution - 1 - i] * y;
+					y = y - step;
+
+				}
+				else
+				{					
+					x = x + step;
+					left += vecOutput[i] * x;
+				}
+
+				if ( (abs( left - right)<0.0000001) && (left!= 0.00) && (right != 0.00))
+				{
+					//end
+					return x;
+					break;
+				}
+			}
+			return ((x+y)/2.00);
+
 		}
 		case DefuzzificationMethod::MiddleOfMaximum:
 		{
-			std::double_t len = max - min;
+			std::double_t len = mmax - mmin;
 			std::double_t step = len / ((std::double_t)resolution);
-			std::double_t x = min;
-			std::double_t max = 0.0;
+			std::double_t x = mmin;
+			std::double_t maxx = 0.0;
 			std::double_t minx = 0.00;
 			std::double_t lastx = 0.00;
 			std::double_t mid = 0.00;
@@ -293,9 +332,9 @@ namespace CntrlLibrary
 			std::uint32_t f = 0;
 			for (std::uint32_t i = 0; i < resolution; i++)
 			{
-				if (vecOutput[i] > (max + 0.000000001))
+				if (vecOutput[i] > (maxx + 0.000000001))
 				{
-					max = vecOutput[i];
+					maxx = vecOutput[i];
 					minx = x;
 					f = i;
 				}
@@ -304,7 +343,7 @@ namespace CntrlLibrary
 
 			x = minx;
 			i = f;
-			while (vecOutput[i] == max)
+			while (vecOutput[i] == maxx)
 			{
 				i++;
 			}
@@ -312,17 +351,17 @@ namespace CntrlLibrary
 		}
 		case DefuzzificationMethod::LargestOfMaximum:
 		{
-			std::double_t len = max - min;
+			std::double_t len = mmax - mmin;
 			std::double_t step = len / ((std::double_t)resolution);
-			std::double_t x = min;
-			std::double_t max = 0.0;
+			std::double_t x = mmin;
+			std::double_t maxx = 0.0;
 			std::double_t lastx = 0.00;
 
 			for (std::uint32_t i = 0; i < resolution; i++)
 			{
-				if (vecOutput[i] >= max)
+				if (vecOutput[i] >= maxx)
 				{
-					max = vecOutput[i];
+					maxx = vecOutput[i];
 					lastx = x;
 				}
 				x += step;;
@@ -331,17 +370,17 @@ namespace CntrlLibrary
 		}
 		case DefuzzificationMethod::SmallestOfMaximum:
 		{
-			std::double_t len = max - min;
+			std::double_t len = mmax - mmin;
 			std::double_t step = len / ((std::double_t)resolution);
-			std::double_t x = min;
-			std::double_t max = 0.0;
+			std::double_t x = mmin;
+			std::double_t maxx = 0.0;
 			std::double_t minx = 0.00;
 
 			for (std::uint32_t i = 0; i < resolution; i++)
 			{
-				if (vecOutput[i] > (max + 0.000000001))
+				if (vecOutput[i] > (maxx + 0.000000001))
 				{
-					max = vecOutput[i];
+					maxx = vecOutput[i];
 					minx = x;
 				}
 				x += step;;
@@ -377,50 +416,49 @@ namespace CntrlLibrary
 
 		for (const auto& [key, rule] : _rules)
 		{
-			if (key == rule->getOutputTerm())
-			{
-				Wi = rule->getWeight() * rule->process();
+			
+			Wi = rule->getWeight() * rule->process();
 
-				std::string oterm = rule->getOutputTerm();
-				FuzzyOutput* fo = rule->getFuzzyOutput();
-				if (fo != nullptr)
+			std::string oterm = rule->getOutputTerm();
+			FuzzyOutput* fo = rule->getFuzzyOutput();
+			if (fo != nullptr)
+			{
+				FuzzySet* fs = fo->getFuzzySet(oterm);;
+				if (fs != nullptr)
 				{
-					FuzzySet* fs = fo->getFuzzySet("oterm");;
-					if (fs != nullptr)
+					if (fs->getMSFType() == FuzzyMembershipFunctionType::LinearSugeno)
 					{
-						if (fs->getMSFType() == FuzzyMembershipFunctionType::LinearSugeno)
+						if (rule->getnumberOfInputs() < 2U)
 						{
-							if (rule->getnumberOfInputs() < 2U)
-							{
-								throw new std::exception("The numer of inputs in LinearSugeno must be >= 2");
-							}
-							else
-							{
-								LinearSugenoFuzzySet* pss = (LinearSugenoFuzzySet*) fs;
-								if (pss != nullptr)
-								{
-									Zi = pss->get(rule->getInputValue(0), rule->getInputValue(1));
-								}
-							}
-						}
-						else if (fs->getMSFType() == FuzzyMembershipFunctionType::SingletonSugeno)
-						{
-							//zero order sugeno system -> Zi is constant
-							SingletonSugenoFuzzySet* pss = (SingletonSugenoFuzzySet*)fs;
-							if (pss != nullptr)
-							{
-								Zi = pss->getConstant();
-							}
+							throw new std::exception("The numer of inputs in LinearSugeno must be >= 2");
 						}
 						else
 						{
-							throw new std::exception("Not supported MembershipFunction in Sugeno system.");
+							LinearSugenoFuzzySet* pss = (LinearSugenoFuzzySet*) fs;
+							if (pss != nullptr)
+							{
+								Zi = pss->get(rule->getInputValue(0), rule->getInputValue(1));
+							}
 						}
 					}
+					else if (fs->getMSFType() == FuzzyMembershipFunctionType::SingletonSugeno)
+					{
+						//zero order sugeno system -> Zi is constant
+						SingletonSugenoFuzzySet* pss = (SingletonSugenoFuzzySet*)fs;
+						if (pss != nullptr)
+						{
+							Zi = pss->getConstant();
+						}
+					}
+					else
+					{
+						throw new std::exception("Not supported MembershipFunction in Sugeno system.");
+					}
 				}
-				prodWiZi += (Wi * Zi);
-				prodWi += Wi;
 			}
+			prodWiZi += (Wi * Zi);
+			prodWi += Wi;
+			
 		}
 		return(prodWiZi / prodWi);
 	}
