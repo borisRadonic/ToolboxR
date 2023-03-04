@@ -40,8 +40,11 @@ namespace DiscreteTime
 		{
 			_y = _gain * ((u - _old) / _Ts);
 			_old = u;
-			_y = std::clamp(_y, _outMin, _outMax);
-			checkSaturation(_y);
+			if (_isUseSaturation)
+			{
+				_y = std::clamp(_y, _outMin, _outMax);
+				checkSaturation(_y);
+			}			
 		}
 		return _y;
 	}

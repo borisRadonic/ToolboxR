@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <cmath>
+#include <memory>
+#include "Integrator.h"
+#include "Derivative.h"
 
 namespace DiscreteTime
 {
@@ -17,6 +20,8 @@ namespace DiscreteTime
 
 		void setParameters(std::double_t kp, std::double_t ki, std::double_t kd, std::double_t kaw, std::double_t ts, std::double_t upSaturation);
 
+		void reset();
+
 		double process(std::double_t error);
 
 	private:
@@ -28,11 +33,16 @@ namespace DiscreteTime
 		std::double_t _Ts = 1.00; //sampling period
 		std::double_t _upSat = 0.00; //Output saturation upper limit
 
-		std::double_t du = 0.00;
 
-		std::double_t _invZ = 0.00;
-		std::double_t _int = 0.00;
+
+		std::double_t _du1 = 0.00;
 
 		bool _isParamsSet = false;
+
+		std::double_t iii = 0.00;
+
+		std::unique_ptr<Integrator> _pIntegrator;
+		std::unique_ptr<Derivative> _pDerivative;
+		
 	};
 }

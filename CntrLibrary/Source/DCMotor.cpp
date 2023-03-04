@@ -35,18 +35,27 @@ namespace Models
 		_w1 = 0.00;
 		_i = 0.00;
 		_w = 0.00;
+		_a = 0.00;
+		_outTorque = 0.00;
 	}
 
-	void DCMotor::process(std::double_t u)
+	void DCMotor::setInputs(std::double_t u, std::double_t lt)
+	{
+		_u	= u;
+		_lt = lt;
+	}
+
+	void DCMotor::process()
 	{
 		if (_isParamsSet)
 		{
-			std::double_t i_d = (1.00 / _L) * (u - (_Kb * _w1) - (_R * _i1));
+			std::double_t i_d = (1.00 / _L) * (_u - (_Kb * _w1) - (_R * _i1));
 			_i = _pIntegratorI->process(i_d);
 			_i1 = _i;
-			std::double_t w_d = (1.00 / _J) * (_Kt * _i - _B * _w1);
-			_w = _pIntegratorW->process(w_d);
+			_a = (1.00 / _J) * (_Kt * _i - _B * _w1 - _lt);
+			_w = _pIntegratorW->process(_a);
 			_w1 = _w;
+			_outTorque = _Kt * _i;
 		}
 	}
 }

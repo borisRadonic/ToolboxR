@@ -39,6 +39,7 @@ namespace DiscreteTime
 	{
 		_x = _ic;
 		_y = _ic;
+		_u1 = 0.00;
 	}
 
 	double Integrator::process(std::double_t u)
@@ -60,13 +61,14 @@ namespace DiscreteTime
 			}
 			case IntegratorMethod::ForwardEuler:
 			{
-				_y = _x;
-				_x = _x + _Ts * _gain * u;
+				_x = _x + _Ts * _gain * _u1;
 				if (_isUseSaturation)
 				{
 					_x = std::clamp(_x, _outMin, _outMax);
 					checkSaturation(_x);
 				}
+				_y = _x;
+				_u1 = u;
 				break;
 			}
 			case IntegratorMethod::Trapezoidal:

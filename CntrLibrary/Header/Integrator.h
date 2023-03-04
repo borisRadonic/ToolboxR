@@ -59,6 +59,8 @@ namespace DiscreteTime
 		std::double_t _x = 0.00;
 		std::double_t _y = 0.00;
 
+		std::double_t _u1 = 0.00;
+
 		bool _isParamsSet = false;
 	};
 }

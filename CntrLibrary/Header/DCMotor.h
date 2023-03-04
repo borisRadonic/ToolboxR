@@ -28,14 +28,21 @@ namespace Models
 
 		void reset();
 
-		void process(std::double_t u);
+		//u  - DC Voltage
+		//lt - Load torque
+		void setInputs(std::double_t u, std::double_t lt);
 
-		
+		void process();
+			
 
 		std::double_t getCurrent() const { return _i; };
 
 		std::double_t getVelocity() const {	return _w; };
 
+		std::double_t getAccell() const { return _a; };
+
+		std::double_t getTorque() const { return _outTorque; };
+	
 	private:
 
 		std::double_t _Ts = 1.00; //sampling period
@@ -53,7 +60,12 @@ namespace Models
 
 		std::double_t _i = 0.00; //Current
 
-		std::double_t _w = 0.00; //velocity in rad
+		std::double_t _w = 0.00; //velocity in rad/sec
+		std::double_t _a = 0.00; //acceleration in rad/sec^2
+		std::double_t _outTorque = 0.00;
+
+		std::double_t _u = 0.00;
+		std::double_t _lt = 0.00;
 
 		std::unique_ptr<Integrator> _pIntegratorI;
 		std::unique_ptr<Integrator> _pIntegratorW;
