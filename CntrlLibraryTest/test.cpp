@@ -16,6 +16,10 @@
 #include "FisFileImport.h"
 #include "FisFileExport.h"
 
+#include "DCMotor.h"
+#include "FrictionModelCV.h"
+#include "PIDController.h"
+
 #include "StringUtil.h"
 
 using namespace CntrlLibrary;
@@ -543,3 +547,142 @@ TEST(CompareWithReference, TestTank2)
 	}
 }
 */
+
+
+TEST(TestCaseFrictionDCMotor, DCMotorFuzzy)
+{
+	std::ostringstream ossErrors;
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+
+	strpath = strpath + "test/vfriction.fis";
+
+	FisFileImport fis(strpath);
+	FuzzyController* controllerFromFis = nullptr;
+	if (false == fis.readFisFile(ossErrors))
+	{
+		std::cout << ossErrors.str();
+	}
+	else
+	{
+		controllerFromFis = fis.toFuzzyController();
+	}
+
+
+	//test controller
+
+	FuzzyInput* inError = controllerFromFis->getInput("error");
+	FuzzyInput* rate = controllerFromFis->getInput("rate");
+	FuzzyOutput* output1 = controllerFromFis->getOutput();
+
+	std::double_t out1;
+
+	controllerFromFis->compile();
+	
+	using namespace Models;
+
+	DCMotor motor;
+	std::double_t J = 0.008586328125;
+
+	std::double_t Ki1 = 1904.96918720126;
+	std::double_t Ki2 = 30.2;
+
+	motor.setParameters(0.0001, 0.000135, 0.178, J, 1.1, 1.55e-3, 0.7614);
+
+	PIDController piTq;
+	piTq.setParameters(2.00174495936295, Ki1, 0.00, Ki1, 0.0001, 120.0);
+
+
+	FrictionModelCSV friction;
+	friction.setParameters(0.0001, 0.010, 3.5, J);
+
+	//simulate first 0.1 s
+	std::double_t I = 0.00;
+	std::double_t w = 0.00;
+	std::double_t a = 0.00;
+	std::double_t T = 0.00;
+	std::double_t Tf = 0.00;
+	std::double_t Tref = 0.0;
+	std::double_t error = 0.00;
+	std::double_t errorVel = 0;
+	std::double_t refVel = 0.9;
+	std::double_t u = 0.00;
+
+
+	std::vector< std::double_t> vecVel;
+	std::vector< std::double_t> vecU;
+	std::vector< std::double_t> vecTr;
+	std::vector< std::double_t> vecTime;
+	std::double_t time = 0.00;
+	std::double_t rateVal = 0.00;
+	Derivative der;
+	der.setParameters(0.0001, 1.0);
+
+
+
+	inError->setValue(0.0);
+	rateVal = der.process(0.0);
+	rate->setValue(rateVal);
+	controllerFromFis->process();
+	out1 = output1->getValue();
+
+	for (std::uint32_t k = 0; k < 10000; k++)
+	{
+		//velocity controller
+		errorVel = (refVel - w);
+
+		if (errorVel < 2.0)
+		{
+			int a = 0;
+			a++;
+		}
+
+		errorVel = errorVel / 400.00;
+			
+		inError->setValue(errorVel);
+		rateVal = der.process(errorVel) / 5000.00;
+		rate->setValue(rateVal);
+		controllerFromFis->process();
+		out1 = output1->getValue();
+
+		Tref = -out1 * 600.00;
+
+		if (Tref > 40)
+		{
+			Tref = 40.00;
+		}
+
+		if (Tref < -40.00)
+		{
+			Tref = -40.00;
+		}
+
+		vecTr.push_back(Tref);
+
+		//torque controller
+		error = Tref - T;
+		u = piTq.process(error);
+
+		motor.setInputs(u, Tf);
+		motor.process();
+		I = motor.getCurrent();
+		w = motor.getVelocity();
+		a = motor.getAccell();
+		T = motor.getTorque();
+
+		vecVel.push_back(w);
+		vecU.push_back(u);
+
+		vecTime.push_back(time);
+		time += 0.0001;
+
+		friction.setInputs(w, T, a);
+		friction.process();
+		Tf = friction.getFrictionTorque();
+	}
+
+
+}

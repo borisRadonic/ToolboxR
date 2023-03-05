@@ -150,8 +150,8 @@ namespace CntrlLibrary
 
 		//Claculate the degrees of activation for each rule
 		std::uint32_t count = 0U;
-		for (const auto& [key2, rule] : _rules)
-		{
+		for (const auto&  rule : _rulesOrderByOutTerm)
+		{			
 			_vecDegOfActOrderByOutTerm[count] = rule->getWeight() * rule->process();
 			count++;
 		}
@@ -165,7 +165,7 @@ namespace CntrlLibrary
 		{
 			Rule* ptrRule = *iterRules;
 			outTerm = ptrRule->getOutputTerm();
-			valGroup = 0.00;
+			valGroup = 0.00;			
 			while ((iterRules != _rulesOrderByOutTerm.end()) && (*iterRules)->getOutputTerm() == outTerm)
 			{
 				valGroup += _vecDegOfActOrderByOutTerm[count];

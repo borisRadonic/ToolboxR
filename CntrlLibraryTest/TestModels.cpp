@@ -55,6 +55,8 @@ TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 	std::vector< std::double_t> vecVel;
 	std::vector< std::double_t> vecU;
 	std::vector< std::double_t> vecTr;
+	std::vector< std::double_t> vecTime;
+	std::double_t time = 0.00;
 
 	for (std::uint32_t k = 0; k < 10000; k++)
 	{
@@ -78,6 +80,8 @@ TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 		vecVel.push_back(w);
 		vecU.push_back(u);
 
+		vecTime.push_back(time);
+		time += 0.0001;
 		
 		//friction.setInputs(w, T, a);
 		//friction.process();
@@ -93,6 +97,9 @@ TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 	//EXPECT_FLOAT_EQ(i, 0.11944857346561119);
 	//EXPECT_FLOAT_EQ(w, 673.41914414630844);
 }
+
+
+
 
 
 TEST(TestCaseDCMotor, TestDCMotor1)
