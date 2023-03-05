@@ -25,14 +25,17 @@ TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 	DCMotor motor;
 	std::double_t J = 0.008586328125;
 
+	std::double_t Ki1 = 1904.96918720126;
+	std::double_t Ki2 = 30.2;
+
 	motor.setParameters(0.0001, 0.000135, 0.178, J, 1.1, 1.55e-3, 0.7614);
 	
 	PIDController piTq;
-	piTq.setParameters(2.0, 1904.96, 0.00, 1.00, 0.0001, 120.0);
+	piTq.setParameters(2.00174495936295, Ki1, 0.00, Ki1, 0.0001, 120.0);
 
 
 	PIDController piVel;
-	piVel.setParameters(2.0, 30.2099855950081, 0.00, 1.00, 0.0001, 40.0);
+	piVel.setParameters(2.0, Ki2, 0.00, Ki2, 0.0001, 40.0);
 
 	FrictionModelCSV friction;
 	friction.setParameters(0.0001, 0.010, 3.5, J);
@@ -46,18 +49,20 @@ TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 	std::double_t Tref = 0.0;
 	std::double_t error = 0.00;
 	std::double_t errorVel = 0;
-	std::double_t refVel = 1.0;
+	std::double_t refVel = 100.00;
 	std::double_t u = 0.00;
 
 	std::vector< std::double_t> vecVel;
 	std::vector< std::double_t> vecU;
+	std::vector< std::double_t> vecTr;
 
 	for (std::uint32_t k = 0; k < 10000; k++)
-	{		
-
+	{
 		//velocity controller
 		errorVel = refVel - w;
 		Tref = piVel.process(errorVel);
+
+		vecTr.push_back(Tref);
 		
 		//torque controller
 		error = Tref - T;
