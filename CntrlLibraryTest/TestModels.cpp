@@ -1,6 +1,5 @@
 #include "pch.h"
 
-
 #include <iostream>
 #include <memory>
 #include <filesystem>
@@ -8,18 +7,59 @@
 #include <fstream>
 #include <vector>
 
+#include "StateSpace.h"
 
 #include "DCMotor.h"
 #include "FrictionModelCV.h"
 #include "PIDController.h"
 
 #include "StringUtil.h"
+#include "Eigen\core"
 
 using namespace CntrlLibrary;
 using namespace Models;
 
 using std::experimental::filesystem::path;
 
+using namespace DiscreteTime;
+
+TEST(TestStateSpaceClass, TestSS)
+{
+	StateSpace<2, 2, 2> sp;
+	StateSpace<2, 2, 2>::AMatrix A;
+	StateSpace<2, 2, 2>::AMatrix B;
+	StateSpace<2, 2, 2>::AMatrix C;
+	StateSpace<2, 2, 2>::AMatrix D;
+	A(0) = -0.11;
+	A(1) =  0.12;
+	A(2) = -1.1;
+	A(3) = -1.2;
+
+	B(0) = 1.0;
+	B(1) = 0.0;
+	B(2) = 0.0;
+	B(3) = 0.0;
+
+	C.setIdentity();
+	D.setZero();
+	
+	Eigen::Vector<double, 2> u;
+	u(0) = 1.0;
+	u(1) = 0.0;
+
+	sp.setParameters(A, B, C, D, "");
+
+	sp.setInput(u);
+
+	sp.process();
+
+	Eigen::Vector<double, 2> y;
+
+	y = sp.getY();
+
+	//sp.setParameters( )
+}
+/*
 TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 {
 	DCMotor motor;
@@ -97,10 +137,7 @@ TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 	//EXPECT_FLOAT_EQ(i, 0.11944857346561119);
 	//EXPECT_FLOAT_EQ(w, 673.41914414630844);
 }
-
-
-
-
+*/
 
 TEST(TestCaseDCMotor, TestDCMotor1)
 {

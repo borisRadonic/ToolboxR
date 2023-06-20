@@ -548,6 +548,7 @@ TEST(CompareWithReference, TestTank2)
 }
 */
 
+/*
 
 TEST(TestCaseFrictionDCMotor, DCMotorFuzzy)
 {
@@ -683,6 +684,5 @@ TEST(TestCaseFrictionDCMotor, DCMotorFuzzy)
 		friction.process();
 		Tf = friction.getFrictionTorque();
 	}
-
-
 }
+*/

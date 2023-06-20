@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Block.h"
+#include <Eigen/Core>
 
 namespace DiscreteTime
 {
@@ -17,11 +18,12 @@ namespace DiscreteTime
 	class StateSpace final : public Block
 	{
 	public:
+			
 		
-		using AMatrix = std::double_t[N][N];
-		using BMatrix = std::double_t[N][M];
-		using CMatrix = std::double_t[R][N];
-		using DMatrix = std::double_t[R][M];
+		using AMatrix = Eigen::Matrix<double, N, N>;
+		using BMatrix = Eigen::Matrix<double, N, M>;
+		using CMatrix = Eigen::Matrix<double, R, N>;
+		using DMatrix = Eigen::Matrix<double, R, M>;
 		
 		StateSpace() {};
 
@@ -31,111 +33,60 @@ namespace DiscreteTime
 		{
 			if (false == _isParamsSet)
 			{
-				memcpy(_A, A, sizeof(double_t) *N*N);
-				memcpy(_B, B, sizeof(double_t) *N*M);
-				memcpy(_C, C, sizeof(double_t) *R*N);
-				memcpy(_D, D, sizeof(double_t) *R*M);
-				for (size_t i = 0; i < N; i++)
-				{
-					_X[i] = 0.00;
-					_oldX[i] = 0.00;
-				}
-				for (size_t i = 0; i < M; i++)
-				{
-					_Y[i] = 0.00;
-				}
+				_A = A;
+				_B = B;
+				_C = C;
+				_D = D;
+				
 				setName(name);
 				_isParamsSet = true;
+				reset();
 			}
+		}
+
+		void setInput(Eigen::Vector<double, M>& U)
+		{
+			_U = U;
 		}
 
 		void reset()
 		{
 			if (_isParamsSet)
 			{
-				for (size_t i = 0; i < N; i++)
-				{
-					_X[i] = 0.00;
-				}
-				for (size_t i = 0; i < M; i++)
-				{
-					_Y[i] = 0.00;
-				}
+				_X.setZero();
+				_X1.setZero();
+				_Y.setZero();
+				_U.setZero();
 			}
 		}
 				
-		void process(const std::vector<std::double_t>& u)
+		void process()
 		{
-			//_X =  A * _oldX + B * u
-			//_Y = C * _X + D * u;
-			//_oldX = _X;
-			std::double_t temp1[N];
-			std::double_t res = 0.00;
-			for (std::uint32_t n = 0U; n < N; n++)
+			if (_isParamsSet)
 			{
-				res = 0.00;
-				for (std::uint32_t j = 0U; j < N; j++)
-				{
-					res += _A[n][j] * _oldX[j];
-				}
-				temp1[n] = res;
-			}
-
-			res = 0.00;
-			for (std::uint32_t n = 0U; n < N; n++)
-			{
-				res = 0.00;
-				for (std::uint32_t j = 0U; j < M; j++)
-				{
-					res += _B[n][j] * u[j];
-				}
-				_X[n] = res + temp1[n];
-				_oldX[n] = _X[n];
-			}
-
-			res = 0.00;
-			std::double_t temp2[R];
-			for (std::uint32_t r = 0U; r < R; r++)
-			{
-				res = 0.00;
-				for (std::uint32_t n = 0U; n < N; n++)
-				{
-					res += _C[r][n] * _X[n];
-				}
-				temp2[r] = res;
-			}
-
-			res = 0.00;
-			for (std::uint32_t r = 0U; r < R; r++)
-			{
-				res = 0.00;
-				for (std::uint32_t m = 0U; m < M; m++)
-				{
-					res += _D[r][m] * u[m];
-				}
-				_Y[r] = res + temp2[r];
+				_X = _A * _X1 + _B * _U;
+				_Y = _C * _X + _D * _U;
+				_X1 = _X;
 			}
 		}
 		
-		const std::double_t getY( std::uint32_t i) const
+		const Eigen::Vector<double, R>& getY() const
 		{
-			if (i < N)
-			{
-				return _Y[i];
-			}
-			return 0.00;
+			return _Y;
 		}
 
 	private:
+		
 
-		std::double_t _A[N][N];
-		std::double_t _B[N][M];
-		std::double_t _C[R][N];
-		std::double_t _D[R][M];
-				
-		std::double_t _X[N];
-		std::double_t _oldX[N];
-		std::double_t _Y[M];
+		Eigen::Vector<double, N> _X;
+		Eigen::Vector<double, N> _X1;
+		Eigen::Vector<double, R> _Y;
+		Eigen::Vector<double, M> _U;
+
+		AMatrix _A;
+		BMatrix _B;
+		CMatrix _C;
+		DMatrix _D;
 
 		bool _isParamsSet = false;
 	};

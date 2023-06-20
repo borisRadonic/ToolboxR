@@ -151,6 +151,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\TimeDelay.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\TrapezoidalFuzzySet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -209,6 +213,7 @@
     <ClInclude Include="Header\SShapedFuzzySet.h" />
     <ClInclude Include="Header\StateSpace.h" />
     <ClInclude Include="Header\StringUtil.h" />
+    <ClInclude Include="Header\TimeDelay.h" />
     <ClInclude Include="Header\TrapezoidalFuzzySet.h" />
     <ClInclude Include="Header\TrapezoidalIFuzzySetInfL.h" />
     <ClInclude Include="Header\TrapezoidalIFuzzySetInfR.h" />
@@ -309,7 +314,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>Header</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Header;$(EIGEN)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -328,7 +333,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>Header</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Header;$(EIGEN)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
