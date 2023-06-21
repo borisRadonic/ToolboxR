@@ -9,7 +9,6 @@
 
 namespace CntrlLibrary
 {
-
 	class FisFileExport
 	{
 	public:

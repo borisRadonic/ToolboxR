@@ -25,23 +25,37 @@ using namespace DiscreteTime;
 
 TEST(TestStateSpaceClass, TestSS)
 {
-	StateSpace<2, 2, 2> sp;
-	StateSpace<2, 2, 2>::AMatrix A;
-	StateSpace<2, 2, 2>::AMatrix B;
-	StateSpace<2, 2, 2>::AMatrix C;
-	StateSpace<2, 2, 2>::AMatrix D;
-	A(0) = -0.11;
-	A(1) =  0.12;
-	A(2) = -1.1;
-	A(3) = -1.2;
 
-	B(0) = 1.0;
-	B(1) = 0.0;
-	B(2) = 0.0;
-	B(3) = 0.0;
+	/*
+	A must be an N-by-N matrix, where n is the number of states. -> State transition matrix
+	B must be an N-by-M matrix, where m is the number of inputs.
+	C must be an R-by-N matrix, where r is the number of outputs.
+	D must be an R-by-M matrix
+	*/
+
+	//StateSpace<N, M, R> sp;
+
+	StateSpace<2, 2, 1> sp;
+		
+	using SS = StateSpace<2, 2, 1>;
+	
+	SS::AMatrix A;
+	SS::BMatrix B;
+	SS::CMatrix C;
+	SS::DMatrix D;
+	A(0) = 0.9315;
+	A(1) = -0.01109;
+	A(2) = 0.000856;
+	A(3) = 1.0;
+
+	B(0) = 0.06012;
+	B(1) = 0.00;
+
+
 
 	C.setIdentity();
 	D.setZero();
+
 	
 	Eigen::Vector<double, 2> u;
 	u(0) = 1.0;
@@ -51,24 +65,32 @@ TEST(TestStateSpaceClass, TestSS)
 
 	sp.setInput(u);
 
-	sp.process();
+	Eigen::Vector<double, 1> y;
 
-	Eigen::Vector<double, 2> y;
+	//1 sec
+	for (std::uint32_t k = 0; k < 60000; k++)
+	{
 
+		sp.process();
+		y = sp.getY();
+	}
+
+	
 	y = sp.getY();
+	
+	
 
-	//sp.setParameters( )
 }
 /*
 TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 {
 	DCMotor motor;
-	std::double_t J = 0.008586328125;
 
-	std::double_t Ki1 = 1904.96918720126;
+	std::double_t Ki1 = 33.2;
 	std::double_t Ki2 = 30.2;
 
-	motor.setParameters(0.0001, 0.000135, 0.178, J, 1.1, 1.55e-3, 0.7614);
+	motor.setParameters(0.0001, 0.000135, 0.178, 0.08586328125, 1.1, 1.55e-3, 0.7614);
+
 	
 	PIDController piTq;
 	piTq.setParameters(2.00174495936295, Ki1, 0.00, Ki1, 0.0001, 120.0);
@@ -142,19 +164,22 @@ TEST(TestCaseDCMotor, TestDCMotorWithFriction)
 TEST(TestCaseDCMotor, TestDCMotor1)
 {
 	DCMotor motor;
-	motor.setParameters(0.0001, 0.000135, 0.178, 0.008586328125, 1.1, 1.55e-3, 0.7614);
+	motor.setParameters(0.0001, 0.000135, 0.178, 0.08586328125, 1.1, 1.55e-3, 0.7614);
+	
+	std::vector< std::double_t> vecVel;
 
-	//simulate first 0.1 s
+	//simulate first  s
 	motor.setInputs(120.00, 0.00);
-	for (std::uint32_t i = 0; i < 1000; i++)
+	for (std::uint32_t i = 0; i < 20000; i++)
 	{
 		motor.process();
+		vecVel.push_back(motor.getVelocity());
 	}
 	std::double_t i = motor.getCurrent();
 	std::double_t w = motor.getVelocity();
 
-	EXPECT_FLOAT_EQ(i, 26.309461273007749);
-	EXPECT_FLOAT_EQ(w, 514.91089859268288);
+	EXPECT_FLOAT_EQ(i, 6.2671933654315852);
+	EXPECT_FLOAT_EQ(w, 635.50450403444040);
 
 	//next 0.9 s
 	for (std::uint32_t i = 0; i < 9000; i++)

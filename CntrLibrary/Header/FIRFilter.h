@@ -4,30 +4,37 @@
 #include <vector>
 #include "Block.h"
 
-namespace DiscreteTime
+namespace CntrlLibrary
 {
-	//Implementation of finite impulse response (FIR) filter
-	class FIRFilter final : public Block
+	namespace DiscreteTime
 	{
-	public:
+		//Implementation of finite impulse response (FIR) filter
+		class FIRFilter final : public Block
+		{
+		public:
 
-		FIRFilter();
+			FIRFilter();
 
-		~FIRFilter();
+			~FIRFilter();
 
-		void setParameters(const std::vector<std::double_t>& coefficients, const std::string& name = "");
+			void setParameters(const std::vector<std::double_t>& coefficients, const std::string& name = "");
 
-		double process(std::double_t u);
+			double process(std::double_t u);
 
-	private:
+		private:
 
-		bool _isParamsSet = false;
+			std::shared_ptr<Signal<std::double_t>> _ptrIn;
+			std::shared_ptr<Signal<std::double_t>> _ptrOut;
 
-		std::vector<std::double_t> _b;
+			bool _isParamsSet = false;
 
-		double _y = 0.00;
+			std::vector<std::double_t> _b;
 
-		std::vector<std::double_t> _x;
+			double _y = 0.00;
 
-	};
+			std::vector<std::double_t> _x;
+
+
+		};
+	}
 }

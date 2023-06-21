@@ -1,34 +1,45 @@
 #include "IIRFilterFO.h"
 
-namespace DiscreteTime
+namespace CntrlLibrary
 {
-	IIRFilterFO::IIRFilterFO()
+	namespace DiscreteTime
 	{
-	}
-
-	IIRFilterFO::~IIRFilterFO()
-	{
-	}
-	
-	void IIRFilterFO::setParameters(const std::double_t a1, const std::double_t b0, const std::double_t b1, const std::string & name)
-	{
-		_a1 = a1;
-		_b0 = b0;
-		_b1 = b1;
-		setName(name);
-		_isParamsSet = true;
-	}
-
-	double IIRFilterFO::process(std::double_t u)
-	{
-		if (_isParamsSet)
+		IIRFilterFO::IIRFilterFO()
 		{
-			_x0 = u;
-			_y0 = (_b0 * u) + (_b1 * _x1) - (_a1 * _y1);
-		
-			_x1 = u;
-			_y1 = _y0;
+			/*create input and aouput*/
+			_ptrIn = Signal<std::double_t>::Factory::NewSignal("in1", BaseSignal::SignalType::Double);
+			_ptrOut = Signal<std::double_t>::Factory::NewSignal("out1", BaseSignal::SignalType::Double);
+
+			this->addInput(_ptrIn);
+			this->addInput(_ptrOut);
 		}
-		return _y0;
+
+		IIRFilterFO::~IIRFilterFO()
+		{
+		}
+
+		void IIRFilterFO::setParameters(const std::double_t a1, const std::double_t b0, const std::double_t b1, const std::string& name)
+		{
+			_a1 = a1;
+			_b0 = b0;
+			_b1 = b1;
+			setName(name);
+			_isParamsSet = true;
+		}
+
+		double IIRFilterFO::process(std::double_t u)
+		{
+			if (_isParamsSet)
+			{
+				_x0 = u;
+				_y0 = (_b0 * u) + (_b1 * _x1) - (_a1 * _y1);
+
+				_x1 = u;
+				_y1 = _y0;
+			}
+			_ptrIn->set(u);
+			_ptrOut->set(_y0);
+			return _y0;
+		}
 	}
 }

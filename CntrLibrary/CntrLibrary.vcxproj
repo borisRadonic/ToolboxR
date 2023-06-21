@@ -171,12 +171,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\WaveFormTracer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\ZShapedFuzzySet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header\BaseSignal.h" />
     <ClInclude Include="Header\BellShapedFuzzySet.h" />
     <ClInclude Include="Header\Block.h" />
     <ClInclude Include="Header\DCMotor.h" />
@@ -208,6 +213,7 @@
     <ClInclude Include="Header\Rule.h" />
     <ClInclude Include="Header\Rules.h" />
     <ClInclude Include="Header\SigmoidalFuzzySet.h" />
+    <ClInclude Include="Header\Signal.h" />
     <ClInclude Include="Header\SingletonFuzzySet.h" />
     <ClInclude Include="Header\SmallFuzzySet.h" />
     <ClInclude Include="Header\SShapedFuzzySet.h" />
@@ -218,6 +224,7 @@
     <ClInclude Include="Header\TrapezoidalIFuzzySetInfL.h" />
     <ClInclude Include="Header\TrapezoidalIFuzzySetInfR.h" />
     <ClInclude Include="Header\TriangularFuzzySet.h" />
+    <ClInclude Include="Header\WaveFormTracer.h" />
     <ClInclude Include="Header\ZShapedFuzzySet.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

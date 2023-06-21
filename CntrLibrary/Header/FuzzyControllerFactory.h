@@ -11,4 +11,3 @@ namespace CntrlLibrary
 		static FuzzyController* createController(const FuzzyControllerType& type, const std::string& name);
 	};
 };
-

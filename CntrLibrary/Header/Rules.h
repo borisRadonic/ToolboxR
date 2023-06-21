@@ -3,7 +3,6 @@
 #include <string>
 #include <map>
 #include <memory>
-
 #include "Rule.h"
 
 namespace CntrlLibrary

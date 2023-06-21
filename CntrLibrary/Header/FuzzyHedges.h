@@ -6,7 +6,6 @@
 
 namespace CntrlLibrary
 {
-
 	class FuzzyHedge
 	{
 	public:

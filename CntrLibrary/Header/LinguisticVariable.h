@@ -61,4 +61,4 @@ namespace CntrlLibrary
 
 		std::double_t _value = 0;
 	};
-};
+}

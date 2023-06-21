@@ -2,8 +2,9 @@
 
 #include "TimeDelay.h"
 
+using namespace CntrlLibrary;
 
-using namespace DiscreteTime;
+using namespace CntrlLibrary::DiscreteTime;
 
 TEST(TestCaseTimeDelay, TimeDelay)
 {

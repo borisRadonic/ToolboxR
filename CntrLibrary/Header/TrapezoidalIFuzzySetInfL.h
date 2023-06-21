@@ -26,4 +26,4 @@ namespace CntrlLibrary
 		std::double_t m_a;
 		std::double_t m_b;
 	};
-};
+}

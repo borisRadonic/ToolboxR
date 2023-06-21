@@ -15,4 +15,4 @@ namespace CntrlLibrary
 
 		~FuzzyInput();
 	};
-};
+}

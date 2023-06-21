@@ -11,7 +11,6 @@
 
 namespace CntrlLibrary
 {
-
 	class FuzzyController
 	{
 	public:

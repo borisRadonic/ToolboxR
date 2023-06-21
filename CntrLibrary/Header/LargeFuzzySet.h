@@ -28,4 +28,4 @@ namespace CntrlLibrary
 		std::double_t m_midpoint;
 		std::double_t m_spread;
 	};
-};
+}

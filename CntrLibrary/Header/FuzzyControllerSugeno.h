@@ -25,6 +25,5 @@ namespace CntrlLibrary
 		virtual void process() override;
 
 		virtual void compile() override;
-
 	};
 };

@@ -4,37 +4,43 @@
 #include <queue>
 #include "Block.h"
 
-namespace DiscreteTime
+namespace CntrlLibrary
 {
-	//Implementation of the delay of input signal by a specified number of samples
-
-	//Time Range						Output
-	//start to (start + lenght)			0.00
-	//after (start + lenght)			Input signal
-
-	class TimeDelay final : public Block
+	namespace DiscreteTime
 	{
-	public:
+		//Implementation of the delay of input signal by a specified number of samples
+
+		//Time Range						Output
+		//start to (start + lenght)			0.00
+		//after (start + lenght)			Input signal
+
+		class TimeDelay final : public Block
+		{
+		public:
 
 
-		TimeDelay();
+			TimeDelay();
 
-		~TimeDelay();
+			~TimeDelay();
 
-		void setParameters(const std::uint32_t lenght);
+			void setParameters(const std::uint32_t lenght);
 
-		double process(const std::double_t u);
+			double process(const std::double_t u);
 
-		void reset();
+			void reset();
 
-	private:
+		private:
 
-		bool _isParamsSet = false;
+			std::shared_ptr<Signal<std::double_t>> _ptrIn;
+			std::shared_ptr<Signal<std::double_t>> _ptrOut;
 
-		std::uint32_t _lenght = 0U;
-				
-		std::queue<std::double_t> _queue;
+			bool _isParamsSet = false;
 
-	};
+			std::uint32_t _lenght = 0U;
+
+			std::queue<std::double_t> _queue;
+
+		};
+	}
 }
 

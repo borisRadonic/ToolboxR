@@ -26,4 +26,3 @@ namespace CntrlLibrary
 		std::double_t m_spread;
 	};
 }
-

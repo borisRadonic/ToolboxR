@@ -4,60 +4,66 @@
 
 #include "Block.h"
 
-namespace DiscreteTime
+namespace CntrlLibrary
 {
-	//Discrete-time derivative
-
-	class Derivative final : public Block
+	namespace DiscreteTime
 	{
-	public:
+		//Discrete-time derivative
 
-		Derivative();
-
-		~Derivative();
-
-		void setParameters(std::double_t ts, std::double_t gain, const std::string& name = "");
-
-		void setSaturation(std::double_t min, std::double_t max);
-
-		inline void setInitialConditions(std::double_t ic)
+		class Derivative final : public Block
 		{
-			_old = ic;
-		}
+		public:
 
-		void reset();
+			Derivative();
 
-		double process(std::double_t u);
+			~Derivative();
 
-		bool getIsSaturationUsed() const
-		{
-			return _isUseSaturation;
-		}
+			void setParameters(std::double_t ts, std::double_t gain, const std::string& name = "");
 
-		std::int32_t getSaturate() const
-		{
-			return _saturate;
-		}
-	protected:
+			void setSaturation(std::double_t min, std::double_t max);
 
-		void checkSaturation(std::double_t val);
+			inline void setInitialConditions(std::double_t ic)
+			{
+				_old = ic;
+			}
 
-	private:
+			void reset();
 
-		std::double_t _gain = 1.00; //value to multiply with integrator input
-		std::double_t _Ts = 1.00; //sampling period
+			double process(std::double_t u);
 
-		std::double_t _outMin = 0.00; //Output saturation limit
-		std::double_t _outMax = 0.00; //Output saturation limit
-		bool _isUseSaturation = false;
+			bool getIsSaturationUsed() const
+			{
+				return _isUseSaturation;
+			}
 
-		std::int32_t _saturate = 0;
+			std::int32_t getSaturate() const
+			{
+				return _saturate;
+			}
+		protected:
 
-		std::double_t _old = 0.00;
-		std::double_t _y = 0.00;
+			void checkSaturation(std::double_t val);
 
-		bool _isParamsSet = false;
-	};
+		private:
+
+			std::shared_ptr<Signal<std::double_t>> _ptrIn;
+			std::shared_ptr<Signal<std::double_t>> _ptrOut;
+
+
+			std::double_t _gain = 1.00; //value to multiply with integrator input
+			std::double_t _Ts = 1.00; //sampling period
+
+			std::double_t _outMin = 0.00; //Output saturation limit
+			std::double_t _outMax = 0.00; //Output saturation limit
+			bool _isUseSaturation = false;
+
+			std::int32_t _saturate = 0;
+
+			std::double_t _old = 0.00;
+			std::double_t _y = 0.00;
+
+			bool _isParamsSet = false;
+		};
+	}
 }
-
 

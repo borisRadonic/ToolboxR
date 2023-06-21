@@ -3,7 +3,6 @@
 
 namespace CntrlLibrary
 {
-
 	class FuzzyControllerMamdani final : public FuzzyController
 	{
 	public:

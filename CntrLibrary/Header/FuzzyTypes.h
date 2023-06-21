@@ -63,5 +63,5 @@ namespace CntrlLibrary
 		wtAver = 5,				//Weighted average of all rule outputs
 		wtSum = 6				//Weighted sum of all rule outputs
 	};
-};
+}
  

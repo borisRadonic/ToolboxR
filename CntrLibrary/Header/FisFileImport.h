@@ -9,7 +9,6 @@
 
 namespace CntrlLibrary
 {
-
 	constexpr std::uint32_t maxInputs = 1000U;
 	constexpr std::uint32_t maxOutputs = 1000U;
 	constexpr std::uint32_t maxMSF = 100U;

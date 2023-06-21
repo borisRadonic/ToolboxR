@@ -94,7 +94,6 @@ namespace CntrlLibrary
 			return _inputTerms;
 		}
 
-
 	private:
 
 		std::string _name;

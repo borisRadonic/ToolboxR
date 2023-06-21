@@ -1,51 +1,60 @@
 #include "TimeDelay.h"
 
-
-namespace DiscreteTime
+namespace CntrlLibrary
 {
-
-	TimeDelay::TimeDelay() :Block()
+	namespace DiscreteTime
 	{
-	}
 
-	TimeDelay::~TimeDelay()
-	{
-	}
-
-	void TimeDelay::setParameters(const std::uint32_t lenght)
-	{
-		_isParamsSet = true;
-
-		_lenght = lenght;
-		for (uint32_t i = 0; i < _lenght; i++)
+		TimeDelay::TimeDelay() :Block()
 		{
-			_queue.push(0.00);
-		}
-	}
+			_ptrIn = Signal<std::double_t>::Factory::NewSignal("in1", BaseSignal::SignalType::Double);
+			_ptrOut = Signal<std::double_t>::Factory::NewSignal("out1", BaseSignal::SignalType::Double);
 
-	double TimeDelay::process(const std::double_t u)
-	{
-		std::double_t ret = 0.00;
-		if (_isParamsSet)
-		{			
-			if (_queue.size() >= _lenght)
+			this->addInput(_ptrIn);
+			this->addInput(_ptrOut);
+		}
+
+		TimeDelay::~TimeDelay()
+		{
+		}
+
+		void TimeDelay::setParameters(const std::uint32_t lenght)
+		{
+			_isParamsSet = true;
+
+			_lenght = lenght;
+			for (uint32_t i = 0; i < _lenght; i++)
 			{
-				
-				_queue.push(u);
-				ret = _queue.front();
-				_queue.pop();
+				_queue.push(0.00);
 			}
 		}
-		return ret;
-	}
 
-	void TimeDelay::reset()
-	{
-		std::queue<std::double_t> empty_queue;			
-		for (uint32_t i = 0; i < _lenght; i++)
+		double TimeDelay::process(const std::double_t u)
 		{
-			empty_queue.push(0.00);
+			std::double_t ret = 0.00;
+			if (_isParamsSet)
+			{
+				if (_queue.size() >= _lenght)
+				{
+
+					_queue.push(u);
+					ret = _queue.front();
+					_queue.pop();
+				}
+			}
+			_ptrIn->set(u);
+			_ptrOut->set(ret);
+			return ret;
 		}
-		_queue.swap(empty_queue);
+
+		void TimeDelay::reset()
+		{
+			std::queue<std::double_t> empty_queue;
+			for (uint32_t i = 0; i < _lenght; i++)
+			{
+				empty_queue.push(0.00);
+			}
+			_queue.swap(empty_queue);
+		}
 	}
 }

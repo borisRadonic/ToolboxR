@@ -25,4 +25,4 @@ namespace CntrlLibrary
         static bool is_number(const std::string& str);
 
     };
-};
+}

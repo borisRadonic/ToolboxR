@@ -27,7 +27,6 @@ namespace CntrlLibrary
 		std::double_t m_c;
 	};
 
-
 	class SingletonSugenoFuzzySet final : public FuzzySet
 	{
 	public:

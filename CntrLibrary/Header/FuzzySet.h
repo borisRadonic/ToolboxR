@@ -43,5 +43,5 @@ namespace CntrlLibrary
 		std::string m_FuzzySetName;
 
 	};
-};
+}
 
