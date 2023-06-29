@@ -12,17 +12,30 @@ namespace CntrlLibrary
 {
 	using SignalPtr	= std::vector<std::shared_ptr<BaseSignal>>;
 
+	/*! \brief Block is a base class for all blocks. Block is an atomic unit.
+	 *         with parameters, inputs and outputs.
+	 *
+	 *  Blocks represent the basic building blocks for models.
+	 */
 	class Block
 	{
 
 	public:
 
+		/*! \Constructor
+		 */
 		Block();
 
 		Block(const std::string& name);
 
+		/*! \Destructor
+		*/
 		virtual ~Block();
 
+		/* !Sets the name of the block
+		/*!
+		  \param name a name of the block
+		*/
 		inline void setName(const std::string& name)
 		{
 			_name = name;
@@ -33,6 +46,12 @@ namespace CntrlLibrary
 			return _name;
 		}
 
+	protected:
+
+		/* !Adds input signal. 
+		/*!
+		\param input a name of the block
+		*/
 		void addInput(std::shared_ptr<BaseSignal> input);
 
 		void addOutput(std::shared_ptr<BaseSignal> output);
