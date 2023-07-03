@@ -24,22 +24,22 @@ By providing these features and functionalities, a Discrete Time Model Library i
 
 Here are some key aspects of the ToolboxR Fuzzy Control Blocks:
 
-    1. Fuzzy set representation: The library provides classes or data structures to define and represent fuzzy sets and their associated membership functions. 
-       It supports the following types of membership functions: Singleton, Gaussian,Bell Shaped, Sigmoidal, Triangular, Trapezoidal, PI-shaped, S-shaped, Z-Shaped, Trapezoidal, Fuzzy-Small function, Fuzzy Large function  and Linear Sugeno membership function.
+   1. Fuzzy set representation: The library provides classes or data structures to define and represent fuzzy sets and their associated membership functions. 
+      It supports the following types of membership functions: Singleton, Gaussian,Bell Shaped, Sigmoidal, Triangular, Trapezoidal, PI-shaped, S-shaped, Z-Shaped, Trapezoidal, Fuzzy-Small function, Fuzzy Large function  and Linear Sugeno membership function.
 
-    2. Fuzzy rule-based systems: The library supports the construction and execution of fuzzy rule-based systems. It should provide a way to define linguistic variables, fuzzy rules, and the corresponding fuzzy inference mechanism for mapping inputs to outputs.
+   2. Fuzzy rule-based systems: The library supports the construction and execution of fuzzy rule-based systems. It should provide a way to define linguistic variables, fuzzy rules, and the corresponding fuzzy inference mechanism for mapping inputs to outputs.
 
-    3. Membership function operations: The library should offer a range of operations on fuzzy sets and membership functions, such as fuzzy set intersection, union, complement, scaling, and aggregation. These operations are essential for fuzzy logic computations and reasoning.
+   3. Membership function operations: The library should offer a range of operations on fuzzy sets and membership functions, such as fuzzy set intersection, union, complement, scaling, and aggregation. These operations are essential for fuzzy logic computations and reasoning.
 
-    4. Fuzzy inference methods: The library should support various fuzzy inference methods, including Mamdani and Sugeno. It should provides functions and classes to perform fuzzy inference and compute the output values based on the input variables and fuzzy rule base.
+   4. Fuzzy inference methods: The library should support various fuzzy inference methods, including Mamdani and Sugeno. It should provides functions and classes to perform fuzzy inference and compute the output values based on the input variables and fuzzy rule base.
 
-    5. Defuzzification methods: The library should include a variety of defuzzification methods to convert the fuzzy output into a crisp value or action. Common defuzzification methods include centroid, weighted average, and maximum membership.
+   5. Defuzzification methods: The library should include a variety of defuzzification methods to convert the fuzzy output into a crisp value or action. Common defuzzification methods include centroid, weighted average, and maximum membership.
 
-    6. Fuzzy control system design tools: The library should provide tools or utilities to assist in the design and tuning of fuzzy control systems. This may include functions for rule base optimization, rule extraction from data, or parameter tuning algorithms.
+   6. Fuzzy control system design tools: The library should provide tools or utilities to assist in the design and tuning of fuzzy control systems. This may include functions for rule base optimization, rule extraction from data, or parameter tuning algorithms.
 
-    7. Fuzzy logic operators: The library supports a range of fuzzy logic operators, such as fuzzy AND, fuzzy OR, fuzzy NOT, and some fuzzy implication operators. These operators are fundamental for fuzzy rule evaluation and inference.
+   7. Fuzzy logic operators: The library supports a range of fuzzy logic operators, such as fuzzy AND, fuzzy OR, fuzzy NOT, and some fuzzy implication operators. These operators are fundamental for fuzzy rule evaluation and inference.
 
-    8. Import/Export: This library provides basic Import/Export utility classes which enable Import of MATLAB/Simulink Fuzzy Models (FIS File Format)
+   8. Import/Export: This library provides basic Import/Export utility classes which enable Import of MATLAB/Simulink Fuzzy Models (FIS File Format)
 
 By providing these features and functionalities, a ToolboxR could empower developers to easily implement and deploy fuzzy logic-based control systems for various applications, such as robotics, automation, process control, and decision support systems.
 
