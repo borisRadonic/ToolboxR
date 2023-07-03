@@ -7,7 +7,7 @@ namespace CntrlLibrary
 {
 	namespace DiscreteTime
 	{
-		//Discrete-time derivative
+		//
 
 		class Difference final : public Block
 		{
