@@ -1,5 +1,8 @@
 # ToolboxR Control Library
 
+
+![](https://github.com/borisRadonic/ToolboxR/blob/master/3p.png)
+
 This library contains the basic time discrete blocks commonly used in discrete time modeling and Fuzzy Control blocks that provides a comprehensive set of features and functionalities for developing and implementing fuzzy logic-based control systems.
 
 The Discrete Time part of ToolboxR Library in C++ provides (should provide) the following features and functionalities:
