@@ -24,22 +24,20 @@ By providing these features and functionalities, a Discrete Time Model Library i
 
 Here are some key aspects of the ToolboxR Fuzzy Control Blocks:
 
-   1. Fuzzy set representation: The library provides classes or data structures to define and represent fuzzy sets and their associated membership functions. 
+   1. **Fuzzy set representation:** The library provides classes or data structures to define and represent fuzzy sets and their associated membership functions. 
       It supports the following types of membership functions: Singleton, Gaussian,Bell Shaped, Sigmoidal, Triangular, Trapezoidal, PI-shaped, S-shaped, Z-Shaped, Trapezoidal, Fuzzy-Small function, Fuzzy Large function  and Linear Sugeno membership function.
 
-   2. Fuzzy rule-based systems: The library supports the construction and execution of fuzzy rule-based systems. It should provide a way to define linguistic variables, fuzzy rules, and the corresponding fuzzy inference mechanism for mapping inputs to outputs.
+   2. **Fuzzy rule-based systems**: The library supports the construction and execution of fuzzy rule-based systems. It should provide a way to define linguistic variables, fuzzy rules, and the corresponding fuzzy inference mechanism for mapping inputs to outputs.
 
-   3. Membership function operations: The library should offer a range of operations on fuzzy sets and membership functions, such as fuzzy set intersection, union, complement, scaling, and aggregation. These operations are essential for fuzzy logic computations and reasoning.
+   3. **Membership function operations**: The library should offer a range of operations on fuzzy sets and membership functions, such as fuzzy set intersection, union, complement, scaling, and aggregation. These operations are essential for fuzzy logic computations and reasoning.
 
-   4. Fuzzy inference methods: The library should support various fuzzy inference methods, including Mamdani and Sugeno. It should provides functions and classes to perform fuzzy inference and compute the output values based on the input variables and fuzzy rule base.
+   4. **Fuzzy inference methods**: The library should support various fuzzy inference methods, including Mamdani and Sugeno. It should provides functions and classes to perform fuzzy inference and compute the output values based on the input variables and fuzzy rule base.
 
-   5. Defuzzification methods: The library should include a variety of defuzzification methods to convert the fuzzy output into a crisp value or action. Common defuzzification methods include centroid, weighted average, and maximum membership.
+   5. **Defuzzification methods**: The library should include a variety of defuzzification methods to convert the fuzzy output into a crisp value or action. Common defuzzification methods include centroid, weighted average, and maximum membership.
 
-   6. Fuzzy control system design tools: The library should provide tools or utilities to assist in the design and tuning of fuzzy control systems. This may include functions for rule base optimization, rule extraction from data, or parameter tuning algorithms.
+   6. **Fuzzy logic operators**: The library supports a range of fuzzy logic operators, such as fuzzy AND, fuzzy OR, fuzzy NOT, and some fuzzy implication operators. These operators are fundamental for fuzzy rule evaluation and inference.
 
-   7. Fuzzy logic operators: The library supports a range of fuzzy logic operators, such as fuzzy AND, fuzzy OR, fuzzy NOT, and some fuzzy implication operators. These operators are fundamental for fuzzy rule evaluation and inference.
-
-   8. Import/Export: This library provides basic Import/Export utility classes which enable Import of MATLAB/Simulink Fuzzy Models (FIS File Format)
+   8. **Import/Export utilities**: This library provides basic Import/Export utility classes which enable Import of MATLAB/Simulink Fuzzy Models (FIS File Format)
 
 By providing these features and functionalities, a ToolboxR could empower developers to easily implement and deploy fuzzy logic-based control systems for various applications, such as robotics, automation, process control, and decision support systems.
 
@@ -58,38 +56,37 @@ Overall, discrete time models provide a valuable framework for understanding and
 
 The main classes are:
 
-  1. Discrete Time Delay
+  1. **Discrete Time Delay**
      The Delay class holds and delays its input by the sample period you specify.
 
-  2. Difference
+  2. **Difference**
      The Difference class outputs the current input value minus the previous input value.
 
-  3. Te Discrete Time Derivative
+  3. **Discrete Time Derivative**
   The Discrete Derivative pproximates the derivative of its input.
 
-   4. Discrete FIR Filter
+   4. **Discrete FIR Filter**
       Discrete FIR Filter class implements a discrete-time finite impulse response (FIR) filter.
 
-
-   5. Discrete First-Order IIR Filter
+   5. **Discrete First-Order IIR Filter**
       The IIR Filter class implements a discrete first-order infinite impulse response (IIR) filter on the specified input signal.
 
-   6. Discrete Second-Order IIR Filter
+   6. **Discrete Second-Order IIR Filter**
       The IIR Filter class implements a discrete second-order infinite impulse response (IIR) filter on the specified input signal.	
 
-   7. Discrete IIR Filter
+   7. **Discrete IIR Filter**
       The IIR Filter class implements a discrete-time infinite impulse response (IIR) filter on the specified input signal.
 
-   8. Discrete Integrator
+   8. **Discrete Integrator**
       Discrete Integrator class performs discrete-time integration or accumulation of signal. It implements Trapezoidal, Forward Euler and Backward Euler integration methods.
 
-   9. Discrete PID Controller
+   9. **Discrete PID Controller**
       The Discrete PID Controller class implements a PID controller (PID, PI, PD only or I only). It includes Output saturation limits and anti-windup mechanism.
 
-   10. Discrete State-Space
+   10. **Discrete State-Space**
        The Discrete State-Space class represents the discrete-time dynamic system in state-space form. A, B, C, and D matrices and intial conditions can be specified. It uses Eigen Library.
 	
-   12. WaveFormTracer
+   12. **Wave Form Tracer**
       This utility classs can be used to export selected signals in gnuplot format file. (Not implemented at the moment!)
 
 
