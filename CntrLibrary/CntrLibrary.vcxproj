@@ -123,6 +123,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\PMSMotor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\Rule.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -210,6 +214,7 @@
     <ClInclude Include="Header\LinguisticVariable.h" />
     <ClInclude Include="Header\PIDController.h" />
     <ClInclude Include="Header\PiShapedFuzzySet.h" />
+    <ClInclude Include="Header\PMSMotor.h" />
     <ClInclude Include="Header\Rule.h" />
     <ClInclude Include="Header\Rules.h" />
     <ClInclude Include="Header\SigmoidalFuzzySet.h" />
