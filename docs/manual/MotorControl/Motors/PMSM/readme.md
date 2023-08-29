@@ -8,7 +8,7 @@ Historically, the acclaimed AC Induction Motor, a testament to Nikola Tesla's ge
 
 - Elevated power density
 - Compact form factor
-- Lighter weightCan you write it simpler: Historically, the acclaimed AC Induction Motor, a testament to Nikola Tesla's genius from over a century ago, maintained a consistent synchronization with the magnetic field's frequency. However, when juxtaposed with the PMSM, the latter displays a series of distinct advantages.
+- Lighter weight: 
 - Minimal maintenance needs
 
 ## Field-Oriented Motor Control (FOC): Bridging the Gap Between DC and PMS Motors
