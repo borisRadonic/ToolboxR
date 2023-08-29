@@ -18,8 +18,8 @@ namespace CntrlLibrary
 	{
 		std::vector<std::int32_t> inputs;
 		std::vector<std::int32_t> outputs;
-		std::uint32_t			 logicOperation;
-		std::double_t			 weight;
+		std::uint32_t			 logicOperation = 0U;
+		std::double_t			 weight = 0U;
 	};
 
 	struct FisMF
