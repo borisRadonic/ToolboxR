@@ -36,7 +36,7 @@ namespace CntrlLibrary
 			_Ktq = Ktq;
 			_Tf = Tf;
 			_pIntegratorIq->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
-			_pIntegratorIq->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
+			_pIntegratorId->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
 			_pIntegratorW->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
 			_pIntegratorR->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
 			_isParamsSet = true;

@@ -19,7 +19,6 @@ using namespace Models;
 using std::experimental::filesystem::path;
 
 using namespace DiscreteTime;
-
 TEST(TestSPMSClass, TestPMS)
 {
 	//PMSMotor motor;
