@@ -90,7 +90,8 @@ The main classes are:
        The Discrete State-Space class represents the discrete-time dynamic system in state-space form. A, B, C, and D matrices and intial conditions can be specified. It uses Eigen Library.
 	
    12. **Wave Form Tracer**
-      This utility classs can be used to export selected signals in gnuplot format file. (Not implemented at the moment!)
+      This utility classs can be used to trace selected signals in gnuplot format file.
+
 
 
 ## Project Status
