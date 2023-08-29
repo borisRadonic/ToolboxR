@@ -32,20 +32,20 @@ namespace CntrlLibrary
 		}
 	}
 
-	BaseSignal* Block::getInput(const std ::uint32_t index )
+	std::shared_ptr<BaseSignal> Block::getInputSignal(const std::uint32_t index)
 	{
 		if (_inputs.size() > index)
 		{
-			return _inputs.at(index).get();
+			return _inputs.at(index);
 		}
 		return nullptr;
 	}
-
-	BaseSignal* Block::getOutput(const std::uint32_t index)
+	
+	std::shared_ptr<BaseSignal> Block::getOutputSignal(const std::uint32_t index)
 	{
 		if (_outputs.size() > index)
 		{
-			return _outputs.at(index).get();
+			return _outputs.at(index);
 		}
 		return nullptr;
 	}

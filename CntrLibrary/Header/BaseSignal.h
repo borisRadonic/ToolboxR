@@ -71,6 +71,8 @@ namespace CntrlLibrary
 		{
 		}
 
+		virtual std::string getValueAsString() const = 0;
+
 		/**
 		 * Sets the name of the signal.
 		 *

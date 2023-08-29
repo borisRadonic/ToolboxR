@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Signal.h"
-
 #include "Block.h"
 
 #include <string>
 #include <vector>
 #include <cmath>
+#include <fstream>
+#include <memory>
+#include <sstream>
 
 namespace CntrlLibrary
 {
@@ -14,24 +16,42 @@ namespace CntrlLibrary
 	{
 	public:
 
-		WaveFormTracer();
+		WaveFormTracer() = delete;
+
+		explicit WaveFormTracer(const std::string& filename, std::double_t ts);
 
 		~WaveFormTracer();
+
+		bool open();
 		
-		//Ts - Sample time
-		//void setParameters(std::double_t ts);
+		void writeHeader();
+				
+		template <typename T>
+		std::shared_ptr<Signal<T>> addSignal(const std::string& name, BaseSignal::SignalType type)
+		{
+			auto signal = Signal<T>::Factory::NewSignal(name, type);
+			addBlockSignal(signal);
+			return signal;
+		}
 
-		//void addSignal( const std::string& name );
+		void addBlockSignal(std::shared_ptr<BaseSignal> signal)
+		{
+			_signals.push_back(signal);
+		}
 
-		//void push(const std::string& name);
+		// Writes the state of all signals to a given file.
+		void trace();
 		
-
-	
 	private:
 
-//		std::vector<std::shared_ptr<Signal<std::double_t>>> _ptrInputs;
-//		std::vector<std::shared_ptr<Signal<std::double_t>>> _ptrOutputs;
-		
+		std::uint32_t counter = 0U;
+		std::string _filename;
+		std::double_t _ts;
+		std::vector<std::shared_ptr<BaseSignal>> _signals;
+		std::ofstream _file;
+
+		std::string getSignalValueAsString(BaseSignal* signal);
+
 	};
 }
 

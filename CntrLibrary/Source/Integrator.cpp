@@ -12,7 +12,7 @@ namespace CntrlLibrary
 			_ptrOut = Signal<std::double_t>::Factory::NewSignal("out1", BaseSignal::SignalType::Double);
 
 			this->addInput(_ptrIn);
-			this->addInput(_ptrOut);
+			this->addOutput(_ptrOut);
 		}
 
 		Integrator::~Integrator()

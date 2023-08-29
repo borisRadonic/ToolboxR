@@ -34,10 +34,10 @@ namespace CntrlLibrary
 
 			void reset();
 
-			//Uq  - Inpult voltage (q part)
-			//Ud  - Inpult voltage (d part)
+			//uq  - Inpult voltage (q part)
+			//ud  - Inpult voltage (d part)
 			//lt - Load torque
-			void setInputs(std::double_t Uq, std::double_t Ud, std::double_t lt);
+			void setInputs(std::double_t uq, std::double_t ud, std::double_t lt);
 
 			void process();
 

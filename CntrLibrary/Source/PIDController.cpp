@@ -11,11 +11,11 @@ namespace CntrlLibrary
 			_pDerivative = std::make_unique<Derivative>();
 
 			/*create input and aouput*/
-			_ptrIn = Signal<std::double_t>::Factory::NewSignal("in1", BaseSignal::SignalType::Double);
-			_ptrOut = Signal<std::double_t>::Factory::NewSignal("out1", BaseSignal::SignalType::Double);
+			_ptrIn = Signal<std::double_t>::Factory::NewSignal("PIDin", BaseSignal::SignalType::Double);
+			_ptrOut = Signal<std::double_t>::Factory::NewSignal("PIDout", BaseSignal::SignalType::Double);
 
 			this->addInput(_ptrIn);
-			this->addInput(_ptrOut);
+			this->addOutput(_ptrOut);
 		}
 
 		PIDController::PIDController(std::double_t kp, std::double_t ki, std::double_t kd, std::double_t kb, std::double_t ts, std::double_t upSaturation)

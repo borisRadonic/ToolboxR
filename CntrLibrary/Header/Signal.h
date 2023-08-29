@@ -3,6 +3,8 @@
 #include "BaseSignal.h"
 #include <memory>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 namespace CntrlLibrary
 {
@@ -42,12 +44,19 @@ namespace CntrlLibrary
 		{
 			return _value;
 		}
-		
+
+		inline virtual std::string getValueAsString() const override
+		{
+			std::ostringstream oss;
+			oss << _value;
+			return oss.str();
+		}
+					
 		struct Factory
 		{
-			static std::unique_ptr<Signal<T>> NewSignal(const std::string& name, SignalType type)
+			static std::shared_ptr<Signal<T>> NewSignal(const std::string& name, SignalType type)
 			{
-				return std::make_unique <Signal<T>>(name, type);
+				return std::make_shared <Signal<T>>(name, type);
 			}
 		};
 

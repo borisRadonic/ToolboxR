@@ -58,10 +58,10 @@ namespace CntrlLibrary
 			_ud = 0.00;
 		}
 
-		void PMSMotor::setInputs(std::double_t Uq, std::double_t Ud, std::double_t lt)
+		void PMSMotor::setInputs(std::double_t uq, std::double_t ud, std::double_t lt)
 		{
-			_uq = 0.00;
-			_ud = 0.00;
+			_uq = uq;
+			_ud = ud;
 			_lt = lt;
 		}
 
