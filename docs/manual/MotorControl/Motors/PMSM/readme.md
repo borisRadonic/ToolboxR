@@ -42,7 +42,7 @@ FOC provides a significant leap in motor control by translating the three-phase 
 The rate of change of d-axis current $\dot{i_d}$ is determined by:
 
 $$
- \dot{i_d} = \frac{1}{L_d} \left( u_d - R i_{d} + \text{P} \cdot \omega_{M} \cdot L_q \cdot i_{q1} \right) 
+ \dot{i_d} = \frac{1}{L_d} \left( u_d - R i_{d} + \text{P} \cdot \omega_{M} \cdot L_q \cdot i_{q} \right) 
 $$
 
 Where:
@@ -50,7 +50,7 @@ Where:
 - $u_d$ is the d-axis voltage input.
 - $R$ is the stator resistance.
 - $i_{d}$ is the d-axis current at the previous time step.
-- $omega_{M}$ is the rotor speed.
+- $\omega_{M}$ is the rotor speed.
 - $L_q$ is the q-axis inductance.
 - $i_{q}$ is the q-axis current at the previous time step.
 - ${P}$ is the number of pole pairs in the motor.
@@ -58,9 +58,11 @@ Where:
 ## 2. Current Dynamics in q-axis
 
 The rate of change of q-axis current $\dot{i_q}$ is computed by:
+
 $$
 \dot{i_q} = \frac{1}{L_q} \left( u_q - R i_{q} - \omega_{M} \left( \text{P} \cdot L_d \cdot i_{d} - K_{emf} \right) \right) 
 $$
+
 Where:
 - $L_q$ and $u_q$ are the q-axis inductance and voltage input respectively.
 - $K_{emf}$ is the back EMF constant.
