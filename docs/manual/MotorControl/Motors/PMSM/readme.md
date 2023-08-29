@@ -8,7 +8,7 @@ Historically, the acclaimed AC Induction Motor, a testament to Nikola Tesla's ge
 
 - Elevated power density
 - Compact form factor
-- Lighter weight
+- Lighter weightCan you write it simpler: Historically, the acclaimed AC Induction Motor, a testament to Nikola Tesla's genius from over a century ago, maintained a consistent synchronization with the magnetic field's frequency. However, when juxtaposed with the PMSM, the latter displays a series of distinct advantages.
 - Minimal maintenance needs
 
 ## Field-Oriented Motor Control (FOC): Bridging the Gap Between DC and PMS Motors
@@ -59,7 +59,7 @@ Where:
 
 The rate of change of q-axis current $\dot{i_q}$ is computed by:
 $$
-\\dot{i_q} = \frac{1}{L_q} \left( u_q - R i_{q} - \omega_{M} \left( \text{P} \cdot L_d \cdot i_{d} - K_{emf} \right) \right) \
+\dot{i_q} = \frac{1}{L_q} \left( u_q - R i_{q} - \omega_{M} \left( \text{P} \cdot L_d \cdot i_{d} - K_{emf} \right) \right) 
 $$
 Where:
 - $L_q$ and $u_q$ are the q-axis inductance and voltage input respectively.
@@ -67,24 +67,28 @@ Where:
 
 ## 3. Mechanical Dynamics
 
-The rotor's angular acceleration (\( \alpha_{M} \)) is expressed by:
+The rotor's angular acceleration $\alpha_{M}$ is expressed by:
 
-\[ \alpha_{M} = \frac{1}{J} \left( K_{tq} \cdot i_q - B \cdot \omega_{M1} - T_f - T_{load} \right) \]
+$$
+\alpha_{M} = \frac{1}{J} \left( K_{tq} \cdot i_q - B \cdot \omega_{M1} - T_f - T_{load} \right) \
+$$
 
 Where:
-- \( J \) is the moment of inertia.
-- \( K_{tq} \) is the torque constant.
-- \( B \) is the friction coefficient.
-- \( T_f \) is the static friction torque.
-- \( T_{load} \) is the load torque.
+- $J$ is the moment of inertia.
+- $K_{tq}$ is the torque constant.
+- $B$ is the friction coefficient.
+- $T_f$ is the static friction torque.
+- $T_{load}$ is the load torque.
 
-The rotor speed (\( \omega_{M} \)) and rotor angle (\( \theta_{M} \)) are then obtained by integrating the angular acceleration.
+The rotor speed $\omega_{M}$ and rotor angle $\theta_{M}$ are then obtained by integrating the angular acceleration.
 
 ## 4. Output Torque
 
-The electromagnetic torque (\( T_e \)) produced by the motor is calculated as:
+The electromagnetic torque $T_e$  produced by the motor is calculated as:
 
-\[ T_e = K_{tq} \cdot i_q \]
+$$
+T_e = K_{tq} \cdot i_q
+$$
 
 In this mathematical model:
 - The dynamics of d-axis and q-axis currents are influenced by their respective voltages, resistances, inductances, and rotor speed.
