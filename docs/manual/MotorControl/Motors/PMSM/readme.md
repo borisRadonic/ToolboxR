@@ -106,5 +106,5 @@ In this mathematical model:
 
 ![](IControl.png)
 
-## 3. Velocity Controller
+
 
