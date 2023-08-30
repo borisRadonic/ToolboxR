@@ -96,3 +96,15 @@ In this mathematical model:
 - The dynamics of d-axis and q-axis currents are influenced by their respective voltages, resistances, inductances, and rotor speed.
 - The rotor's mechanical dynamics are determined by the motor's physical properties and the q-axis current, which generates electromagnetic torque.
 - The output torque is directly proportional to the q-axis current, indicating the PMSM's ability to generate torque efficiently.
+
+# PMSM Controller
+
+## 1. Controller
+
+
+## 2. Current Controller
+
+![](IControl.png)
+
+## 3. Velocity Controller
+
