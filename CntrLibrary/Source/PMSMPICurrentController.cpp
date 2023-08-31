@@ -92,6 +92,10 @@ namespace CntrlLibrary
 				// L coupling: Considering the mutual inductance effect between d and q axis in synchronous machines, the change in one axis affects the other.
 				_u_q = outQ + _polePairs * _vel_mech_flt * _Kemf + id_s * _vel_mech_flt * _Ld;
 				_u_d = outD - iq_s * _polePairs * _vel_mech_flt * _Lq;
+				// Inverse Park transformation to obtain alpha-beta values
+				_v_alpha = _u_d * cos(rotor_angle) - _u_q * sin(rotor_angle);
+				_v_beta = _u_d * sin(rotor_angle) + _u_q * cos(rotor_angle);
+
 			}
 		}
 	}

@@ -121,6 +121,26 @@ namespace CntrlLibrary
 			}
 
 			/**
+			* @brief Retrieves the computed alpha-axis voltage.
+			*
+			* @return Computed alpha-axis voltage in the alpha-beta space.
+			*/
+			std::double_t get_v_alpha() const
+			{
+				return _v_alpha;
+			}
+
+			/**
+			* @brief Retrieves the computed beta-axis voltage.
+			*
+			* @return Computed beta-axis voltage in the alpha-beta space.
+			*/
+			std::double_t get_v_beta() const
+			{
+				return _v_beta;
+			}
+
+			/**
 			* @brief Retrieves the calculated and filtered mechanical velocity of the motor.
 			*
 			* @return Filtered mechanical velocity.
@@ -142,6 +162,10 @@ namespace CntrlLibrary
 
 			std::double_t _u_q = 0.00; /**< Output voltage on the q-axis in dq space. */
 			std::double_t _u_d = 0.00; /**< Output voltage on the d-axis in dq space. */
+
+			std::double_t _v_alpha;  /**< Output voltage on the alpha in alpha/beta space. */
+			std::double_t _v_beta; /**< Output voltage on the beta in alpha/beta space. */
+
 			std::double_t _vel_mech_flt = 0.00; /**< Calculated and filtered mechanical velocity of the motor. */
 
 			// Pointers to various filters and controllers.
