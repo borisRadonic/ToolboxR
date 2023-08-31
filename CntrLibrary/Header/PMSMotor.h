@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <cmath>
 #include <memory>
@@ -22,11 +22,11 @@ namespace CntrlLibrary
 			//Ts - Sample time
 			//p - Number of pole pairs
 			//b  - Combined friction of rotor and load
-			//Kemf - EMF constant (There is ralation between Kemf and Ktq, but the most of manufactors provided both of them)
-			//J  - Combined moment of inertia of rotor and load
+			//Kemf - Back EMF constant is the peak voltage induced by the permanent magnet in the per-unit rotational speed of each of the phases. The relationship between the peak permanent magnet flux linkage and the back EMF is: k e = N ψ m )
+		 	//J  - Combined moment of inertia of rotor and load
 			//Rs  - Stator resistance in [Ohm]
-			//Lq  - induction of stator in dq frame (q part) in [H]
-			//Ld  - induction of stator in dq frame (d part) in [H]
+			//Lq  - Inductance of stator in dq frame (q part) in [H]
+			//Ld  - Inductance of stator in dq frame (d part) in [H]
 			//Ktq - Torque constant in [A/Nm]
 			//Tf  - Static friction torque in [Nm]
 
@@ -58,16 +58,16 @@ namespace CntrlLibrary
 		private:
 
 			std::double_t _Ts = 1.00; //sampling period
-			std::uint16_t _polePairs = 1U;
-			std::double_t _B = 1.00;
-			std::double_t _Kemf = 0.00;
-			std::double_t _invJ = 1.00; //Inverse inertia
-			std::double_t _R = 1.00;
-			std::double_t _Lq = 1.00;
-			std::double_t _Ld = 1.00;
-			std::double_t _invLq = 1.00;
-			std::double_t _invLd = 1.00;
-			std::double_t _Ktq = 1.00;
+			std::uint16_t _polePairs = 1U; //The number of motor pol-pairs
+			std::double_t _B = 1.00; //Combined friction of rotor and load
+			std::double_t _Kemf = 0.00; //Back EMF constant
+			std::double_t _invJ = 1.00; //Inverse Combined moment of inertia of rotor and load
+			std::double_t _R = 1.00; //Stator resistance in [Ohm]
+			std::double_t _Lq = 1.00; //Inductance of stator in dq frame (q part) in [H]
+			std::double_t _Ld = 1.00; //Inductance of stator in dq frame(d part) in[H]
+			std::double_t _invLq = 1.00; //Inverse inductance of stator in dq frame (q part) in [H]
+			std::double_t _invLd = 1.00; //Inverse inductance of stator in dq frame (d part) in [H]
+			std::double_t _Ktq = 1.00; //Torque constant in[A / Nm]
 			std::double_t _Tf = 1.00; //static friction of shaft in [Nm]
 
 			bool _isParamsSet = false;

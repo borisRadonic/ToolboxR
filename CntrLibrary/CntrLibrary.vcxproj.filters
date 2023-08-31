@@ -138,6 +138,9 @@
     <ClCompile Include="Source\PMSMotor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PMSMPICurrentController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BellShapedFuzzySet.h">
@@ -276,6 +279,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\PMSMotor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PMSMPICurrentController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

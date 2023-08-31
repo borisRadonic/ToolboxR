@@ -20,6 +20,8 @@ namespace CntrlLibrary
 
 			double process(std::double_t u);
 
+			void reset();
+
 			const std::double_t getA1() const
 			{
 				return _a1;

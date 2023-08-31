@@ -41,5 +41,13 @@ namespace CntrlLibrary
 			_ptrOut->set(_y0);
 			return _y0;
 		}
+
+		void IIRFilterFO::reset()
+		{
+			_x1 = 0.00;
+			_y1 = 0.00;
+			_x0 = 0.00;
+			_y0 = 0.00;
+		}
 	}
 }

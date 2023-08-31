@@ -31,7 +31,7 @@ namespace CntrlLibrary
 
 		double FIRFilter::process(std::double_t u)
 		{
-			if (_isParamsSet && _b.size() > 0U)
+			if (_isParamsSet && (_b.size() > 0U) )
 			{
 				std::size_t count = _b.size() - 1;
 
@@ -58,5 +58,19 @@ namespace CntrlLibrary
 			_ptrOut->set(_y);
 			return _y;
 		}
+
+		void FIRFilter::reset()
+		{
+			std::size_t count = _b.size();
+
+			if (_isParamsSet && (count > 0U) )
+			{
+				for (size_t i = 0; i < _b.size(); i++)
+				{
+					_x[i] = 0.00;
+				}
+			}
+		}
+
 	}
 }

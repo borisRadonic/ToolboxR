@@ -22,6 +22,8 @@ namespace CntrlLibrary
 
 			double process(std::double_t u);
 
+			void reset();
+
 		private:
 
 			std::shared_ptr<Signal<std::double_t>> _ptrIn;

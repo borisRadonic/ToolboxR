@@ -46,6 +46,16 @@ namespace CntrlLibrary
 			}
 		}
 
+		void IIRFilter::reset()
+		{
+			for (size_t i = 0; i < _x.size(); i++)
+			{
+				_x[i] = 0.00;
+				_y[i] = 0.00;
+			}
+		}
+
+
 		/*
 		The impulse response of the overall system is thus the convolution of the impulse responses
 		of the feed-forward and the feed-back system. Accordingly, in terms of z-transforms,
