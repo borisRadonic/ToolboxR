@@ -10,6 +10,7 @@
 #include "StateSpace.h"
 
 #include "DCMotor.h"
+#include "HBPWMDCMotor.h"
 #include "FrictionModelCV.h"
 #include "PIDController.h"
 #include "WaveFormTracer.h"
@@ -243,6 +244,100 @@ TEST(TestCaseDCMotor, TestDCMotor2)
 		motor.setInputs(piVel.process(error), 0.00);
 		motor.process();
 		tracer.trace();
+	}
+	std::double_t i = motor.getCurrent();
+	std::double_t w = motor.getVelocity();
+
+	//EXPECT_FLOAT_EQ(i, 26.309461273007749);
+	//EXPECT_FLOAT_EQ(w, 514.91089859268288);
+
+}
+
+
+TEST(TestCasePWMotor, TestDCMotorPWM)
+{
+	HBPWMDCMotor motor;
+	//Based on IGBT characteristics of Infineon IHW20N65R5
+	std::double_t ts = 0.000001; //in this case 1us
+	std::double_t tsc = 0.0001; //100 us
+
+	std::double_t Vfdi = 0.8;
+	std::double_t SlopeDi = 17.77;
+	std::double_t Vfce = 0.75;
+	std::double_t SlopeIc = 20.0;
+
+	motor.setParameters(ts, 0.000135, 0.178, 0.008586328125, 1.1, 1.55e-3, 0.7614,Vfdi, SlopeDi, Vfce,SlopeIc );
+
+
+	PIDController piVel;
+
+	std::double_t kp = 5.1;
+	std::double_t ki = 0.0;
+	std::double_t kd = 0.00;
+	std::double_t kb = 0.00;
+
+	
+	
+	std::double_t upSaturation = 12.00;
+	piVel.setParameters(kp, ki, kd, kb, tsc, upSaturation);
+
+	double error = 0.0;
+
+
+	auto p = std::filesystem::current_path();
+
+	std::string strpath = p.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/TestDCMotorPWM.dat";
+
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
+
+
+	tracer.addBlockSignal(piVel.getInputSignal(0));
+	tracer.addBlockSignal(piVel.getOutputSignal(0));
+
+	auto refVelShPtr = tracer.addSignal<std::double_t>("refVel", BaseSignal::SignalType::Double);
+	auto motorVelShPtr = tracer.addSignal<std::double_t>("Vel", BaseSignal::SignalType::Double);
+
+	tracer.writeHeader();
+
+	refVelShPtr->set(50.5);
+
+	std::double_t dcBusVoltage = upSaturation; //const at the moment
+
+	for (std::uint32_t i = 0U; i < 10000U; i++)
+	{
+		motorVelShPtr->set(motor.getVelocity());
+		error = refVelShPtr->get() - motorVelShPtr->get();
+		//calculate duty cycle
+		std::double_t val = piVel.process(error);
+		std::double_t duty_cycle = val / upSaturation;
+		//PWM in the midle of cycle
+		std::int32_t count = (std::uint32_t) (duty_cycle * 100);
+		std::uint32_t start = 50 - abs(count / 2);
+		std::uint32_t end = 50 + abs(count / 2);
+	
+		for (std::uint32_t i = 0; i < 20; i++)
+		{
+			if (i < start || i >= end)
+			{
+				motor.setInputs(dcBusVoltage, 0.00, false,false);
+			}
+			else
+			{
+				if (val >= 0.0)
+				{
+					motor.setInputs(dcBusVoltage, 0.00, true, false);
+				}
+				else
+				{
+					motor.setInputs(dcBusVoltage, 0.00, false, true);
+				}
+			}
+			tracer.trace();
+			motor.process();
+		}		
 	}
 	std::double_t i = motor.getCurrent();
 	std::double_t w = motor.getVelocity();

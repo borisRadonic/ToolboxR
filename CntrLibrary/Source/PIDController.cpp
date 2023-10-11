@@ -78,7 +78,7 @@ namespace CntrlLibrary
 			}
 			else
 			{
-				uSat = std::fmax(u, _upSat);
+				uSat = std::fmax(u, -_upSat);
 			}
 			_du1 = uSat - u;
 			_ptrOut->set(uSat);

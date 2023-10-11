@@ -91,6 +91,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\HBPWMDCMotor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\IIRFilter.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -210,6 +214,7 @@
     <ClInclude Include="Header\FuzzySet.h" />
     <ClInclude Include="Header\FuzzyTypes.h" />
     <ClInclude Include="Header\GaussianFuzzySet.h" />
+    <ClInclude Include="Header\HBPWMDCMotor.h" />
     <ClInclude Include="Header\IIRFilter.h" />
     <ClInclude Include="Header\IIRFilterFO.h" />
     <ClInclude Include="Header\IIRFilterSO.h" />
