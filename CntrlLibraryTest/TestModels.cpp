@@ -266,23 +266,37 @@ TEST(TestCasePWMotor, TestDCMotorPWM)
 	std::double_t Vfce = 0.75;
 	std::double_t SlopeIc = 20.0;
 
-	motor.setParameters(ts, 0.000135, 0.178, 0.008586328125, 1.1, 1.55e-3, 0.7614,Vfdi, SlopeDi, Vfce,SlopeIc );
+	std::double_t b = 0.000135;
+	std::double_t Kb = 0.178;
+	std::double_t J = 0.008586328125;
+	std::double_t R = 1.1;
+	std::double_t L = 1.55e-3;
+	std::double_t Kt = 0.7614;
 
+	motor.setParameters(ts, b, Kb ,J , R, L, Kt,Vfdi, SlopeDi, Vfce,SlopeIc );
 
 	PIDController piVel;
+	PIDController piTq;
 
-	std::double_t kp = 5.1;
-	std::double_t ki = 0.0;
+	std::double_t kpT = 98.1;
+	std::double_t kiT = 600.0;
+	std::double_t kdT = 0.00;
+	std::double_t kbT = 0.00;
+
+	std::double_t kp = 10.0;
+	std::double_t ki = 15.0;
 	std::double_t kd = 0.00;
 	std::double_t kb = 0.00;
 
+	std::double_t upSaturationTq = 6.0; //max 6 Nm
+	std::double_t upSaturationU = 14.00; //max 14 V
 	
-	
-	std::double_t upSaturation = 12.00;
-	piVel.setParameters(kp, ki, kd, kb, tsc, upSaturation);
+	piTq.setParameters(kpT, kiT, kdT, kbT, tsc, upSaturationU);
+		
+	piVel.setParameters(kp, ki, kd, kb, tsc, upSaturationTq);
 
 	double error = 0.0;
-
+	double errorTq = 0.0;
 
 	auto p = std::filesystem::current_path();
 
@@ -294,33 +308,37 @@ TEST(TestCasePWMotor, TestDCMotorPWM)
 	EXPECT_TRUE(tracer.open());
 
 
-	tracer.addBlockSignal(piVel.getInputSignal(0));
-	tracer.addBlockSignal(piVel.getOutputSignal(0));
-
 	auto refVelShPtr = tracer.addSignal<std::double_t>("refVel", BaseSignal::SignalType::Double);
 	auto motorVelShPtr = tracer.addSignal<std::double_t>("Vel", BaseSignal::SignalType::Double);
+	auto refTqShPtr = tracer.addSignal<std::double_t>("refTq", BaseSignal::SignalType::Double);
+	auto motorTqShPtr = tracer.addSignal<std::double_t>("Tq", BaseSignal::SignalType::Double);
 
 	tracer.writeHeader();
 
-	refVelShPtr->set(50.5);
+	refVelShPtr->set(10.5);
 
-	std::double_t dcBusVoltage = upSaturation; //const at the moment
+	std::double_t dcBusVoltage = upSaturationU; //const at the moment
 
-	for (std::uint32_t i = 0U; i < 10000U; i++)
+	for (std::uint32_t i = 0U; i < 1000U; i++)
 	{
-		motorVelShPtr->set(motor.getVelocity());
-		error = refVelShPtr->get() - motorVelShPtr->get();
+		error = refVelShPtr->get() - motorVelShPtr->get();		
+		double tqref = piVel.process(error);				
+		errorTq = tqref - motor.getTorque();
+		double val = piTq.process(errorTq);
+		refTqShPtr->set(tqref);
+
+		//calculate compensations for IGBT and diode dependant from current and active switches
+
 		//calculate duty cycle
-		std::double_t val = piVel.process(error);
-		std::double_t duty_cycle = val / upSaturation;
-		//PWM in the midle of cycle
+		std::double_t duty_cycle = val / dcBusVoltage;
+		//ON in the midle of the cycle
 		std::int32_t count = (std::uint32_t) (duty_cycle * 100);
 		std::uint32_t start = 50 - abs(count / 2);
 		std::uint32_t end = 50 + abs(count / 2);
 	
-		for (std::uint32_t i = 0; i < 20; i++)
+		for (std::uint32_t j = 0; j < 100; j++)
 		{
-			if (i < start || i >= end)
+			if (j <= start || j >= end)
 			{
 				motor.setInputs(dcBusVoltage, 0.00, false,false);
 			}
@@ -335,14 +353,15 @@ TEST(TestCasePWMotor, TestDCMotorPWM)
 					motor.setInputs(dcBusVoltage, 0.00, false, true);
 				}
 			}
-			tracer.trace();
+			
 			motor.process();
+			motorVelShPtr->set(motor.getVelocity());
+			motorTqShPtr->set(motor.getTorque());
+			tracer.trace();
 		}		
 	}
 	std::double_t i = motor.getCurrent();
 	std::double_t w = motor.getVelocity();
 
-	//EXPECT_FLOAT_EQ(i, 26.309461273007749);
-	//EXPECT_FLOAT_EQ(w, 514.91089859268288);
 
 }

@@ -76,17 +76,44 @@ namespace CntrlLibrary
 			if (_isParamsSet)
 			{
 				std::double_t i_d = 0.00;
+				std::double_t u_r = 0.00;
 				if (!(_sw23ON == true && _sw14ON == true))
 				{
 					if (_sw14ON == true )
 					{
 						_Uce = _Vf_ce +  abs(_i1)/_Slope_ic;
-						i_d = (1.00 / _L) * (_u - _Uce) - (2.00 * (_Kb * _w1) - (_R * _i1) - 2.0 * _Udiode);
+						_Udiode = _Vf_di + abs(_i1) / _Slope_di;
+						u_r = _u - (_Kb * _w1) - (_R * _i1) - 2 * _Uce;
+						if (_i1 < 0.00)
+						{
+							/*Current flow through diode D4 and SW1*/
+							u_r = -_u + (_Kb * _w1) + (_R * _i1) + _Uce + _Udiode;
+							i_d = -(1.00 / _L) * u_r;
+						}
+						else
+						{
+							/*Current flow through SW1 and SW4*/
+							u_r = _u - (_Kb * _w1) - (_R * _i1) - 2.0 * _Uce;
+							i_d = (1.00 / _L) * u_r;
+						}
 					}
 					else if (_sw23ON == true)
 					{
 						_Uce = _Vf_ce + abs(_i1)/ _Slope_ic;
-						i_d = -(1.00 / _L) * (_u - _Uce) - (2.00 * (_Kb * _w1) - (_R * _i1) - 2.0 * _Udiode);
+						_Udiode = _Vf_di + abs(_i1) / _Slope_di;
+
+						if (_i1 > 0.00)
+						{
+							/*Current flow through diode D2 and SW2*/
+							u_r = -_u - (_Kb * _w1) + (_R * _i1) + _Uce + _Udiode;
+							i_d = (1.00 / _L) * u_r;
+						}
+						else
+						{
+							/*Current flow through SW3 and SW2*/
+							u_r = _u + (_Kb * _w1) - (_R * _i1) - 2.0 *_Uce;
+							i_d = -(1.00 / _L) * u_r;
+						}						
 					}
 					else
 					{
