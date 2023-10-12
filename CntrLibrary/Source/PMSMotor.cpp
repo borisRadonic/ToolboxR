@@ -77,7 +77,8 @@ namespace CntrlLibrary
 				_wM = _pIntegratorW->process(_aM);
 				_angleM = _pIntegratorR->process(_wM);
 				double angleE = _angleM * _polePairs;
-				_angleE = angleE - M_PI * floor(angleE * M_2_PI);
+				//_angleE = angleE - M_PI * floor(angleE * M_2_PI);
+				_angleE = angleE;
 				_iq1 = _iq;
 				_id1 = _id;
 				_wM1 = _wM;

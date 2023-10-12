@@ -49,11 +49,17 @@ namespace CntrlLibrary
 			_isParamsSet = true;
 			
 			// Setting the parameters for the filters and PI controllers.
-			_pIRFltPreQ->setParameters(iirPreFlt_a1, iirPreFlt_b0, iirPreFlt_b1);
+			if ((iirPreFlt_a1 > 0.00) && (iirPreFlt_b0 > 0.00) && (iirPreFlt_b1 > 0.00))
+			{
+				_pIRFltPreQ->setParameters(iirPreFlt_a1, iirPreFlt_b0, iirPreFlt_b1);
+			}
 			_pPIq->setParameters(kp_q, ki_q, 0.00, kb_q, _Ts, upSat_q);
 			_pPId->setParameters(kp_d, ki_d, 0.00, kb_d, _Ts, upSat_d);
 			_pDerAngle->setParameters(_Ts, 1.00);
-			_pIRFltVel->setParameters(iirVelFlt_a1, iirVelFlt_b0, iirVelFlt_b1 );
+			if ((iirVelFlt_a1 > 0.00) && (iirVelFlt_b0 > 0.00) && (iirVelFlt_b1 > 0.00))
+			{
+				_pIRFltVel->setParameters(iirVelFlt_a1, iirVelFlt_b0, iirVelFlt_b1);
+			}
 		}
 
 		// Reset: Reset all the parameters, filters, and controllers to default or zero values.
@@ -75,7 +81,7 @@ namespace CntrlLibrary
 			{
 				// Filtering the reference value for iq.
 				std::double_t iq_ref_flt = _pIRFltPreQ->process(iq_ref);
-
+				
 				// Calculating and filtering the mechanical velocity.
 				_vel_mech_flt = _pIRFltVel->process(_pDerAngle->process(rotor_angle));
 

@@ -12,10 +12,10 @@ set ylabel "Value"
 set key outside top left
 
 # Plot the data
-plot "TestDCMotorPWM.dat" using 1:2 with lines title "refVel", \
-     "TestDCMotorPWM.dat" using 1:3 with lines title "Vel", \
-     "TestDCMotorPWM.dat" using 1:4 with lines title "refTq", \
-     "TestDCMotorPWM.dat" using 1:5 with lines title "Tq"
+plot "TestPMSM.dat" using 1:2 with lines title "Id", \
+     "TestPMSM.dat" using 1:3 with lines title "Vel", \
+     "TestPMSM.dat" using 1:4 with lines title "refIq", \
+     "TestPMSM.dat" using 1:5 with lines title "Iq"
 
 # Pause (for terminals that close immediately after displaying the plot)
 pause -1 "Press any key to continue"

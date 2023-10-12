@@ -107,7 +107,7 @@ namespace CntrlLibrary
 			*/
 			std::double_t getUq() const
 			{
-				return _u_q;
+ 				return _u_q;
 			}
 
 			/**
