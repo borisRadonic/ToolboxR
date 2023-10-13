@@ -170,11 +170,11 @@ namespace CntrlLibrary
 
 			// Pointers to various filters and controllers.
 
-			std::unique_ptr<IIRFilterFO> _pIRFltPreQ; /**< Pointer to the IIR pre-filter for q-axis. */
+			std::unique_ptr<Filters::IIRFirstOrderFilter> _pIRFltPreQ; /**< Pointer to the IIR pre-filter for q-axis. */
 			std::unique_ptr<PIDController> _pPIq; /**< Pointer to the PID controller for q-axis. */
 			std::unique_ptr<PIDController> _pPId; /**< Pointer to the PID controller for d-axis. */
 			std::unique_ptr<Derivative> _pDerAngle; /**< Pointer to calculate the derivative of the angle. */
-			std::unique_ptr<IIRFilterFO> _pIRFltVel; /**< Pointer to the IIR filter for velocity. */
+			std::unique_ptr<Filters::IIRFirstOrderFilter> _pIRFltVel; /**< Pointer to the IIR filter for velocity. */
 
 		};
 	}

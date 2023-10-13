@@ -144,6 +144,9 @@
     <ClCompile Include="Source\HBPWMDCMotor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\IIRFilterButterSO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BellShapedFuzzySet.h">
@@ -288,6 +291,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\HBPWMDCMotor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\IIRFilterButterSO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

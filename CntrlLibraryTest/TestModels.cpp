@@ -408,7 +408,7 @@ TEST(TestCasePMSM, TestPMSM)
 
 	PIDController piVel;
 	PMSMPICurrentController tqController;
-	IIRFilterFO velPreFlt;
+	Filters::IIRFirstOrderFilter velPreFlt;
 		
 	std::double_t kp = 0.49;
 	std::double_t Ti = 0.3;

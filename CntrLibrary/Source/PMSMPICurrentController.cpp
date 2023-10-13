@@ -8,11 +8,11 @@ namespace CntrlLibrary
 		// Constructor: Initialize the unique pointers for the filters and controllers.
 		PMSMPICurrentController::PMSMPICurrentController() :Block()
 		{
-			_pIRFltPreQ = std::make_unique<IIRFilterFO>();
+			_pIRFltPreQ = std::make_unique<Filters::IIRFirstOrderFilter>();
 			_pPIq		= std::make_unique<PIDController>();
 			_pPId		= std::make_unique<PIDController>();
 			_pDerAngle	= std::make_unique<Derivative>();
-			_pIRFltVel	= std::make_unique<IIRFilterFO>();
+			_pIRFltVel	= std::make_unique<Filters::IIRFirstOrderFilter>();
 		}
 		// Set parameters for the PI current controller, filters, and motor properties.
 		void PMSMPICurrentController::setParameters(std::double_t iirPreFlt_a1,
