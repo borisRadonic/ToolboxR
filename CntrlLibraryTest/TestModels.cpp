@@ -1,4 +1,6 @@
 #include "pch.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include <iostream>
 #include <memory>
@@ -406,24 +408,41 @@ TEST(TestCasePMSM, TestPMSM)
 
 	PIDController piVel;
 	PMSMPICurrentController tqController;
+	IIRFilterFO velPreFlt;
 		
-	std::double_t kp = 0.05;
-	std::double_t Ti = 0.2;
-	std::double_t ki = 0.01;
+	std::double_t kp = 0.49;
+	std::double_t Ti = 0.3;
+	std::double_t ki = kp/Ti;
 	std::double_t kd = 0.00;
 	std::double_t kb = 1.00;
 
-	std::double_t upSaturationTq = 0.76; //max 0.76 Nm
+	//Velocity First order IIR Filter coefficients
+	std::double_t Wc_vel = 6.00; //rad/sec
+	std::double_t alpha_vel = exp( -Wc_vel * ts); //rad/sec
+	std::double_t iirVelpre_a1 = -alpha_vel;
+	std::double_t iirVelpre_b0 = 1 - alpha_vel;
+	std::double_t iirVelpre_b1 = 0.00; //first orderer
+	velPreFlt.setParameters(iirVelpre_a1, iirVelpre_b0, iirVelpre_b1);
 
-	std::double_t iirPreFlt_a1 = 0.00;
-	std::double_t iirPreFlt_b0 = 0.00;
-	std::double_t iirPreFlt_b1 = 0.00;
+	std::double_t upSaturationTq = 12.0; //max 15 Nm
+	
+
+	//max bandwith is dependant from motor electrical constant
+	std::double_t tau_e = Lq / Rs;
+	
+	//we do not use velocity filter in torque controller at the moment
 	std::double_t iirVelFlt_a1 = 0.00;
 	std::double_t iirVelFlt_b0 = 0.00;
-	std::double_t iirVelFlt_b1 = 0.00;
-	std::double_t kp_q = 50.0;
-	std::double_t ki_q = kp_q/0.01;
-	//std::double_t ki_q = 0.00;
+	std::double_t iirVelFlt_b1 = 0.00; //first order filter
+
+	std::double_t W_c_tq = 1000; /// frequency of the torque/current controller prefilters in [rad/sec]
+	std::double_t alpha_q = exp(-W_c_tq * ts); //rad/sec
+	std::double_t iirPreFlt_a1 = -alpha_q;
+	std::double_t iirPreFlt_b0 = 1- alpha_q;
+	std::double_t iirPreFlt_b1 = 0.00;
+	
+	std::double_t kp_q = 15.0;
+	std::double_t ki_q = kp_q/0.001;
 	std::double_t kd_q = 0.00;
 	std::double_t kb_q = 1.00;
 	std::double_t upSat_q = 300.00;
@@ -466,20 +485,35 @@ TEST(TestCasePMSM, TestPMSM)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-
 	auto motorIdShPtr = tracer.addSignal<std::double_t>("Id", BaseSignal::SignalType::Double);
-	auto motorVelShPtr = tracer.addSignal<std::double_t>("Vel", BaseSignal::SignalType::Double);
 	auto refTqShPtr = tracer.addSignal<std::double_t>("refIq", BaseSignal::SignalType::Double);
 	auto motorIqShPtr = tracer.addSignal<std::double_t>("Iq", BaseSignal::SignalType::Double);
+	auto refVelShPtr = tracer.addSignal<std::double_t>("refVel", BaseSignal::SignalType::Double);
+	auto motorVelShPtr = tracer.addSignal<std::double_t>("Vel", BaseSignal::SignalType::Double);
 
 	tracer.writeHeader();
 	
-	for (std::uint32_t i = 0U; i < 10000U; i++)
+	for (std::uint32_t i = 0U; i < 60000U; i++)
 	{
-		double tqref = 2.0;
+
+		double error = refVelShPtr->get() - motorVelShPtr->get();
+		double tqref = piVel.process(error);		
+	
+
+		if (i < 30000)
+		{
+			
+			refVelShPtr->set(velPreFlt.process(60.0 * 6.28)); ///1000 rpm cw
+		}
+		else
+		{
+			refVelShPtr->set(velPreFlt.process(-60.0 * 6.28)); ///1000 rpm ccw
+		}
+
+			
 		refTqShPtr->set(tqref / Kt);
 		tqController.process(tqref / Kt, 0.0, motor.getIq() , motor.getId(), motor.getPos() );
-		if (i > 9000)
+		if (i > 50000 )
 		{
 			motor.setInputs(tqController.getUq(), tqController.getUd(), 0.00);
 		}
@@ -491,8 +525,4 @@ TEST(TestCasePMSM, TestPMSM)
 		motorIqShPtr->set(motor.getIq());
 		tracer.trace();		
 	}
-	//std::double_t i = motor.getCurrent();
-	//std::double_t w = motor.getVelocity();
-
-
 }
