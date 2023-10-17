@@ -115,6 +115,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\JerkLimitedTrajectory.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\LargeFuzzySet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -136,6 +140,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\PMSMPICurrentController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\QuinticPolyTrajectory.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -224,12 +232,14 @@
     <ClInclude Include="Header\IIRFilterFO.h" />
     <ClInclude Include="Header\IIRFilterSO.h" />
     <ClInclude Include="Header\Integrator.h" />
+    <ClInclude Include="Header\JerkLimitedTrajectory.h" />
     <ClInclude Include="Header\LargeFuzzySet.h" />
     <ClInclude Include="Header\LinguisticVariable.h" />
     <ClInclude Include="Header\PIDController.h" />
     <ClInclude Include="Header\PiShapedFuzzySet.h" />
     <ClInclude Include="Header\PMSMotor.h" />
     <ClInclude Include="Header\PMSMPICurrentController.h" />
+    <ClInclude Include="Header\QuinticPolyTrajectory.h" />
     <ClInclude Include="Header\Rule.h" />
     <ClInclude Include="Header\Rules.h" />
     <ClInclude Include="Header\SigmoidalFuzzySet.h" />

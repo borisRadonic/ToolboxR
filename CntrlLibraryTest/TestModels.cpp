@@ -16,6 +16,12 @@
 #include "PMSMotor.h"
 #include "PMSMPICurrentController.h"
 
+#ifdef TEST_VERSION
+#include "JerkLimitedTrajectory.h"
+#endif
+
+#include "QuinticPolyTrajectory.h"
+
 #include "FrictionModelCV.h"
 #include "PIDController.h"
 #include "WaveFormTracer.h"
@@ -81,93 +87,85 @@ TEST(TestStateSpaceClass, TestSS)
 		sp.process();
 		y = sp.getY();
 	}
-
-	
+		
 	y = sp.getY();
-	
-	
-
 }
-/*
-TEST(TestCaseDCMotor, TestDCMotorWithFriction)
+
+TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 {
-	DCMotor motor;
+	using namespace TrajectoryGeneration;
 
-	std::double_t Ki1 = 33.2;
-	std::double_t Ki2 = 30.2;
+	auto path = std::filesystem::current_path();
 
-	motor.setParameters(0.0001, 0.000135, 0.178, 0.08586328125, 1.1, 1.55e-3, 0.7614);
+	std::string strpath = path.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/QuanticPolyTrajectory.dat";
 
-	
-	PIDController piTq;
-	piTq.setParameters(2.00174495936295, Ki1, 0.00, Ki1, 0.0001, 120.0);
+	double ts = 0.001;
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
 
 
-	PIDController piVel;
-	piVel.setParameters(2.0, Ki2, 0.00, Ki2, 0.0001, 40.0);
+	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
+	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
+	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
 
-	FrictionModelCSV friction;
-	friction.setParameters(0.0001, 0.010, 3.5, J);
+	QuinticPolyTrajectory traj;
 
-	//simulate first 0.1 s
-	std::double_t I = 0.00;
-	std::double_t w = 0.00;
-	std::double_t a = 0.00;
-	std::double_t T = 0.00;
-	std::double_t Tf = 0.00;
-	std::double_t Tref = 0.0;
-	std::double_t error = 0.00;
-	std::double_t errorVel = 0;
-	std::double_t refVel = 100.00;
-	std::double_t u = 0.00;
+	traj.setParameters(1000.0, 600.00, 0.001); // Max jerk, acceleration, velocity and processing time 
+	traj.setInitialConditions(0.00, 0.00, 0.00);  // Starting from rest at position 0
+	traj.setTargetPosition(300.00, 0.00, 0.00);  // Target position, Target velocity, Target acceleration
+	EXPECT_TRUE(traj.prepare( 2.10)); /*time*/
 
-	std::vector< std::double_t> vecVel;
-	std::vector< std::double_t> vecU;
-	std::vector< std::double_t> vecTr;
-	std::vector< std::double_t> vecTime;
-	std::double_t time = 0.00;
-
-	for (std::uint32_t k = 0; k < 10000; k++)
+	double pos, vel, accel;
+	for (double t = 0.000; t <= 3.0; t = t + 0.001)
 	{
-		//velocity controller
-		errorVel = refVel - w;
-		Tref = piVel.process(errorVel);
-
-		vecTr.push_back(Tref);
-		
-		//torque controller
-		error = Tref - T;
-		u = piTq.process(error);
-				
-		motor.setInputs( u, Tf);
-		motor.process();
-		I = motor.getCurrent();
-		w = motor.getVelocity();
-		a = motor.getAccell();
-		T = motor.getTorque();
-		
-		vecVel.push_back(w);
-		vecU.push_back(u);
-
-		vecTime.push_back(time);
-		time += 0.0001;
-		
-		//friction.setInputs(w, T, a);
-		//friction.process();
-		//Tf = friction.getFrictionTorque();
+		traj.process(t, pos, vel, accel);
+		acceleration->set(accel);
+		velocity->set(vel);
+		position->set(pos);
+		tracer.trace();
 	}
-	
-
-	//EXPECT_FLOAT_EQ(i, 26.309461273007749);
-	//EXPECT_FLOAT_EQ(w, 514.91089859268288);
-
-	
-
-	//EXPECT_FLOAT_EQ(i, 0.11944857346561119);
-	//EXPECT_FLOAT_EQ(w, 673.41914414630844);
 }
-*/
+#ifdef TEST_VERSION
+TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
+{
+	using namespace TrajectoryGeneration;
 
+	auto path = std::filesystem::current_path();
+
+	std::string strpath = path.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/TestTrajectory1.dat";
+
+	double ts = 0.001;
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
+
+
+	auto acceleration	= tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
+	auto velocity		= tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
+	auto position		= tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
+	 
+
+	JerkLimitedTrajectory traj;  
+
+	traj.setParameters(100000.0, 1000.0, 600.00, 0.001); // Max jerk, acceleration, velocity and processing time 
+	traj.setInitialConditions(0.00, 0.00,0.00);  // Starting from rest at position 0
+	traj.setTargetPosition(300.00, 0.00, 0.00);  // Target position, Target velocity, Target acceleration
+	EXPECT_TRUE(traj.prepare());
+
+	double pos, vel, accel;
+	for (double t = 0.000; t <= 7.0; t = t + 0.001)
+	{
+		traj.process(t, pos, vel, accel);
+		acceleration->set(accel);
+		velocity->set(vel);
+		position->set(pos);
+		tracer.trace();
+	}
+}
+#endif
 TEST(TestCaseDCMotor, TestDCMotor1)
 {
 	DCMotor motor;
@@ -523,6 +521,6 @@ TEST(TestCasePMSM, TestPMSM)
 		motorIdShPtr->set(motor.getId());
 		motorVelShPtr->set(motor.getVel());
 		motorIqShPtr->set(motor.getIq());
-		tracer.trace();		
+		tracer.trace();
 	}
 }

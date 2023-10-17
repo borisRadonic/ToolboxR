@@ -147,6 +147,12 @@
     <ClCompile Include="Source\IIRFilterButterSO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\JerkLimitedTrajectory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\QuinticPolyTrajectory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BellShapedFuzzySet.h">
@@ -294,6 +300,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\IIRFilterButterSO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\JerkLimitedTrajectory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\QuinticPolyTrajectory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
