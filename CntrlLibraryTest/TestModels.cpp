@@ -106,24 +106,29 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	EXPECT_TRUE(tracer.open());
 
 
+	auto jerk = tracer.addSignal<std::double_t>("jerk", BaseSignal::SignalType::Double);
 	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
 	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
 	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
 
 	QuinticPolyTrajectory traj;
 
-	traj.setParameters(1000.0, 600.00, 0.001); // Max jerk, acceleration, velocity and processing time 
+	traj.setParameters(6000.0, 650.00, 500.00, 0.001); // Max jerk, acceleration, velocity and processing time 
 	traj.setInitialConditions(0.00, 0.00, 0.00);  // Starting from rest at position 0
 	traj.setTargetPosition(300.00, 0.00, 0.00);  // Target position, Target velocity, Target acceleration
-	EXPECT_TRUE(traj.prepare( 2.10)); /*time*/
+	EXPECT_TRUE(traj.prepare( 1.50)); /*time*/
 
-	double pos, vel, accel;
+	double pos = 0.00;
+	double vel = 0.00;
+	double accel = 0.00;;
+	double jrk = 0.00;;
 	for (double t = 0.000; t <= 3.0; t = t + 0.001)
 	{
-		traj.process(t, pos, vel, accel);
+		traj.process(t, pos, vel, accel, jrk);
+		jerk->set(jrk);
 		acceleration->set(accel);
 		velocity->set(vel);
-		position->set(pos);
+		position->set(pos);		
 		tracer.trace();
 	}
 }

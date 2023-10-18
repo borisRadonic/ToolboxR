@@ -12,9 +12,10 @@ set ylabel "Value"
 set key outside top left
 
 # Plot the data
-plot "QuanticPolyTrajectory.dat" using 1:2 with lines title "accel", \
-     "QuanticPolyTrajectory.dat" using 1:3 with lines title "vel", \
-     "QuanticPolyTrajectory.dat" using 1:4 with lines title "pos"
+plot "QuanticPolyTrajectory.dat" using 1:2 with lines title "jerk", \
+	 "QuanticPolyTrajectory.dat" using 1:3 with lines title "accel", \
+     "QuanticPolyTrajectory.dat" using 1:4 with lines title "vel", \
+     "QuanticPolyTrajectory.dat" using 1:5 with lines title "pos"
 
 
 # Pause (for terminals that close immediately after displaying the plot)

@@ -28,9 +28,10 @@ namespace CntrlLibrary
                 target_acceleration = accel;
             }
 
-            inline void setParameters(double max_a, double max_v, double ts)
+            inline void setParameters(double max_j, double max_a, double max_v, double ts)
             {
                 _ts = ts;
+                max_jerk = max_j;
                 max_acceleration = max_a;
                 max_velocity = max_v;
             }
@@ -40,13 +41,14 @@ namespace CntrlLibrary
             /*function must be called once before calling process function*/
             bool prepare(double tf);
 
-            void process(double t, double& position, double& velocity, double& acceleration);
+            void process(double t, double& position, double& velocity, double& acceleration, double& jerk);
 
         private:
 
             double _ts = 0.00001;
 
             double max_acceleration = 0.00;
+            double max_jerk = 0.00;
             double max_velocity = 0.00;
 
             double initial_position = 0.00;

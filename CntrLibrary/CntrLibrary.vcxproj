@@ -19,6 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BasicNumMethods.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\BellShapedFuzzySet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -206,6 +210,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BaseSignal.h" />
+    <ClInclude Include="Header\BasicNumMethods.h" />
     <ClInclude Include="Header\BellShapedFuzzySet.h" />
     <ClInclude Include="Header\Block.h" />
     <ClInclude Include="Header\DCMotor.h" />
