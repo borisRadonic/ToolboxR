@@ -10,9 +10,16 @@ namespace CntrlLibrary
         namespace BasicNumMethods
         {
 
+            enum class ResultType
+            {
+                Ok = 0,
+                WrongInputParameters = 1,
+                NotPossible = 3,
+                OutOfTolerance = 5
+            };
+
             class NewtonRaphson
             {
-
             public:
 
                 NewtonRaphson() = delete;
@@ -23,12 +30,12 @@ namespace CntrlLibrary
                 }
 
                 /*only for x > 0*/
-                bool findRoot(double initial_guess, double& root )
+                ResultType findRoot(double initial_guess, double& root )
                 {
                     if (initial_guess < 0.00)
                     {
                         root = 0.00;
-                        return false;
+                        return ResultType::WrongInputParameters;
                     }
                     double x = initial_guess;
                     for (int i = 0; i < _max_iter; ++i)
@@ -41,17 +48,17 @@ namespace CntrlLibrary
                             if (x < std::numeric_limits<double>::min())
                             {
                                 root = 0.00;
-                                return false;
+                                return ResultType::NotPossible;
                             }
                             if (std::abs(delta_x) < _tol)
                             {
                                 root = x;
-                                return true;
+                                return ResultType::Ok;
                             }
                         }
                     }
                     root = x;  // the last computed value
-                    return false;                    
+                    return ResultType::OutOfTolerance;
                 }
 
             private:
@@ -65,11 +72,11 @@ namespace CntrlLibrary
             class SimpsonsIntegrator
             {
             public:
-                static double approximateIntegral(std::function<double(double)> f, double x1, double x2, int n)
+                static ResultType approximateIntegral(std::function<double(double)> f, double x1, double x2, int n, double& outResult)
                 {
                     if (n % 2 != 0)
                     {
-                        return -1.0;
+                        return ResultType::WrongInputParameters;
                     }
                     double h = (x2 - x1) / n;
                     // Initialize with the boundary values
@@ -90,9 +97,10 @@ namespace CntrlLibrary
                     }
                     else
                     {
-                        return -1.0;
+                        return ResultType::NotPossible;
                     }
-                    return integral;
+                    outResult = integral;
+                    return ResultType::Ok;
                 }
             };
         }

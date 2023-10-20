@@ -16,13 +16,158 @@
 #include "FisFileImport.h"
 #include "FisFileExport.h"
 
+#include "WaveFormTracer.h"
+
 #include "DCMotor.h"
 #include "FrictionModelCV.h"
 #include "PIDController.h"
 
 #include "StringUtil.h"
 
+#include "HexicPolynomial.h"
+
+#include <Eigen/Dense>
+
 using namespace CntrlLibrary;
+using namespace Models;
+
+
+using std::experimental::filesystem::path;
+
+using namespace DiscreteTime;
+
+
+TEST(TestHexicPolynomial, TestHexicPolynomial1)
+{
+	using namespace Math;
+	using namespace Polynomials;
+	HexicPolynomial poly;
+
+	auto path = std::filesystem::current_path();
+
+	std::string strpath = path.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/HexicPolynomial.dat";
+
+	double ts = 0.001;
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
+
+
+	auto xt = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
+	auto x1t = tracer.addSignal<std::double_t>("x_der_1", BaseSignal::SignalType::Double);
+	auto x2t = tracer.addSignal<std::double_t>("x_der_2", BaseSignal::SignalType::Double);
+	auto x3t = tracer.addSignal<std::double_t>("x_der_3", BaseSignal::SignalType::Double);
+
+	double x = 0.00;
+	double x1 = 0.00;
+	double x2 = 0.00;
+	double x3 = 0.00;
+	double x4 = 0.00;
+
+	double tf = 1.50;
+
+
+	double a0 = 0.00;
+	double a1 = 0.00;
+	double a2 = 0.00;
+	double a3 = 0.00;
+	double a4 = 0.00;
+	double a5 = 0.00;
+	double a6 = 0.00;
+
+	double i_pos = -20.00;
+	double i_vel = 10.00;
+	double i_accel = 10.00;
+	double f_pos = 300.00;
+	double f_vel = 200.00;
+	double f_accel = 15.00;
+
+	double v_max = 300.00;
+
+	a0 = i_pos;
+	a1 = i_vel;;
+	a2 = i_accel / 2.0;
+
+	double tf_2 = tf * tf;
+	double tf_3 = tf_2 * tf;
+	double tf_4 = tf_3 * tf;
+	double tf_5 = tf_4 * tf;
+	double tf_6 = tf_5 * tf;
+
+
+	//Eigen::Matrix4d A;
+	double t1 = 0.277;
+
+	double tf2 = tf / 4.00;
+	double tf2_2 = tf2 * tf2;
+	double tf2_3 = tf_2 * tf2;
+	double tf2_4 = tf_3 * tf2;
+	double tf2_5 = tf_4 * tf2;
+	double tf2_6 = tf_5 * tf2;
+
+	/*
+	A << tf_3, tf_4, tf_5, tf_6,
+		 tf2_3, tf2_4, tf2_5, tf2_6,
+		3.00 * tf_2, 4.00 * tf_3, 5.00 * tf_4, 6.00 * tf_5,
+		//3.00 * t1*t1,  4.00* t1 * t1 * t1, 5.00 * t1* t1 * t1*t1,  6.00 * t1 * t1 * t1 * t1 * t1,
+		6.00 * tf, 12.00 * tf_2, 20.00 * tf_2, 30 * tf_4;
+		 //6.00,      24.00 * tf,		60.00 * tf_2,	120 * tf_3;
+
+
+
+	Eigen::Vector4d b(  f_pos - i_pos - i_vel * tf - 0.50 * i_accel * tf * tf,
+						(f_pos - i_pos)/2.00 - i_vel * tf2 - 0.50 * i_accel * tf2 * tf2,
+						f_vel - i_vel - i_accel * tf,
+						//v_max - i_vel - i_accel * tf,
+						f_accel - i_accel);
+
+	// Solve for x using Eigen's linear solver
+	Eigen::Vector4d vec_x = A.colPivHouseholderQr().solve(b);
+	*/
+
+
+	Eigen::MatrixXd A(4, 4);
+	Eigen::VectorXd b(4);
+	b << f_pos - i_pos - i_vel * tf - 0.50 * i_accel * tf * tf,
+		//(f_pos - i_pos) / 2.00 - i_vel * tf2 - 0.50 * i_accel * tf2 * tf2,
+		f_vel - i_vel - i_accel * tf,
+		v_max - i_vel - i_accel * tf,
+		f_accel - i_accel;
+		//0.00;
+
+		A << tf_3, tf_4, tf_5, tf_6,
+			//tf2_3, tf2_4, tf2_5, tf2_6,
+			3.00 * tf_2, 4.00 * tf_3, 5.00 * tf_4, 6.00 * tf_5,
+			3.00 * t1 * t1, 4.00 * t1 * t1 * t1, 5.00 * t1 * t1 * t1 * t1, 6.00 * t1 * t1 * t1 * t1 * t1,
+			6.00 * tf, 12.00 * tf_2, 20.00 * tf_3, 30 * tf_4;
+		//6.00, 24.00 * tf, 60.00 * tf_2, 120 * tf_3;
+
+
+	// Compute the least squares solution
+	Eigen::VectorXd vec_x = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
+
+
+	a3 = vec_x(0);
+	a4 = vec_x(1);
+	a5 = vec_x(2);
+	a6 = vec_x(3);
+
+
+	poly.setParams(a0, a1, a2, a3, a4, a5, a6);
+
+	for (double t = 0.00001; t <= tf; t = t + 0.001)
+	{
+		poly.calculate(t, x, x1, x2, x3, x4);
+		xt->set(x);
+		x1t->set(x1);
+		x2t->set(x2);
+		x3t->set(x3);
+		tracer.trace();
+
+	}
+}
+
 
 TEST(TestCaseFuzzySet, FuzzySet1)
 {

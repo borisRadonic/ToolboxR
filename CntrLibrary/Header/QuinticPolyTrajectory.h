@@ -1,7 +1,12 @@
-
 #pragma once
+#include "BasicNumMethods.h"
 #include <cmath>
 #include <algorithm>
+#include "QuinticPolynomial.h"
+
+using namespace CntrlLibrary::Math::BasicNumMethods;
+using namespace CntrlLibrary::Math::Polynomials;
+
 
 namespace CntrlLibrary
 {
@@ -11,37 +16,65 @@ namespace CntrlLibrary
         class QuinticPolyTrajectory
         {
         public:
+            QuinticPolyTrajectory() = delete;
 
-            QuinticPolyTrajectory();
+            /**
+            * @brief Constructs a Quintic Polynomial Trajectory.
+            *
+            * Initializes a trajectory using a quintic polynomial based on the provided initial
+            * and final conditions for position, velocity, and acceleration.
+            *
+            * @param i_pos    Initial position value for the trajectory.
+            * @param i_vel    Initial velocity value for the trajectory.
+            * @param i_accel  Initial acceleration value for the trajectory.
+            * @param f_pos    Final position value for the trajectory.
+            * @param f_vel    Final velocity value for the trajectory.
+            * @param f_accel  Final acceleration value for the trajectory.
+            * @param f_time   Time duration for which the trajectory is defined.
+            */
+            explicit QuinticPolyTrajectory( double i_pos,
+                                            double i_vel,
+                                            double i_accel,
+                                            double f_pos,
+                                            double f_vel,
+                                            double f_accel,
+                                            double f_time );
+            /**
+            * @brief Identify the extrema values for both velocity and acceleration.
+            *
+            * This function uses the Newton-Raphson method to find the extrema values of velocity and acceleration
+            * based on a Quintic Polynomial. The initial values `initial_velocity` and `initial_acceleration` are
+            * ignored during the calculations. Similarly, the final values `target_velocity` and
+            * `target_acceleration` are not taken into account. A Quintic Polynomial can produce at most one
+            * velocity extrema and two acceleration extremas.
+            *
+            * @param[out] ex_velocity          A pair representing the velocity extrema and its corresponding time.
+            * @param[out] ex_accelerations     A pair of pairs representing the two acceleration extrema. 
+            *                                  Each inner pair consists of an acceleration value and its corresponding time.
+            *
+            * @return ResultType from the Math::BasicNumMethods namespace, indicating the success or failure of
+            *         the calculation.
+            */
+            Math::BasicNumMethods::ResultType findExtremaNewtonRaphson(std::pair<double, double>& ex_velocity, std::pair<std::pair<double, double>, std::pair<double, double>> & ex_accelerations);
 
-            inline void setInitialConditions(double pos, double vel, double accel)
+           /**
+            * @brief Calculate position, velocity, acceleration, and jerk based on the input time.
+            *
+            * Given a time value @p t, this function computes and updates the associated values of
+            * position, velocity, acceleration, and jerk.
+            *
+            * @param t            The input time value.
+            * @param[out] position     Calculated position at time @p t.
+            * @param[out] velocity     Calculated velocity at time @p t.
+            * @param[out] acceleration Calculated acceleration at time @p t.
+            * @param[out] jerk         Calculated jerk at time @p t.
+            */
+            void calculateValuesForTime(double t, double& position, double& velocity, double& acceleration, double& jerk);
+
+            inline const QuinticPolynomial& getPoly() const
             {
-                initial_position = pos;
-                initial_velocity = vel;
-                initial_acceleration = accel;
+                return poly;
             }
-
-            inline void setTargetPosition(double pos, double vel, double accel)
-            {
-                target_position = pos;
-                target_velocity = vel;
-                target_acceleration = accel;
-            }
-
-            inline void setParameters(double max_j, double max_a, double max_v, double ts)
-            {
-                _ts = ts;
-                max_jerk = max_j;
-                max_acceleration = max_a;
-                max_velocity = max_v;
-            }
-
-            bool isMaxAccel(double tMax, double ta);
-   
-            /*function must be called once before calling process function*/
-            bool prepare(double tf);
-
-            void process(double t, double& position, double& velocity, double& acceleration, double& jerk);
 
         private:
 
@@ -61,12 +94,8 @@ namespace CntrlLibrary
 
             double _tf = 0.00;
 
-            double _a0 = 0.00;
-            double _a1 = 0.00;
-            double _a2 = 0.00;
-            double _a3 = 0.00;
-            double _a4 = 0.00;
-            double _a5 = 0.00;
+            QuinticPolynomial poly;
+
 
         };
     }

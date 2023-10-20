@@ -314,5 +314,11 @@
     <ClInclude Include="Header\BasicNumMethods.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header\QuinticPolynomial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\HexicPolynomial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

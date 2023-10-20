@@ -29,9 +29,9 @@ namespace CntrlLibrary
                 target_acceleration = accel;
             }
 
-            inline void setParameters(double max_j, double max_a, double max_v, double ts)
+            inline void setParameters(double max_j, double max_a, double max_v, double tf)
             {
-                _ts = ts;
+                _tf = tf;
                 max_jerk            = max_j;
                 max_acceleration    = max_a;
                 max_velocity        = max_v;
@@ -51,7 +51,7 @@ namespace CntrlLibrary
 
         private:
 
-            double _ts = 0.00001;
+            double _tf = 1.00; //final time
 
             double max_jerk         = 0.00;
             double max_acceleration = 0.00;

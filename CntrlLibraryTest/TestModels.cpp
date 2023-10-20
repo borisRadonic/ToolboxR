@@ -16,10 +16,9 @@
 #include "PMSMotor.h"
 #include "PMSMPICurrentController.h"
 
-#ifdef TEST_VERSION
-#include "JerkLimitedTrajectory.h"
-#endif
+#include "HexicPolynomial.h"
 
+#include "JerkLimitedTrajectory.h"
 #include "QuinticPolyTrajectory.h"
 
 #include "FrictionModelCV.h"
@@ -29,12 +28,15 @@
 #include "StringUtil.h"
 #include "Eigen\core"
 
+#include <Eigen/Dense>
+
 using namespace CntrlLibrary;
 using namespace Models;
 
 using std::experimental::filesystem::path;
 
 using namespace DiscreteTime;
+
 
 TEST(TestStateSpaceClass, TestSS)
 {
@@ -111,28 +113,44 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
 	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
 
-	QuinticPolyTrajectory traj;
+	double i_pos = -20.00;
+	double i_vel = 10.00;
+	double i_accel = 10.00;
+	double f_pos = 300.00;
+	double f_vel = 200.00;
+	double f_accel = 15.00;
+	double f_time = 1.50;
 
-	traj.setParameters(6000.0, 650.00, 500.00, 0.001); // Max jerk, acceleration, velocity and processing time 
-	traj.setInitialConditions(0.00, 0.00, 0.00);  // Starting from rest at position 0
-	traj.setTargetPosition(300.00, 0.00, 0.00);  // Target position, Target velocity, Target acceleration
-	EXPECT_TRUE(traj.prepare( 1.50)); /*time*/
+
+	QuinticPolyTrajectory traj( i_pos,
+								i_vel,
+								i_accel,
+								f_pos,
+								f_vel,
+								f_accel,
+								f_time);
+
+		
+	std::pair<double, double> ex_velocity;
+	std::pair<std::pair<double, double>, std::pair<double, double>> ex_accelerations;
+	Math::BasicNumMethods::ResultType result = traj.findExtremaNewtonRaphson( ex_velocity, ex_accelerations);
 
 	double pos = 0.00;
 	double vel = 0.00;
 	double accel = 0.00;;
 	double jrk = 0.00;;
-	for (double t = 0.000; t <= 3.0; t = t + 0.001)
+	for (double t = 0.00001; t <= f_time; t = t + 0.001)
 	{
-		traj.process(t, pos, vel, accel, jrk);
-		jerk->set(jrk);
+		traj.calculateValuesForTime(t, pos, vel, accel, jrk);
+		jerk->set(jrk/20.0);
 		acceleration->set(accel);
 		velocity->set(vel);
 		position->set(pos);		
 		tracer.trace();
 	}
 }
-#ifdef TEST_VERSION
+
+#ifdef TEST_7453457849
 TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 {
 	using namespace TrajectoryGeneration;
@@ -155,9 +173,18 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 
 	JerkLimitedTrajectory traj;  
 
-	traj.setParameters(100000.0, 1000.0, 600.00, 0.001); // Max jerk, acceleration, velocity and processing time 
-	traj.setInitialConditions(0.00, 0.00,0.00);  // Starting from rest at position 0
-	traj.setTargetPosition(300.00, 0.00, 0.00);  // Target position, Target velocity, Target acceleration
+
+	double i_pos = -20.00;
+	double i_vel = 10.00;
+	double i_accel = 10.00;
+	double f_pos = 300.00;
+	double f_vel = 200.00;
+	double f_accel = 15.00;
+	double f_time = 1.50;
+
+	traj.setParameters(100000.0, 1000.0, 300.00, f_time); // Max jerk, acceleration, velocity and processing time 
+	traj.setInitialConditions(i_pos, i_vel, i_accel);
+	traj.setTargetPosition(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
 	EXPECT_TRUE(traj.prepare());
 
 	double pos, vel, accel;
