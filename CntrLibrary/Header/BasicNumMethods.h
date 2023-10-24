@@ -15,6 +15,7 @@ namespace CntrlLibrary
                 Ok = 0,
                 WrongInputParameters = 1,
                 NotPossible = 3,
+                NegativeTime = 4,
                 OutOfTolerance = 5
             };
 
@@ -41,20 +42,26 @@ namespace CntrlLibrary
                     for (int i = 0; i < _max_iter; ++i)
                     {
                         double df = _dfunc(x);
-                        if (abs(df) > std::numeric_limits<double>::min())
+                        if (abs(df) > _tol)
                         {
-                            double delta_x = _func(x) / df;
-                            x -= delta_x;
-                            if (x < std::numeric_limits<double>::min())
+                            double f = _func(x);
+                            x = x - f/ df;
+                            if (x < 0.00)
                             {
-                                root = 0.00;
-                                return ResultType::NotPossible;
+                                return ResultType::NegativeTime;
                             }
-                            if (std::abs(delta_x) < _tol)
+                           
+                            if (std::abs(f) < _tol)
                             {
                                 root = x;
                                 return ResultType::Ok;
                             }
+                        }
+                        else
+                        {
+                            /*it is maximum*/
+                            root = x;
+                            return ResultType::Ok;
                         }
                     }
                     root = x;  // the last computed value

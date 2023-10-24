@@ -156,6 +156,12 @@
     <ClCompile Include="Source\BasicNumMethods.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SimplelHexicTrajectory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SimplelHepticTrajectory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BellShapedFuzzySet.h">
@@ -318,6 +324,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\HexicPolynomial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\HepticPolynomial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SimplelHexicTrajectory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SimplelHepticTrajectory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

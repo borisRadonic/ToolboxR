@@ -1,4 +1,4 @@
-#ifdef TEST_VERSION
+//#ifdef TEST_VERSION
 
 #pragma once
 #include <cmath>
@@ -69,4 +69,4 @@ namespace CntrlLibrary
           };
     }
 }
-#endif
+//#endif

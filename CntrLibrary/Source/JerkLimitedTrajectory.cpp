@@ -1,4 +1,4 @@
-﻿#ifdef TEST_VERSION
+﻿//#ifdef TEST_VERSION
 
 #include "JerkLimitedTrajectory.h"
 #include "QuinticPolyTrajectory.h"
@@ -24,11 +24,87 @@
 
             bool JerkLimitedTrajectory::prepare()
             {
-
                 if (_tf <= std::numeric_limits<double>::min())
                 {
                     return false;
                 }
+                double max_stop_distance = (initial_velocity * initial_velocity) / (2.00 * max_acceleration);
+                double travel_distance = target_position - initial_position;
+                if (abs(travel_distance) <= max_stop_distance)
+                {
+                    //create stop trajectory
+                    target_velocity = 0.00;
+                    target_acceleration = 0.00;
+                    if (initial_velocity >= 0.00)
+                    {
+                        target_position = initial_position + max_stop_distance;
+                    }
+                    else
+                    {
+                        target_position = initial_position - max_stop_distance;
+                    }
+                    //...
+                }
+                //check if the velocity exceeded max_velocity
+                if (initial_velocity > max_velocity)
+                {
+                    //deaccelerate to _max_velocity
+                    double dvel = abs(initial_velocity) - max_velocity;
+                    double max_reduce_vel_distance = (dvel * dvel ) / ( 2.00 * max_acceleration);
+                    //double deacceleration case...
+                }
+               
+                double max_velocity_squ = max_velocity * max_velocity;
+                double min_max_vel_distance =   abs( (max_velocity_squ - (initial_velocity * initial_velocity)) / (2.00 * max_acceleration)
+                                                + max_velocity_squ / (2.00 * max_acceleration) );
+
+                double Ta = 0.00;
+                double Td = 0.00;
+                double Tv = 0.00;
+
+
+                double Ac = 0.00;
+                double Dc = 0.00;
+                double Vc = 0.00;
+
+                double sign = 1.00;
+                if (travel_distance < 0.00)
+                {
+                    sign = -1.00;
+                }
+                Ac = sign * max_acceleration;
+                Dc = sign * max_acceleration;
+                if (abs(travel_distance) >= min_max_vel_distance)
+                {
+                    //trapesoidal profile
+                    Vc = sign * max_velocity;
+                                        
+                    Tv = (travel_distance - sign * min_max_vel_distance) / Vc;
+                }
+                else
+                {
+                    //triangular profile
+                    Tv = 0.00;
+                    Vc = sign * sqrt((2.00 * max_acceleration * max_acceleration * travel_distance
+                                        - max_acceleration * initial_velocity * initial_velocity) / (max_acceleration + max_acceleration));
+                }
+                Ta = (Vc - initial_velocity) / Ac;
+                Td = Vc / Dc;
+
+                /*effect of jerk phase (produced with filtering)*/
+                
+                double Tja = abs(Ac - initial_acceleration) / max_jerk;
+                double Tjv = abs(Ac / max_jerk);
+                double Tjd = abs( Dc / max_jerk);
+                
+                //Tj = 
+                //double vel_error = sign * initial_acceleration * ( (2.00 * Ac -  initial_acceleration)/max_jerk) ) ;
+                //double pos_error = sign * ( (Ac * initial_velocity - (Ac + Dc) * Vc) / (2.00 * max_jerk) )
+                //                 + initial_acceleration * initial_acceleration * ( ( 3.00 * Ac - 2.00 * initial_acceleration) / ( 12.00 * max_jerk * max_jerk) );     ;
+
+                //abs( Ac - initial_acceleration)
+
+
 
                 if ((max_jerk <= std::numeric_limits<double>::min()) ||
                     max_acceleration <= std::numeric_limits<double>::min() ||
@@ -44,9 +120,13 @@
                                             target_position,
                                             target_velocity,
                                             target_acceleration,
-                                            _tf);
+                                            max_acceleration,
+                                            max_velocity );
 
+                traj.create(_tf);
                 QuinticPolynomial poly(traj.getPoly());
+
+                double ttime = traj.calculateMinTime();
                 
                 std::function<double(double)> funcCalcVel = std::bind(&QuinticPolynomial::calculateDerX, &poly, std::placeholders::_1);
                 std::function<double(double)> funcCalcVelDer = std::bind(&QuinticPolynomial::calculateDerX2, &poly, std::placeholders::_1);
@@ -149,4 +229,4 @@
             }
         }
     }
-#endif
+//#endif

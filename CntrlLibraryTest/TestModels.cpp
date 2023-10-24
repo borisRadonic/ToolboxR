@@ -38,7 +38,7 @@ using std::experimental::filesystem::path;
 using namespace DiscreteTime;
 
 
-TEST(TestStateSpaceClass, TestSS)
+TEST(TestStateSpaceClass, TestStateSpace)
 {
 
 	/*
@@ -107,7 +107,6 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-
 	auto jerk = tracer.addSignal<std::double_t>("jerk", BaseSignal::SignalType::Double);
 	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
 	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
@@ -120,17 +119,21 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	double f_vel = 200.00;
 	double f_accel = 15.00;
 	double f_time = 1.50;
-
+	double m_accel = 450.00;
+	double m_vel = 300.00;
 
 	QuinticPolyTrajectory traj( i_pos,
 								i_vel,
 								i_accel,
 								f_pos,
 								f_vel,
-								f_accel,
-								f_time);
-
+								f_accel,								
+								m_accel,
+								m_vel );
 		
+	f_time = traj.calculateMinTime();
+	traj.create(f_time);
+
 	std::pair<double, double> ex_velocity;
 	std::pair<std::pair<double, double>, std::pair<double, double>> ex_accelerations;
 	Math::BasicNumMethods::ResultType result = traj.findExtremaNewtonRaphson( ex_velocity, ex_accelerations);
@@ -150,7 +153,7 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	}
 }
 
-#ifdef TEST_7453457849
+//#ifdef TEST_7453457849
 TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 {
 	using namespace TrajectoryGeneration;
@@ -197,7 +200,7 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 		tracer.trace();
 	}
 }
-#endif
+//#endif
 TEST(TestCaseDCMotor, TestDCMotor1)
 {
 	DCMotor motor;

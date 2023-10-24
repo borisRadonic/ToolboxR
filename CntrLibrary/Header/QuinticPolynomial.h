@@ -48,8 +48,18 @@ namespace CntrlLibrary
                 {
                     double t_2 = t * t;
                     double t_3 = t_2 * t;
-                    double t_4 = t_3 * t;
                     return (2.00 * _a2 + 6.00 * _a3 * t + 12.00 * _a4 * t_2 + 20.00 * _a5 * t_3);
+                }
+
+                inline double calculateDerX3(double t)
+                {
+                    double t_2 = t * t;
+                    return (6.00 * _a3 + 24.00 * _a4 * t + 60.00 * _a5 * t_2 );
+                }
+
+                inline double calculateDerX4(double t)
+                {
+                    return (24.00 * _a4 + 120.00 * _a5 * t);
                 }
 
                 inline void calculate(double t, double& x, double& x_der1, double& x_der2, double& x_der3)

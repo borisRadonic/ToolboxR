@@ -38,7 +38,16 @@ namespace CntrlLibrary
                                             double f_pos,
                                             double f_vel,
                                             double f_accel,
-                                            double f_time );
+                                            double m_accel,
+                                            double m_vel );
+
+            double calculateMinTime();
+            
+            /**
+            * @brief Creates trajectory from final time
+            **/
+            void create(double f_time);
+
             /**
             * @brief Identify the extrema values for both velocity and acceleration.
             *
@@ -81,7 +90,6 @@ namespace CntrlLibrary
             double _ts = 0.00001;
 
             double max_acceleration = 0.00;
-            double max_jerk = 0.00;
             double max_velocity = 0.00;
 
             double initial_position = 0.00;
@@ -92,7 +100,7 @@ namespace CntrlLibrary
             double target_velocity = 0.00;
             double target_acceleration = 0.00;
 
-            double _tf = 0.00;
+            double _final_time = 0.00;
 
             QuinticPolynomial poly;
 
