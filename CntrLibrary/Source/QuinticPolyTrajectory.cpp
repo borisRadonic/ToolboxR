@@ -32,36 +32,10 @@ namespace CntrlLibrary
             ,target_acceleration(f_accel)
             ,max_acceleration(m_accel)
             ,max_velocity(m_vel)
-        {            
-           
-            /*
-            Eigen::Matrix3d A;
-
-            A << tf_3,          tf_4,           tf_5,
-                 3.00 * tf_2,   4.00 * tf_3,    5.00 * tf_4,
-                 6.00 * _tf,    12.00 * tf_2,   20.00 * tf_3;
-
-            Eigen::Vector3d b(  f_pos - i_pos - i_vel * _tf - 0.50 * i_accel * _tf * _tf,
-                                f_vel - i_vel - i_accel * _tf,
-                                f_accel - i_accel);
-
-            // Solve for x using Eigen's linear solver
-            Eigen::Vector3d x = A.colPivHouseholderQr().solve(b);
-
-            _a3 = x(0);
-            _a4 = x(1);
-            _a5 = x(2);
-            */
-            /*This was prooved using solver*/
-          
-
-            // v(t) = _a1​ + 2 * _a2 * ​t + 3 * a3 * ​t^2 + 4 * _a4​ * t ^ 3 + 5 * _a5 * t ^ 4 -> velocity of polinomial
-            // a(t) =  2 * _a2 + 6 * a3 * ​t + 12 * _a4​ * t ^ 2 + 20 * _a5 * t ^ 3 -> acceleration of polinomial
-            // j(t)=   6 * _a3​ + 24 * a4 * ​t + 60 * a5 ​* t ^ 2 -> jerk of polinomial
-            // s(t)=   24 * a4 + 120 * a5 * t -> Snap (The first derivative of jerk with respect to time) of polinomial
+        {
         }
 
-        double QuinticPolyTrajectory::calculateMinTime()
+        double QuinticPolyTrajectory::calculateMinTime(double vel_tolerance, double accel_tolerance)
         {
             if ((max_velocity <= abs(std::numeric_limits<double>::min()))
                 || (max_acceleration <= abs(std::numeric_limits<double>::min())))
@@ -76,17 +50,13 @@ namespace CntrlLibrary
 
             double time_min = delta_s / max_velocity;
             double time_max = 2.00 * (max_velocity / max_acceleration) + time_min * 2.00;
-            create(time_min);
-
+            double guess = (time_min + time_max ) / 2.0;
+            create(guess);
 
             std::pair<double, double> max_velo;
             std::pair<std::pair<double, double>, std::pair<double, double>> max_accels;
                         
             double time_optimal = 0.00;
-
-            double root2 = 0.00;
-            double guess = time_min / 2.0;
-            //double root1 = initial_guess;
             double max_v = std::numeric_limits<double>::min();
             std::int32_t max_steps = 200;
  
@@ -94,14 +64,11 @@ namespace CntrlLibrary
             bool small = false;
             double last = 0.00;
 
-            double prev_error = 0.00;
-            double stepSize = time_max/16.00;
-            double tolerance = abs(max_velocity) * TOLERANCE_COEFFICIENT;
-            while ((abs(max_velocity - max_v) >= tolerance) && (max_steps > 1))
+            bool ok = false;
+            while (max_steps > 1)
             {
                 Math::BasicNumMethods::ResultType result = findExtremaNewtonRaphson(max_velo, max_accels);
-
-                //Math::BasicNumMethods::ResultType result = solverAccel.findRoot(initial_guess, root1);
+                                
                 if (result != Math::BasicNumMethods::ResultType::Ok)
                 {
                     return 0.00;
@@ -111,53 +78,92 @@ namespace CntrlLibrary
 
                 double error = abs(max_velocity) - abs(max_v);
 
-                if ( abs(error) <= tolerance)
+                if ( abs(error) <= vel_tolerance)
                 {
                     time_optimal = 2.0 * max_velo.second;
+                    ok = true;
                     break;
-                }                         
+                }
 
-                // Adjust step size based on error trend
-                if (error > 0.00 && error > prev_error)
-                {
-                    stepSize *= 0.5;  // Reduce step size by half
-                }
-                else if (error > 0.00 && error < prev_error)
-                {
-                    stepSize *= 1.1;  // Increase step size by 10%
-                }
-                else if (error < 0 && error < prev_error)
-                {
-                    stepSize *= 0.5;  // Reduce step size by half
-                }
-                else if (error < 0 && error > prev_error) 
-                {
-                    stepSize *= 1.1;  // Increase step size by 10%
-                }
-                prev_error = error;
-
-                // Clamp step size if necessary
-                stepSize = std::max(0.001, std::min(stepSize, 0.50));
-
-                // Modify time using the adaptive step size
                 if (error > 0.00)
                 {
-                    guess = guess - stepSize;
+                    //slow
+                    if (guess < time_max)
+                    {
+                        time_max = guess;
+                    }
                 }
                 else
                 {
-                    guess = guess + stepSize;
+                    //to fast
+                    if (guess > time_min)
+                    {
+                        time_min = guess;
+                    }
                 }
-                
-                time_optimal = guess * 2.00;
+                guess = (time_max + time_min) / 2.00;
                 create(guess);
                 max_steps--;
             }
+            if (!ok)
+            {
+                return 0.00;
+            }
+            max_steps = 200;
             create(time_optimal);
 
-            /*optimize for max_acceleration*/
+            guess = time_optimal;
+            double max_a = 0.00;
+            /*limit max acceleration*/
+            double time_max_accel = 0.00;
+            double last_error = 0.00;
+            double min_step = accel_tolerance / (2.0 * max_acceleration);
+            double max_step = (2.0) * accel_tolerance / max_acceleration;
+            double step = min_step;
+            double min_time = time_optimal;
+          
+            while (max_steps > 1)
+            {
+                Math::BasicNumMethods::ResultType result = findExtremaNewtonRaphson(max_velo, max_accels);
 
-            return time_optimal;
+                if (result != Math::BasicNumMethods::ResultType::Ok)
+                {
+                    return 0.00;
+                }
+                if (abs(max_accels.first.first) > abs(max_accels.second.first))
+                {
+                    max_a = max_accels.first.first;
+                    time_max_accel = max_accels.first.second;
+                }
+                else
+                {
+                    max_a = max_accels.second.first;
+                    time_max_accel = max_accels.second.second;
+                }
+                double error = abs(max_acceleration) - abs(max_a);
+
+                if (abs(error) <= abs(accel_tolerance))
+                {
+                    time_optimal = guess;
+                    return time_optimal;
+                }
+
+                // Adjust step if error is oscillating or not decreasing fast enough
+                if (abs(error) > 0.9 * abs(last_error))
+                {
+                    step *= 0.50;  // reduce the step by half
+                }
+                // Ensure step is within bounds
+                step = std::clamp(step, min_step, max_step);
+
+                guess -= step * error;
+
+                last_error = error;
+           
+                create(guess);
+                max_steps--;
+            }
+            return 0.00;
         }
 
 

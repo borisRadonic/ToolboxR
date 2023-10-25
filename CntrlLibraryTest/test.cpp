@@ -27,6 +27,7 @@
 #include "HexicPolynomial.h"
 #include "HepticPolynomial.h"
 #include "SimplelHepticTrajectory.h"
+#include "QuinticBezierCurve.h"
 
 #include <Eigen/Dense>
 
@@ -34,11 +35,74 @@ using namespace CntrlLibrary;
 using namespace Models;
 
 
+
 using std::experimental::filesystem::path;
 
 using namespace DiscreteTime;
 
 
+TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
+{
+	using namespace Math;
+	using namespace Bezier;
+
+	auto path = std::filesystem::current_path();
+
+	std::string strpath = path.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/TestBezierCurve.dat";
+
+	double ts = 0.0001;
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
+
+	auto xt = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
+	auto x1t = tracer.addSignal<std::double_t>("x_der_1", BaseSignal::SignalType::Double);
+	auto x2t = tracer.addSignal<std::double_t>("x_der_2", BaseSignal::SignalType::Double);
+	auto x3t = tracer.addSignal<std::double_t>("x_der_3", BaseSignal::SignalType::Double);
+
+	double x = 0.00;
+	double x1 = 0.00;
+	double x2 = 0.00;
+	double x3 = 0.00;
+	double x4 = 0.00;
+
+	double tf = 0.1;
+
+	double i_pos = 00.00;
+	double i_vel = 100.00;
+	double i_accel = 0.00;
+	double f_pos = 200.00;
+	double f_vel = 0.00;
+	double f_accel = 0.00;
+
+	double v_max = 300.00;
+	double a_max = 600.00;
+	double j_max = 6000.00;
+
+	double P0 = i_pos;
+	double P1 = i_pos + (i_vel / 5.00);
+	double P2 = i_pos + 2.0 * (i_vel / 5.00) + (i_accel / 20.00);   
+	double P5 = f_pos;
+	double P4 = f_pos - (f_vel / 5.00);
+	double P3 = f_pos - 2.0 * (f_vel / 5.00) + (f_accel / 20.00);
+	
+	
+		
+	QuinticBezierCurve curve;
+	curve.setParams(P0, P1, P2, P3, P4, P5);
+
+	for (double t = 0.0000; t <= 1.00; t = t + 0.0001)
+	{
+		curve.calculate(t, x, x1, x2, x3);
+		xt->set(x);
+		x1t->set(x1);
+		x2t->set(x2);
+		x3t->set(x3);
+		tracer.trace();
+	}
+
+}
 
 TEST(TestHepticPolynomial, TestHepticPolynomial1)
 {
@@ -68,9 +132,7 @@ TEST(TestHepticPolynomial, TestHepticPolynomial1)
 	double x4 = 0.00;
 
 	double tf = 0.1;
-
 	
-
 	double i_pos = 0.00;
 	double i_vel = 0.00;
 	double i_accel = 0.00;
@@ -84,7 +146,7 @@ TEST(TestHepticPolynomial, TestHepticPolynomial1)
 
 		
 	SimplelHepticTrajectory sht(i_pos, f_pos, v_max, a_max, tf);
-	double time = sht.calculateMinTime();
+	double time = sht.calculateMinTime(0.5, 0.5);
 	tf = time;
 	EXPECT_TRUE(time > 0.00001 );
 	sht.create(time);
@@ -140,19 +202,28 @@ TEST(TestHexicPolynomial, TestHexicPolynomial1)
 	double a5 = 0.00;
 	double a6 = 0.00;
 
-	double i_pos = -20.00;
-	double i_vel = 10.00;
+	double i_pos = 0.00;
+	double i_vel = 100.00;
 	double i_accel = 10.00;
 	double f_pos = 300.00;
 	double f_vel = 200.00;
-	double f_accel = 15.00;
+	double f_accel = 0.00;
 
 	double v_max = 300.00;
 	double a_max = 600.00;
 
 	a0 = i_pos;
 	a1 = i_vel;;
-	a2 = i_accel / 2.0;
+	a2 = i_accel/2.00;
+
+	double tau, tau_2, tau_3, tau_4, tau_5, tau_6;
+
+	tau = 1.00;
+	tau_2 = tau * tau;
+	tau_3 = tau_2 * tau;
+	tau_4 = tau_3 * tau;
+	tau_5 = tau_4 * tau;
+	tau_6 = tau_5 * tau;
 
 	double tf_2 = tf * tf;
 	double tf_3 = tf_2 * tf;
@@ -160,47 +231,60 @@ TEST(TestHexicPolynomial, TestHexicPolynomial1)
 	double tf_5 = tf_4 * tf;
 	double tf_6 = tf_5 * tf;
 
+	Eigen::Matrix3d A;
+	A << tau_3, tau_4, tau_5,
+		4.00 * tau_3, 4.00 * tau_3, 5.00 * tau_4/*, 6.00 * tau_5*/,
+		6.00 * tau, 12.00 * tau_2, 20.00 * tau_3;/* 30.00 * tau_4*/
+		//6.00, 24.00 * tau, 60.00 * tau_2;/*, 120.00 * tau_3*/
+		
 
-	Eigen::Matrix4d A;
-	double t1 = 2.277;
+	Eigen::Vector3d b(f_pos - i_pos - i_vel * tau - 0.50 * i_accel * tau * tau,
+		f_vel - i_vel - i_accel * tau,
+		f_accel - i_accel);
 
-	double tf2 = tf / 4.00;
-	double tf2_2 = tf2 * tf2;
-	double tf2_3 = tf_2 * tf2;
-	double tf2_4 = tf_3 * tf2;
-	double tf2_5 = tf_4 * tf2;
-	double tf2_6 = tf_5 * tf2;
+
+	//(f_pos - i_pos + (i_vel - f_vel ) * tf - (i_accel - f_accel) * tau_5);
+
+
+
+	Eigen::Vector3d vec_x = A.colPivHouseholderQr().solve(b);
+
+
+	//*delta_s / (tf_4);
+
+	a3 = vec_x(0) / tf_3;;
+	a4 = vec_x(1)/ tf_4;
+	a5 = vec_x(2)/ tf_5;
+	a6 = 0.00;
+
+	/*
+	Eigen::Matrix3d A;
+
+		A << tf_4, tf_5, tf_6,
+		4.00 * tf_3, 5.00 * tf_4, 6.00 * tf_5,
+		12.00 * tf_2, 20.00 * tf_3, 30.00 * tf_4;
+		
+	
+
+	Eigen::Vector3d b(f_pos - i_pos - i_vel * tf - 0.50 * i_accel * tf * tf,
+		f_vel - i_vel - i_accel * tf,
+		f_accel - i_accel);
+		// Compute the least squares solution
+	Eigen::Vector3d vec_x = A.colPivHouseholderQr().solve(b);
 
 	
-	A << tf_3, tf_4, tf_5, tf_6,
-		 tf2_3, tf2_4, tf2_5, tf2_6,
-		3.00 * tf_2, 4.00 * tf_3, 5.00 * tf_4, 6.00 * tf_5,
-		//3.00 * t1*t1,  4.00* t1 * t1 * t1, 5.00 * t1* t1 * t1*t1,  6.00 * t1 * t1 * t1 * t1 * t1,
-		6.00 * tf, 12.00 * tf_2, 20.00 * tf_2, 30 * tf_4;
-		 //6.00,      24.00 * tf,		60.00 * tf_2,	120 * tf_3;
+	a3 = 0.00;
+	a4 = vec_x(0);
+	a5 = vec_x(1);
+	a6 = vec_x(2);
+	*/
 
 
-
-	Eigen::Vector4d b(  f_pos - i_pos - i_vel * tf - 0.50 * i_accel * tf * tf,
-						(f_pos - i_pos)/2.00 - i_vel * tf2 - 0.50 * i_accel * tf2 * tf2,
-						f_vel - i_vel - i_accel * tf,
-						//v_max - i_vel - i_accel * tf,
-						f_accel - i_accel);
-
-	
-	// Compute the least squares solution
-	Eigen::Vector4d vec_x = A.colPivHouseholderQr().solve(b);
-
-
-	a3 = vec_x(0);
-	a4 = vec_x(1);
-	a5 = vec_x(2);
-	a6 = vec_x(3);
 
 
 	poly.setParams(a0, a1, a2, a3, a4, a5, a6);
 
-	for (double t = 0.00001; t <= tf; t = t + 0.001)
+	for (double t = 0.00001; t <= tf+0.1; t = t + 0.001)
 	{
 		poly.calculate(t, x, x1, x2, x3, x4);
 		xt->set(x);

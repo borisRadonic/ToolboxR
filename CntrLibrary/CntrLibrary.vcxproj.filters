@@ -13,281 +13,194 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{3313f39c-f74e-46ab-9920-c5942157dfcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Trajectories">
+      <UniqueIdentifier>{a241f83f-8d21-4f61-9931-0bcf2e33c285}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Fuzzy">
+      <UniqueIdentifier>{90a40cd2-7e4a-44f9-8883-aa49b2841a68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DiscreteTime">
+      <UniqueIdentifier>{6b2b2f34-39c5-4ade-88ac-7746c4347020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Models">
+      <UniqueIdentifier>{9c5ef2e9-d031-4cc5-83d1-3d1a0b4b881f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{1d0f7636-ac68-463c-81f9-8e789c966964}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{2df8b0b1-27b1-46dc-900a-4b2841747399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Fuzzy">
+      <UniqueIdentifier>{ff1d438d-6b2f-4300-af9b-765fcf03a656}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DiscreteTime">
+      <UniqueIdentifier>{28f0eb30-84a6-4142-96a6-6f4b4756d251}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Models">
+      <UniqueIdentifier>{eb7e52a0-e1d1-44da-b79b-7ec3f4291860}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Trajectories">
+      <UniqueIdentifier>{28c3869f-7cd2-4b73-ab3e-7fb67f6270a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{53b77fae-e12e-4e00-a854-cebe9ec3c74e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BellShapedFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FisFileImport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzyController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzyControllerFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzyControllerMamdani.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzyControllerSugeno.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzyHedges.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzyInput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzyOutput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GaussianFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LargeFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LinguisticVariable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PiShapedFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Rule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Rules.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SigmoidalFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SingletonFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SmallFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SShapedFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\StringUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TrapezoidalFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TrapezoidalIFuzzySetInfL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TrapezoidalIFuzzySetInfR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TriangularFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ZShapedFuzzySet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FisFileExport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Derivative.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Difference.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FIRFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\IIRFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\IIRFilterFO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\IIRFilterSO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Integrator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PIDController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DCMotor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FrictionModelCV.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TimeDelay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\WaveFormTracer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PMSMotor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\BasicNumMethods.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\PMSMPICurrentController.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\BellShapedFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
     </ClCompile>
-    <ClCompile Include="Source\HBPWMDCMotor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\FuzzyController.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FuzzyControllerFactory.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FuzzyControllerMamdani.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FuzzyControllerSugeno.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FuzzyHedges.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FuzzyInput.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FuzzyOutput.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GaussianFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LargeFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LinguisticVariable.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PiShapedFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SingletonFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SmallFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SShapedFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TrapezoidalFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TrapezoidalIFuzzySetInfL.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TrapezoidalIFuzzySetInfR.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TriangularFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ZShapedFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Derivative.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Difference.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FIRFilter.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\IIRFilter.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
     <ClCompile Include="Source\IIRFilterButterSO.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
-    <ClCompile Include="Source\JerkLimitedTrajectory.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\IIRFilterFO.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
-    <ClCompile Include="Source\QuinticPolyTrajectory.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\IIRFilterSO.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BasicNumMethods.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Integrator.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SimplelHexicTrajectory.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\PIDController.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TimeDelay.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DCMotor.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\HBPWMDCMotor.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PMSMotor.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PMSMPICurrentController.cpp">
+      <Filter>Source Files\Models</Filter>
     </ClCompile>
     <ClCompile Include="Source\SimplelHepticTrajectory.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Trajectories</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\JerkLimitedTrajectory.cpp">
+      <Filter>Source Files\Trajectories</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\QuinticPolyTrajectory.cpp">
+      <Filter>Source Files\Trajectories</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FisFileExport.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FisFileImport.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Rule.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Rules.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FrictionModelCV.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SigmoidalFuzzySet.cpp">
+      <Filter>Source Files\Fuzzy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StringUtil.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header\BellShapedFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FisFileImport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\FuzzyController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzyControllerFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzyControllerMamdani.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzyControllerSugeno.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzyHedges.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzyInput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzyOutput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FuzzyTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\GaussianFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\LargeFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\LinguisticVariable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\PiShapedFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Rule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Rules.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\SigmoidalFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\SingletonFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\SmallFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\SShapedFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\StringUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\TrapezoidalFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\TrapezoidalIFuzzySetInfL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\TrapezoidalIFuzzySetInfR.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\TriangularFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\ZShapedFuzzySet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FisFileExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Block.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Derivative.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Difference.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FIRFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\IIRFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\IIRFilterFO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\IIRFilterSO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Integrator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\PIDController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\StateSpace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\DCMotor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FrictionModelCV.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\TimeDelay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\WaveFormTracer.h">
@@ -299,41 +212,161 @@
     <ClInclude Include="Header\BaseSignal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\PMSMotor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\PMSMPICurrentController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\HBPWMDCMotor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\IIRFilterButterSO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\JerkLimitedTrajectory.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Header\BasicNumMethods.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Header\QuinticPolyTrajectory.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Trajectories</Filter>
     </ClInclude>
-    <ClInclude Include="Header\BasicNumMethods.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Header\JerkLimitedTrajectory.h">
+      <Filter>Header Files\Trajectories</Filter>
     </ClInclude>
     <ClInclude Include="Header\QuinticPolynomial.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Header\HexicPolynomial.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Header\HepticPolynomial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\SimplelHexicTrajectory.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Header\SimplelHepticTrajectory.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Trajectories</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyController.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyControllerFactory.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyControllerMamdani.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyControllerSugeno.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyHedges.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyInput.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyOutput.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FuzzyTypes.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\GaussianFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FisFileExport.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FisFileImport.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\LargeFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\LinguisticVariable.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PiShapedFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Rule.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Rules.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SigmoidalFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SingletonFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SmallFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SShapedFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\TrapezoidalFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\TrapezoidalIFuzzySetInfL.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\TrapezoidalIFuzzySetInfR.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\TriangularFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\ZShapedFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\BellShapedFuzzySet.h">
+      <Filter>Header Files\Fuzzy</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\IIRFilter.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\IIRFilterButterSO.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\IIRFilterFO.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\IIRFilterSO.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Integrator.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PIDController.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\StateSpace.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\TimeDelay.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FIRFilter.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Difference.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Derivative.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DCMotor.h">
+      <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\HBPWMDCMotor.h">
+      <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PMSMotor.h">
+      <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PMSMPICurrentController.h">
+      <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FrictionModelCV.h">
+      <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\StringUtil.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\QuinticBezierCurve.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -33,7 +33,7 @@ namespace CntrlLibrary
             explicit SimplelHepticTrajectory(double i_pos, double f_pos, double v_max, double a_max, double f_time);
 
           
-            double calculateMinTime();
+            double calculateMinTime(double vel_tolerance, double accel_tolerance);
 
             void create(double f_time);
 

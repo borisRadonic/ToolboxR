@@ -3,7 +3,6 @@
 #include <cmath>
 #include <limits>
 
-#define TOLERANCE_COEFFICIENT 0.02 //0.01 i 1%  
 
 namespace CntrlLibrary
 {
@@ -14,7 +13,7 @@ namespace CntrlLibrary
         {
         }
 
-        double SimplelHepticTrajectory::calculateMinTime()
+        double SimplelHepticTrajectory::calculateMinTime(double vel_tolerance, double accel_tolerance)
         {
             if( (max_velocity <= abs( std::numeric_limits<double>::min()) )
             || (max_acceleration <= abs(std::numeric_limits<double>::min()) ))
@@ -25,75 +24,46 @@ namespace CntrlLibrary
 
             //Initial velocity, initial acceleration, final velocity and finL accelertations are all 0
             //maximums are in the middle -> we do not need solver
-            
-
-            std::function<double(double)> funcCalcVel = std::bind(&HepticPolynomial::calculateDerX, &poly, std::placeholders::_1);
-                                  
 
             double time_min = delta_s / max_velocity;
             double time_max = 2.00 * (max_velocity / max_acceleration) + time_min * 2.00;
-            create(time_min);
+            double guess = (time_max + time_min) / 2.00;
+            create(guess);
             double time_optimal = 0.00;
-
-            double root2 = 0.00;
-            double guess = time_min / 2.0;            
+                    
             double max_v = std::numeric_limits<double>::min();
             std::int32_t max_steps = 200;
 
-            bool great = false;
-            bool small = false;
-            double last = 0.00;
-
-            double prev_error = 0.00;
-            double stepSize = time_max / 16.00;
-            double tolerance = abs(max_velocity) * TOLERANCE_COEFFICIENT;
+           
             while (max_steps > 1)
             {           
-                max_v = poly.calculateDerX(guess);
+                max_v = poly.calculateDerX(guess/2.0);
                 double error = abs(max_velocity) - abs(max_v);
+
+                if (abs(error) <= vel_tolerance)
+                {
+                    time_optimal = guess;
+                    break;
+                }
+
                 if (error > 0.00)
                 {
-                    if (abs(error) <= tolerance)
+                    //slow
+                    if (guess < time_max)
                     {
-                        time_optimal = 2.0 * guess;
-                        break;
-                    }
-                }
-
-                // Adjust step size based on error trend
-                if (error > 0.00 && error > prev_error)
-                {
-                    stepSize *= 0.5;  // Reduce step size by half
-                }
-                else if (error > 0.00 && error < prev_error)
-                {
-                    stepSize *= 1.1;  // Increase step size by 10%
-                }
-                else if (error < 0 && error < prev_error)
-                {
-                    stepSize *= 0.5;  // Reduce step size by half
-                }
-                else if (error < 0 && error > prev_error)
-                {
-                    stepSize *= 1.1;  // Increase step size by 10%
-                }
-                prev_error = error;
-
-                // Clamp step size if necessary
-                stepSize = std::max(0.001, std::min(stepSize, 0.50));
-
-                // Modify time using the adaptive step size
-                if (error > 0.00)
-                {
-                    guess = guess - stepSize;
+                        time_max =  guess;
+                    }                  
                 }
                 else
                 {
-                    guess = guess + stepSize;
+                    //to fast
+                    if (guess > time_min)
+                    {
+                        time_min =  guess;
+                    }
                 }
-
-                time_optimal = guess * 2.00;
-                create(guess*2);
+                guess = (time_max + time_min) / 2.00;
+                create(guess);
                 max_steps--;
             }
             create(time_optimal);

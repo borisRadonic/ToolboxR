@@ -119,7 +119,7 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	double f_vel = 200.00;
 	double f_accel = 15.00;
 	double f_time = 1.50;
-	double m_accel = 450.00;
+	double m_accel = 300.00;
 	double m_vel = 300.00;
 
 	QuinticPolyTrajectory traj( i_pos,
@@ -131,7 +131,7 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 								m_accel,
 								m_vel );
 		
-	f_time = traj.calculateMinTime();
+	f_time = traj.calculateMinTime(0.5,0.5);
 	traj.create(f_time);
 
 	std::pair<double, double> ex_velocity;

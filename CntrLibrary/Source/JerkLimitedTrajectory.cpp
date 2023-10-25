@@ -126,7 +126,7 @@
                 traj.create(_tf);
                 QuinticPolynomial poly(traj.getPoly());
 
-                double ttime = traj.calculateMinTime();
+                double ttime = traj.calculateMinTime(0.5,0.5);
                 
                 std::function<double(double)> funcCalcVel = std::bind(&QuinticPolynomial::calculateDerX, &poly, std::placeholders::_1);
                 std::function<double(double)> funcCalcVelDer = std::bind(&QuinticPolynomial::calculateDerX2, &poly, std::placeholders::_1);

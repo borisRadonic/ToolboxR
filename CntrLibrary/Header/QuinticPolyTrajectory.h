@@ -41,7 +41,7 @@ namespace CntrlLibrary
                                             double m_accel,
                                             double m_vel );
 
-            double calculateMinTime();
+            double calculateMinTime(double vel_tolerance, double accel_tolerance);
             
             /**
             * @brief Creates trajectory from final time
@@ -86,8 +86,6 @@ namespace CntrlLibrary
             }
 
         private:
-
-            double _ts = 0.00001;
 
             double max_acceleration = 0.00;
             double max_velocity = 0.00;

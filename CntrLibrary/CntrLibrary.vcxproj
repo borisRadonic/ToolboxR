@@ -167,10 +167,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\SimplelHexicTrajectory.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Source\SingletonFuzzySet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -254,6 +250,7 @@
     <ClInclude Include="Header\PiShapedFuzzySet.h" />
     <ClInclude Include="Header\PMSMotor.h" />
     <ClInclude Include="Header\PMSMPICurrentController.h" />
+    <ClInclude Include="Header\QuinticBezierCurve.h" />
     <ClInclude Include="Header\QuinticPolynomial.h" />
     <ClInclude Include="Header\QuinticPolyTrajectory.h" />
     <ClInclude Include="Header\Rule.h" />
@@ -261,7 +258,6 @@
     <ClInclude Include="Header\SigmoidalFuzzySet.h" />
     <ClInclude Include="Header\Signal.h" />
     <ClInclude Include="Header\SimplelHepticTrajectory.h" />
-    <ClInclude Include="Header\SimplelHexicTrajectory.h" />
     <ClInclude Include="Header\SingletonFuzzySet.h" />
     <ClInclude Include="Header\SmallFuzzySet.h" />
     <ClInclude Include="Header\SShapedFuzzySet.h" />
