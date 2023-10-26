@@ -3,6 +3,7 @@
 #include <functional> 
 #include <cmath>
 #include <limits>
+#include <Eigen/Dense>
 
 namespace CntrlLibrary
 {
@@ -13,6 +14,8 @@ namespace CntrlLibrary
             class QuinticBezierCurve
             {
             public:
+
+               
 
                 QuinticBezierCurve()
                 {
@@ -46,6 +49,20 @@ namespace CntrlLibrary
                         + t5 * _P5);
                 }
 
+                inline double calculateScalDerX(double scale, double t)
+                {
+                    double s = scale;
+                    double s_t = (s - t);
+                    double s_t2 = s_t * s_t;
+                    double s_t3 = s_t2 * s_t;
+                    double s_t4 = s_t3 * s_t;
+                    double s_t5 = s_t4 * s_t;
+
+                    return (-5.00 * _P0 * s_t4 
+                        + 5.00 * s * (_P1 * (s - 5.00 * t) * s_t3 
+                          + s * t * (2.00 * _P2 * (2.00 * s - 5.00 * t) * s_t2 + s * t * (2 * _P3 * (3 * s - 5 * t) * (s - t) + s * t * (4.00 * _P4 * s - 5 * _P4 * t + _P5 * s * t)))) / (s*s*s*s*s) );
+                }
+
                 inline double calculateDerX(double t)
                 {
                     double t2 = t * t;
@@ -72,6 +89,79 @@ namespace CntrlLibrary
                         + 60 * t_2 * t * (_P3 - 2.00 * _P2 + _P1)
                         + 60.00 * (1 - t) * t2 * (_P4 - 2.00 * _P3 + _P2)
                         + 20.00 * t3 * (_P5 - _P4));
+                }
+
+
+                Math::BasicNumMethods::ResultType findFirstDerRoots(std::vector<double>& roots)
+                {
+                    double d1 = _P2 - 2.00 * _P1 + _P0;
+                    double d2 = _P3 - 2.00 * _P2 + _P1;
+                    double d3 = _P4 - 2.00 * _P3 + _P2;
+
+                    double A = 20.00 * d1 + 60.00 * (d2 - d3) +  20.00  * (_P5 - _P4);
+                    double B = 60.00 * (d1 + d3) - 120.00 * d2;
+                    double C = 60.00 * (d1 + d2);
+                    double D = -20.00 * d1;
+                   
+                    if ( (abs(A) <= 0.0001) && (abs(B) <= 0.0001) && (abs(C) > 0.0001))
+                    {
+                        roots.push_back( -D / C );
+                        return Math::BasicNumMethods::ResultType::Ok;
+
+                    }
+                    else if ( (abs(A) <= 0.0001) && (abs(B) >= 0.0001) )
+                    {
+                        /*we have only two roots and we can use quadratic formula*/
+                        double discriminant = C * C - 4.00 * B * D;
+                        if (discriminant > 0.00)
+                        {
+                            double root1 = (-C + std::sqrt(discriminant)) / (2.0 * B);
+                            double root2 = (-C - std::sqrt(discriminant)) / (2.0 * B);
+                            
+                            if (((root1 >= 0.00) && (root1 <= 1.00)) )
+                            {
+                                roots.push_back(root1);
+                            }
+                            if (((root2 >= 0.00) && (root2 <= 1.00)))
+                            {
+                                roots.push_back(root2);
+                            }
+                            return Math::BasicNumMethods::ResultType::Ok;
+                        }
+                        else
+                        {
+                            return Math::BasicNumMethods::ResultType::NotPossible;
+                        }
+                    }
+                    else
+                    {
+
+                        // Construct the companion matrix
+                        Eigen::Matrix3cd companionMatrix = Eigen::Matrix3cd::Zero();
+                        companionMatrix(0, 1) = 1.0;
+                        companionMatrix(1, 2) = 1.0;
+
+                        companionMatrix(2, 0) = -D / A;
+                        companionMatrix(2, 1) = -C / A;
+                        companionMatrix(2, 2) = -B / A;
+
+                        // Solve for eigenvalues
+                        Eigen::ComplexEigenSolver<Eigen::Matrix3cd> solver(companionMatrix);
+                        Eigen::Vector3cd eigenValues = solver.eigenvalues();
+
+                        for (auto& r : eigenValues)
+                        {
+                            if ( (abs( r.imag() ) <  0.0001) && ( r.real() >= 0.00) )
+                            {
+                                roots.push_back(r.real());
+                            }
+                        }
+                    }
+                    if (roots.size() > 0)
+                    {
+                        return Math::BasicNumMethods::ResultType::Ok;
+                    }
+                    return Math::BasicNumMethods::ResultType::NotPossible;
                 }
 
                 inline double calculateDerX3(double t)
@@ -159,6 +249,9 @@ namespace CntrlLibrary
                 }
 
             private:
+
+                const double MIN_TIME_DIFFERENCE = 1e-5; /*10 us*/
+                
 
                 double _P0 = 0.00;
                 double _P1 = 0.00;

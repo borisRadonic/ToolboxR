@@ -82,6 +82,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	double P0 = i_pos;
 	double P1 = i_pos + (i_vel / 5.00);
+
 	double P2 = i_pos + 2.0 * (i_vel / 5.00) + (i_accel / 20.00);   
 	double P5 = f_pos;
 	double P4 = f_pos - (f_vel / 5.00);
@@ -91,6 +92,11 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 		
 	QuinticBezierCurve curve;
 	curve.setParams(P0, P1, P2, P3, P4, P5);
+
+	std::vector<double> roots;
+	
+	curve.findFirstDerRoots(roots);
+	 
 
 	for (double t = 0.0000; t <= 1.00; t = t + 0.0001)
 	{
