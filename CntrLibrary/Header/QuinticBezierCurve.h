@@ -3,6 +3,7 @@
 #include <functional> 
 #include <cmath>
 #include <limits>
+#include "BasicNumMethods.h"
 #include <Eigen/Dense>
 
 namespace CntrlLibrary
@@ -14,8 +15,7 @@ namespace CntrlLibrary
             class QuinticBezierCurve
             {
             public:
-
-               
+                             
 
                 QuinticBezierCurve()
                 {
@@ -29,6 +29,42 @@ namespace CntrlLibrary
                     , _P4(rhs._P4)
                     , _P5(rhs._P5)
                 {
+                }
+                /*
+                inline double getIntegralInT()
+                {
+                    double c0 = _P0 / 6.0;
+                    double c1 = _P1 / 5.0;
+                    double c2 = _P2 / 4.0;
+                    double c3 = _P3 / 4.0;
+                    double c4 = _P4 / 5.0;
+                    double c5 = _P5 / 6.0;
+
+                    // The integral of the Bezier curve from t = 0 to t = 1
+                    return c0 + c1 + c2 + c3 + c4 + c5;
+                }*/
+
+
+                inline double calculateIntegralX(double t)
+                {
+                    double t2 = t * t;
+                    double t3 = t2 * t;
+                    double t4 = t3 * t;
+                    double t5 = t4 * t;
+                    double t6 = t5 * t;
+
+                    double t_2 = (1 - t) * (1 - t);
+                    double t_3 = t_2 * (1 - t);
+                    double t_4 = t_3 * (1 - t);
+                    double t_5 = t_4 * (1 - t);
+                    double t_6 = t_5 * (1 - t);
+
+                    return (_P0 * t_6 / 6.0
+                        + 5.00 * _P1 * t_5 * t / 5.0
+                        + 10.00 * _P2 * t_4 * t2 / 4.0
+                        + 10.00 * _P3 * t_3 * t3 / 3.0
+                        + 5.00 * _P4 * t_2 * t4 * t / 2.0
+                        + _P5 * t6);
                 }
 
                 inline double calculateX(double t)
@@ -47,20 +83,6 @@ namespace CntrlLibrary
                         + 10.00 * _P3 * t_2 * t3
                         + 5.00 * (1 - t) * t4 * _P4
                         + t5 * _P5);
-                }
-
-                inline double calculateScalDerX(double scale, double t)
-                {
-                    double s = scale;
-                    double s_t = (s - t);
-                    double s_t2 = s_t * s_t;
-                    double s_t3 = s_t2 * s_t;
-                    double s_t4 = s_t3 * s_t;
-                    double s_t5 = s_t4 * s_t;
-
-                    return (-5.00 * _P0 * s_t4 
-                        + 5.00 * s * (_P1 * (s - 5.00 * t) * s_t3 
-                          + s * t * (2.00 * _P2 * (2.00 * s - 5.00 * t) * s_t2 + s * t * (2 * _P3 * (3 * s - 5 * t) * (s - t) + s * t * (4.00 * _P4 * s - 5 * _P4 * t + _P5 * s * t)))) / (s*s*s*s*s) );
                 }
 
                 inline double calculateDerX(double t)
@@ -91,6 +113,64 @@ namespace CntrlLibrary
                         + 20.00 * t3 * (_P5 - _P4));
                 }
 
+                inline double calculateTimeScaledFirstDer(double scale, double t)
+                {
+                    double scaled_t = t / scale;  // Scale the input time
+
+                    if (scaled_t < 0.0) scaled_t = 0.0;
+                    if (scaled_t > 1.0) scaled_t = 1.0;
+
+
+                    double t2 = scaled_t * scaled_t;
+                    double t3 = t2 * scaled_t;
+                    double t4 = t3 * scaled_t;
+                    double t_2 = (1 - scaled_t) * (1 - scaled_t);
+                    double t_3 = t_2 * (1 - scaled_t);
+                    double t_4 = t_3 * (1 - scaled_t);
+
+                    // Multiply the result by the scale to adjust the rate of change
+                    return (5.00 * t_4 * (_P1 - _P0)
+                        + 20.00 * t_3 * scaled_t * (_P2 - _P1)
+                        + 30.00 * t_2 * t2 * (_P3 - _P2)
+                        + 20.00 * (1 - scaled_t) * t3 * (_P4 - _P3)
+                        + 5.00 * t4 * (_P5 - _P4)) / scale;
+                }
+
+                inline double calculateTimeScaledSecondDerX(double _P0, double _P1, double _P2, double _P3, double _P4, double _P5, double scale, double t)
+                {
+                    double scaled_t = t / scale;
+
+                    // Ensure scaled_t is within the [0, 1] interval
+                    if (scaled_t < 0.0) scaled_t = 0.0;
+                    if (scaled_t > 1.0) scaled_t = 1.0;
+
+                    double t2 = scaled_t * scaled_t;
+                    double t3 = t2 * scaled_t;
+                    double t_2 = (1 - scaled_t) * (1 - scaled_t);
+                    double t_3 = t_2 * (1 - scaled_t);
+
+                    // Calculate the second derivative and divide by the square of the scale
+                    return (20.00 * t_3 * (_P2 - 2.00 * _P1 + _P0)
+                        + 60.00 * t_2 * scaled_t * (_P3 - 2.00 * _P2 + _P1)
+                        + 60.00 * (1 - scaled_t) * t2 * (_P4 - 2.00 * _P3 + _P2)
+                        + 20.00 * t3 * (_P5 - 2.00 * _P4 + _P3)) / (scale * scale);
+                }
+
+                inline double calculateTimeScaledThirdDerX(double _P0, double _P1, double _P2, double _P3, double _P4, double _P5, double scale, double t)
+                {
+                    double scaled_t = t / scale;
+
+                    // Ensure scaled_t is within the [0, 1] interval
+                    if (scaled_t < 0.0) scaled_t = 0.0;
+                    if (scaled_t > 1.0) scaled_t = 1.0;
+
+                    double t2 = scaled_t * scaled_t;
+
+                    // Calculate the third derivative and divide by the cube of the scale
+                    return (60.00 * (1 - scaled_t) * t2 * (_P5 - 3.00 * _P4 + 3.00 * _P3 - _P2)
+                        + 60.00 * t2 * scaled_t * (_P4 - 3.00 * _P3 + 3.00 * _P2 - _P1)
+                        + 20.00 * scaled_t * scaled_t * (_P3 - 3.00 * _P2 + 3.00 * _P1 - _P0)) / (scale * scale * scale);
+                }
 
                 Math::BasicNumMethods::ResultType findFirstDerRoots(std::vector<double>& roots)
                 {

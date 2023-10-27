@@ -1,7 +1,7 @@
 ﻿//#ifdef TEST_VERSION
 
 #include "JerkLimitedTrajectory.h"
-#include "QuinticPolyTrajectory.h"
+#include "QuinticBezierCurve.h"
 
 #include <cmath>
 #include <algorithm>
@@ -80,6 +80,8 @@
                     Vc = sign * max_velocity;
                                         
                     Tv = (travel_distance - sign * min_max_vel_distance) / Vc;
+                    /*we will use Trapesoidal trajectory*/
+
                 }
                 else
                 {
@@ -87,15 +89,18 @@
                     Tv = 0.00;
                     Vc = sign * sqrt((2.00 * max_acceleration * max_acceleration * travel_distance
                                         - max_acceleration * initial_velocity * initial_velocity) / (max_acceleration + max_acceleration));
+                    /*we will use Triangular Trajectory */
+
+
                 }
                 Ta = (Vc - initial_velocity) / Ac;
                 Td = Vc / Dc;
 
-                /*effect of jerk phase (produced with filtering)*/
+                /*effect of jerk phase (produced with bazier curve)*/
                 
                 double Tja = abs(Ac - initial_acceleration) / max_jerk;
                 double Tjv = abs(Ac / max_jerk);
-                double Tjd = abs( Dc / max_jerk);
+                double Tjd = abs( ( Dc- target_acceleration) / max_jerk);
                 
                 //Tj = 
                 //double vel_error = sign * initial_acceleration * ( (2.00 * Ac -  initial_acceleration)/max_jerk) ) ;
@@ -112,7 +117,9 @@
                 {
                     return false;
                 }
-                                
+                               
+
+                /*
 
                 QuinticPolyTrajectory traj( initial_position,
                                             initial_velocity,
@@ -152,7 +159,7 @@
                     v_eff += 2.0 * v_eff* v_eff/ max_acceleration;
                     if (v_eff < max_velocity)
                     {
-                        /*find the area where velocity > max_velocity*/
+
                         double T1 = ex_velocity.second - ex_velocity.second * (ex_velocity.first - max_velocity) / (max_velocity - initial_velocity);
                         double T2 = ex_velocity.second + (ex_velocity.first - max_velocity) * (_tf - ex_velocity.second) / (ex_velocity.first - target_velocity);
 
@@ -197,7 +204,7 @@
                     int a = 0;
                     a++;
                 }
-
+                */
                 /*
                bool accelToHigh = false;
                bool hasNegAccel = false;

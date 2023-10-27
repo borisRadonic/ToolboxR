@@ -68,18 +68,71 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	double x4 = 0.00;
 
 	double tf = 0.1;
-
+	/*
 	double i_pos = 00.00;
 	double i_vel = 100.00;
 	double i_accel = 0.00;
 	double f_pos = 200.00;
 	double f_vel = 0.00;
 	double f_accel = 0.00;
+	*/
+
+	double i_pos = 00.00;
+	double i_vel = 100.00;
+	double i_accel = 10.00;
+	double f_pos = 100.00;
+	double f_vel = 10.00;
+	double f_accel = 0.00;
 
 	double v_max = 300.00;
 	double a_max = 600.00;
-	double j_max = 6000.00;
+	double j_max = 16000.00;
+	
+	
+	double travel_distance = f_pos - i_pos;
+	
+	double Ta = 0.00;
+	double Td = 0.00;
+	double Tv = 0.00;
 
+
+	double Ac = 0.00;
+	double Dc = 0.00;
+	double Vc = 0.00;
+
+	double sign = 1.00;
+	if (travel_distance < 0.00)
+	{
+		sign = -1.00;
+	}
+	Ac = sign * a_max;
+	Dc = -sign * a_max;
+	
+	double min_max_vel_distance = abs((v_max* v_max - (i_vel * i_vel)) / (2.00 * a_max)
+		+ v_max * v_max / (2.00 * a_max));
+
+
+	//the condition for 'triangular profile'
+	EXPECT_TRUE( abs(travel_distance) < min_max_vel_distance );
+
+	Tv = 0.00;
+	Vc = sign * sqrt((2.00 * a_max * a_max * travel_distance - a_max * i_vel * i_vel) / (a_max + a_max));
+
+
+	
+	Ta = abs( (Vc - i_vel) / Ac);
+
+	Td = abs( (Vc-f_vel) / Dc );
+
+	/*effect of jerk phases*/
+
+	double Tja = abs(Ac - i_accel) / j_max;
+	double Tjv = abs(Ac / j_max);
+	double Tjd = abs((Dc - i_accel) / j_max);
+	
+			
+
+	/*
 	double P0 = i_pos;
 	double P1 = i_pos + (i_vel / 5.00);
 
@@ -88,22 +141,128 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	double P4 = f_pos - (f_vel / 5.00);
 	double P3 = f_pos - 2.0 * (f_vel / 5.00) + (f_accel / 20.00);
 	
+
+	double P0 = i_vel;
+	double P1 = i_vel + (i_accel / 5.00);
+
+	double P2 = i_vel + 2.0 * (i_accel / 5.00);
+	double P5 = Vc;
+	double P4 = Vc;
+	double P3 = Vc;
+	*/
+
+	/*create 4 Bazier curves:
+	* 
+	* A+ Acceleration	+
+	* A- Acceleration	-
+	* D+ Deacceleration +
+	* D- Deacceleration -
 	
+	7 phases:  A+, const Ac, A-, Const Vc, D+, Const -Dc, D-,
+	
+
+	Times: tphAp, tphAc, tphAm, tphVc, tphDp, tphDc, tphDm, 
+	*/
+
+
+	double tphAp = Ta/2.00;
+	double time2 = Ta/2.00;
+
+	//scale for total time
+	double time_scale_factor1 = 1.00 / tphAp;
+	double time_scale_factor2 = 1.00 / tphAp;
+
+	double P0 = i_accel;
+	double P1 = i_accel;
+	double P2 = i_accel;
+	double P5 = Ac;
+	double P4 = Ac;
+	double P3 = Ac;
 		
-	QuinticBezierCurve curve;
-	curve.setParams(P0, P1, P2, P3, P4, P5);
+	QuinticBezierCurve curveAplus;
+	curveAplus.setParams(P0, P1, P2, P3, P4, P5);
+	
+	//it should be velocity at the end of A+ phase
+	double intAplus = curveAplus.calculateIntegralX(1.0 / time_scale_factor1);
+	intAplus = intAplus * time_scale_factor1;
+	double v_a_initial = i_accel * Ta / 2;	
+
+
+	//calculate t for the Ac (constant acceleration) Phase
+	
+
+
+	P0 = Ac;
+	P1 = Ac;
+	P2 = Ac;
+	P5 = 0.00;
+	P4 = 0.00;
+	P3 = 0.00;
+
+	QuinticBezierCurve curveAminus;
+	curveAminus.setParams(P0, P1, P2, P3, P4, P5);
+	
+
+	/*
+	P0 = Vc;
+	P1 = Vc ;
+
+	P2 = Vc;
+	P5 = f_vel;
+	P4 = f_vel - (f_accel / 5.00);
+	P3 = f_vel - 2.0 * (f_accel / 5.00);
+	*/
+
+	QuinticBezierCurve curveB;
+	curveB.setParams(P0, P1, P2, P3, P4, P5);
+	
+
+
+	//scale 
+
 
 	std::vector<double> roots;
 	
-	curve.findFirstDerRoots(roots);
+	//curveA.findFirstDerRoots(roots);
 	 
 
-	for (double t = 0.0000; t <= 1.00; t = t + 0.0001)
+	Integrator integral;
+
+	integral.setParameters(IntegratorMethod::ForwardEuler, 0.0001, 1.00);
+	integral.setInitialConditions(i_pos);
+
+	
+	
+	for (double t = 0.0000; t <= Ta/2.00; t = t + 0.0001)
 	{
-		curve.calculate(t, x, x1, x2, x3);
+		double tau = t * time_scale_factor1;
+		if (tau < 1.00)
+		{
+			x = curveAplus.calculateX(tau);
+			//x1 = curveAplus.calculateTimeScaledFirstDer(1.0 / time_scale_factor1, t);
+		}
+		
 		xt->set(x);
 		x1t->set(x1);
 		x2t->set(x2);
+		x3 = integral.process(x);
+		x3t->set(x3);
+		tracer.trace();
+	}
+
+	for (double t = Ta/2.0; t <= Ta; t = t + 0.0001)
+	{
+		double tau = t * time_scale_factor2;
+		if (tau < 1.00)		
+		{
+			x = curveAminus.calculateX(abs(tau));
+			//x1 = curveAminus.calculateTimeScaledFirstDer(1.0 / time_scale_factor1, t);
+		}
+
+		xt->set(x);
+		x1t->set(x1);
+		x2t->set(x2);
+		x3 = integral.process(x);
 		x3t->set(x3);
 		tracer.trace();
 	}
@@ -164,7 +323,7 @@ TEST(TestHepticPolynomial, TestHepticPolynomial1)
 		xt->set(x);
 		x1t->set(x1);
 		x2t->set(x2);
-		x3t->set(x3);
+		
 		tracer.trace();
 	}
 }
@@ -285,8 +444,7 @@ TEST(TestHexicPolynomial, TestHexicPolynomial1)
 	a6 = vec_x(2);
 	*/
 
-
-
+	
 
 	poly.setParams(a0, a1, a2, a3, a4, a5, a6);
 
