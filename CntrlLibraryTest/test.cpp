@@ -91,7 +91,6 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	
 	double travel_distance = f_pos - i_pos;
 	
-	double Ta = 0.00;
 	double Td = 0.00;
 	double Tv = 0.00;
 
@@ -120,13 +119,14 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 
 	
-	Ta = abs( (Vc - i_vel) / Ac);
+	double Ta = abs( (Vc - i_vel) / Ac);
 
 	Td = abs( (Vc-f_vel) / Dc );
 
 	/*effect of jerk phases*/
 
-	double Tja = abs(Ac - i_accel) / j_max;
+	
+
 	double Tjv = abs(Ac / j_max);
 	double Tjd = abs((Dc - i_accel) / j_max);
 	
@@ -164,44 +164,56 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	Times: tphAp, tphAc, tphAm, tphVc, tphDp, tphDc, tphDm, 
 	*/
 
-
-	double tphAp = Ta/2.00;
-	double time2 = Ta/2.00;
+	double tphAp = abs(Ac - i_accel) / j_max;
+	double tphAm = abs(Ac) / j_max;
 
 	//scale for total time
 	double time_scale_factor1 = 1.00 / tphAp;
-	double time_scale_factor2 = 1.00 / tphAp;
+	double time_scale_factor2 = 1.00 / tphAm;
 
-	double P0 = i_accel;
-	double P1 = i_accel;
-	double P2 = i_accel;
-	double P5 = Ac;
-	double P4 = Ac;
-	double P3 = Ac;
-		
+	double P0 = i_accel;  //start Acceleration
+	double P1 = i_accel;  //it influence the initial rise phase
+	double P2 = Ac/2.0;  //it shapes the middle part of the curve
+	double P3 = Ac/2.0;  //it shapes the middle part of the curve
+	double P5 = Ac; // it influence the final  phase
+	double P4 = Ac; // it influence the final  phase
+
+
+	
 	QuinticBezierCurve curveAplus;
 	curveAplus.setParams(P0, P1, P2, P3, P4, P5);
 	
 	//it should be velocity at the end of A+ phase
-	double intAplus = curveAplus.calculateIntegralX(1.0 / time_scale_factor1);
-	intAplus = intAplus * time_scale_factor1;
-	double v_a_initial = i_accel * Ta / 2;	
+	double IntegralAp = tphAp * curveAplus.calculateIntegral(1.00, 1.00);
 
 
-	//calculate t for the Ac (constant acceleration) Phase
+	//we calculate A- like positive case (something is still wrong with integrating...)
+	P0 = 0;
+	P1 = 0;
+	QuinticBezierCurve curveTemp;
+	curveTemp.setParams(P0, P1, P2, P3, P4, P5);
+	//it should be velocity at the end of A- phase
+	double IntegralAm = tphAm * curveTemp.calculateIntegral(1.00, 1.00);
 	
-
-
-	P0 = Ac;
-	P1 = Ac;
-	P2 = Ac;
-	P5 = 0.00;
-	P4 = 0.00;
-	P3 = 0.00;
+	//calculate time of constant acceleration to reach Vc
+	double tphAc = (Vc - (IntegralAp+ IntegralAm)) / Ac;
+	tphAc += tphAp;
+	
+	tphAm += tphAc;
+	
+	P0 = Ac; //start Acceleration
+	P1 = Ac; //it influence the initial phase
+	P2 = Ac / 2.0; //it shapes the middle part of the curve
+	P3 = Ac / 2.0; //it shapes the middle part of the curve
+	P4 = 0.00; // /it influence the final  phase
+	P5 = 0.00; //stop acceleration
+	
 
 	QuinticBezierCurve curveAminus;
 	curveAminus.setParams(P0, P1, P2, P3, P4, P5);
 	
+	
+
 
 	/*
 	P0 = Vc;
@@ -213,8 +225,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	P3 = f_vel - 2.0 * (f_accel / 5.00);
 	*/
 
-	QuinticBezierCurve curveB;
-	curveB.setParams(P0, P1, P2, P3, P4, P5);
+	//QuinticBezierCurve curveB;
+	//curveB.setParams(P0, P1, P2, P3, P4, P5);
 	
 
 
@@ -228,18 +240,20 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	Integrator integral;
 
-	integral.setParameters(IntegratorMethod::ForwardEuler, 0.0001, 1.00);
+	integral.setParameters(IntegratorMethod::BackwardEuler, 0.0001, 1.00);
 	integral.setInitialConditions(i_pos);
 
 	
 	
-	for (double t = 0.0000; t <= Ta/2.00; t = t + 0.0001)
+	for (double t = 0.0000; t < tphAp; t = t + 0.0001)
 	{
 		double tau = t * time_scale_factor1;
 		if (tau < 1.00)
 		{
 			x = curveAplus.calculateX(tau);
+
 			//x1 = curveAplus.calculateTimeScaledFirstDer(1.0 / time_scale_factor1, t);
+			x2 = tphAp * curveAplus.calculateIntegral(tau, 1.00);
 		}
 		
 		xt->set(x);
@@ -250,13 +264,36 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 		tracer.trace();
 	}
 
-	for (double t = Ta/2.0; t <= Ta; t = t + 0.0001)
+	/*const acceleration*/
+
+	
+
+	//x1 = 0.00;
+	for (double t = tphAp; t < tphAc; t = t + 0.0001)
 	{
-		double tau = t * time_scale_factor2;
-		if (tau < 1.00)		
+		x = Ac;
+		xt->set(x);
+		x2 = IntegralAp + Ac * (t - tphAp);
+
+		x1t->set(x1);
+		x2t->set(x2);
+		x3 = integral.process(x);
+		x3t->set(x3);
+		tracer.trace();
+	}
+		
+	
+	for (double t = tphAc; t < tphAm; t = t + 0.0001)
+	{
+		double tau = abs(t - tphAc) * time_scale_factor2;
+		if (tau < 1.00)
 		{
 			x = curveAminus.calculateX(abs(tau));
-			//x1 = curveAminus.calculateTimeScaledFirstDer(1.0 / time_scale_factor1, t);
+			//x1 = curveAminus.calculateTimeScaledFirstDer(1.0 / time_scale_factor2, t- tphAc);
+			double c1 = 0.00;
+			double delta = c1 + (tphAm - tphAc) * curveAminus.calculateIntegral( tau, +1.00) ;
+			//x2 += IntegralAp + Ac * (tphAm - tphAc);
+			x2 = IntegralAp + Ac * (tphAc - tphAp) /* + (t - tphAc) * Ac*/ + delta;
 		}
 
 		xt->set(x);

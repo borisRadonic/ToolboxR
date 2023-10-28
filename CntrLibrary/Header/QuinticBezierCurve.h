@@ -29,23 +29,9 @@ namespace CntrlLibrary
                     , _P4(rhs._P4)
                     , _P5(rhs._P5)
                 {
-                }
-                /*
-                inline double getIntegralInT()
-                {
-                    double c0 = _P0 / 6.0;
-                    double c1 = _P1 / 5.0;
-                    double c2 = _P2 / 4.0;
-                    double c3 = _P3 / 4.0;
-                    double c4 = _P4 / 5.0;
-                    double c5 = _P5 / 6.0;
+                } 
 
-                    // The integral of the Bezier curve from t = 0 to t = 1
-                    return c0 + c1 + c2 + c3 + c4 + c5;
-                }*/
-
-
-                inline double calculateIntegralX(double t)
+                inline double calculateIntegral(double t, double sign)
                 {
                     double t2 = t * t;
                     double t3 = t2 * t;
@@ -53,18 +39,21 @@ namespace CntrlLibrary
                     double t5 = t4 * t;
                     double t6 = t5 * t;
 
+                    
+                    
                     double t_2 = (1 - t) * (1 - t);
                     double t_3 = t_2 * (1 - t);
                     double t_4 = t_3 * (1 - t);
                     double t_5 = t_4 * (1 - t);
                     double t_6 = t_5 * (1 - t);
+                  
 
-                    return (_P0 * t_6 / 6.0
-                        + 5.00 * _P1 * t_5 * t / 5.0
-                        + 10.00 * _P2 * t_4 * t2 / 4.0
-                        + 10.00 * _P3 * t_3 * t3 / 3.0
-                        + 5.00 * _P4 * t_2 * t4 * t / 2.0
-                        + _P5 * t6);
+                    return ( -(1.00 / 6.00) * _P0 * t_6 * sign
+                        + 5.00 * _P1 * ( (t6 / 6.00) - 4.00 * (t5 / 5.00) + 3.00 * (t4 / 2.00) - 4.0 * (t3 / 3.00) + (t2 / 2.00))
+                        - 10.00 * _P2 * (t6 / 6.00 - 3.00 * (t5 / 5.00) + 3.00 * (t4 / 4.00) - (t3 / 3.00))
+                        + 10.00 * _P3 * (t6 / 6.00 - 2.00 * (t5 / 5.00) + (t4 / 4.00))
+                        - 5.00 * _P4 * (t6 / 6.00 - t5 / 5.00)
+                        + _P5 * t6 / 6.00);
                 }
 
                 inline double calculateX(double t)
