@@ -31,14 +31,13 @@ namespace CntrlLibrary
                 {
                 } 
 
-                inline double calculateIntegral(double t, double sign)
+                inline double calculateIntegral(double t)
                 {
                     double t2 = t * t;
                     double t3 = t2 * t;
                     double t4 = t3 * t;
                     double t5 = t4 * t;
                     double t6 = t5 * t;
-
                     
                     
                     double t_2 = (1 - t) * (1 - t);
@@ -48,13 +47,39 @@ namespace CntrlLibrary
                     double t_6 = t_5 * (1 - t);
                   
 
-                    return ( -(1.00 / 6.00) * _P0 * t_6 * sign
+                    return ( -(1.00 / 6.00) * _P0 * t_6
                         + 5.00 * _P1 * ( (t6 / 6.00) - 4.00 * (t5 / 5.00) + 3.00 * (t4 / 2.00) - 4.0 * (t3 / 3.00) + (t2 / 2.00))
                         - 10.00 * _P2 * (t6 / 6.00 - 3.00 * (t5 / 5.00) + 3.00 * (t4 / 4.00) - (t3 / 3.00))
                         + 10.00 * _P3 * (t6 / 6.00 - 2.00 * (t5 / 5.00) + (t4 / 4.00))
                         - 5.00 * _P4 * (t6 / 6.00 - t5 / 5.00)
                         + _P5 * t6 / 6.00);
                 }
+
+
+                inline double calculateSecondIntegral(double t)
+                {
+                    double t2 = t * t;
+                    double t3 = t2 * t;
+                    double t4 = t3 * t;
+                    double t5 = t4 * t;
+                    double t6 = t5 * t;
+                    double t7 = t6 * t;
+
+                    double t_2 = (1 - t) * (1 - t);
+                    double t_3 = t_2 * (1 - t);
+                    double t_4 = t_3 * (1 - t);
+                    double t_5 = t_4 * (1 - t);
+                    double t_6 = t_5 * (1 - t);
+                    double t_7 = t_6 * (1 - t);
+
+                    return (-(1.00 / 42.00) * _P0 * t_7
+                        + 0.833333 * _P1 * (0.142857 * t7 - 0.80 * t6 + 1.80 * t5 - 2.00 * t4 + t3)
+                        - 1.66667 * _P2 * (0.142857 * t7 - 0.60 * t6 + 0.90 * t5 - 0.50 * t4)
+                        + 1.66667 * _P3 * (0.142857 * t7 - 0.40 * t6 + 0.30 * t5)
+                        + (1.00/6.00) * _P4 * (t6 - 5.00 * (t7/7.00) )
+                        + _P5 * t7 / 42.00);
+                }
+
 
                 inline double calculateX(double t)
                 {

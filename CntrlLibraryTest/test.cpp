@@ -51,21 +51,30 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	std::string strpath = path.generic_string();
 	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
 	std::string fileName1 = strpath + "test/TestBezierCurve.dat";
+	std::string fileName2 = strpath + "test/TestBezierCurve2.dat";
 
 	double ts = 0.0001;
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto xt = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
-	auto x1t = tracer.addSignal<std::double_t>("x_der_1", BaseSignal::SignalType::Double);
-	auto x2t = tracer.addSignal<std::double_t>("x_der_2", BaseSignal::SignalType::Double);
-	auto x3t = tracer.addSignal<std::double_t>("x_der_3", BaseSignal::SignalType::Double);
+	WaveFormTracer tracer2(fileName2, ts);
+	EXPECT_TRUE(tracer2.open());
 
-	double x = 0.00;
-	double x1 = 0.00;
-	double x2 = 0.00;
-	double x3 = 0.00;
-	double x4 = 0.00;
+	auto trS = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
+	auto trSI = tracer.addSignal<std::double_t>("xI", BaseSignal::SignalType::Double);
+	auto trV = tracer.addSignal<std::double_t>("v", BaseSignal::SignalType::Double);
+	auto trVI = tracer.addSignal<std::double_t>("vI", BaseSignal::SignalType::Double);
+	auto trA = tracer.addSignal<std::double_t>("a", BaseSignal::SignalType::Double);
+
+
+	auto trErrV = tracer2.addSignal<std::double_t>("Error v", BaseSignal::SignalType::Double);
+	auto trErrS = tracer2.addSignal<std::double_t>("Error x", BaseSignal::SignalType::Double);
+	
+
+	double a = 0.00;
+	double v = 0.00;
+	double s = 0.00;
+	
 
 	double tf = 0.1;
 	/*
@@ -79,9 +88,9 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	double i_pos = 00.00;
 	double i_vel = 100.00;
-	double i_accel = 10.00;
+	double i_accel = 0.00;
 	double f_pos = 100.00;
-	double f_vel = 10.00;
+	double f_vel = 0.00;
 	double f_accel = 0.00;
 
 	double v_max = 300.00;
@@ -117,7 +126,6 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	Tv = 0.00;
 	Vc = sign * sqrt((2.00 * a_max * a_max * travel_distance - a_max * i_vel * i_vel) / (a_max + a_max));
 
-
 	
 	double Ta = abs( (Vc - i_vel) / Ac);
 
@@ -125,12 +133,9 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	/*effect of jerk phases*/
 
-	
-
 	double Tjv = abs(Ac / j_max);
 	double Tjd = abs((Dc - i_accel) / j_max);
-	
-			
+				
 
 	/*
 	double P0 = i_pos;
@@ -164,8 +169,14 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	Times: tphAp, tphAc, tphAm, tphVc, tphDp, tphDc, tphDm, 
 	*/
 
+
+	//calculate max. accel 
 	double tphAp = abs(Ac - i_accel) / j_max;
 	double tphAm = abs(Ac) / j_max;
+
+
+	double tphDp = abs(Dc) / j_max;
+	double tphDm = (abs(Dc)- f_accel) / j_max;
 
 	//scale for total time
 	double time_scale_factor1 = 1.00 / tphAp;
@@ -173,136 +184,177 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	double P0 = i_accel;  //start Acceleration
 	double P1 = i_accel;  //it influence the initial rise phase
-	double P2 = Ac/2.0;  //it shapes the middle part of the curve
-	double P3 = Ac/2.0;  //it shapes the middle part of the curve
+	double P2 = i_accel;  //it shapes the middle part of the curve
+	double P3 = i_accel;  //it shapes the middle part of the curve
 	double P5 = Ac; // it influence the final  phase
 	double P4 = Ac; // it influence the final  phase
-
 
 	
 	QuinticBezierCurve curveAplus;
 	curveAplus.setParams(P0, P1, P2, P3, P4, P5);
-	
-	//it should be velocity at the end of A+ phase
-	double IntegralAp = tphAp * curveAplus.calculateIntegral(1.00, 1.00);
+	double ConstIntAp0 = curveAplus.calculateIntegral(0.00);
 
 
-	//we calculate A- like positive case (something is still wrong with integrating...)
-	P0 = 0;
-	P1 = 0;
-	QuinticBezierCurve curveTemp;
-	curveTemp.setParams(P0, P1, P2, P3, P4, P5);
-	//it should be velocity at the end of A- phase
-	double IntegralAm = tphAm * curveTemp.calculateIntegral(1.00, 1.00);
-	
-	//calculate time of constant acceleration to reach Vc
-	double tphAc = (Vc - (IntegralAp+ IntegralAm)) / Ac;
-	tphAc += tphAp;
-	
-	tphAm += tphAc;
-	
-	P0 = Ac; //start Acceleration
-	P1 = Ac; //it influence the initial phase
-	P2 = Ac / 2.0; //it shapes the middle part of the curve
-	P3 = Ac / 2.0; //it shapes the middle part of the curve
+	P0 =  Ac; //start Acceleration
+	P1 =  Ac; //it influence the initial phase
+	P2 =  Ac; //it shapes the middle part of the curve
+	P3 =  Ac; //it shapes the middle part of the curve
 	P4 = 0.00; // /it influence the final  phase
 	P5 = 0.00; //stop acceleration
 	
 
 	QuinticBezierCurve curveAminus;
 	curveAminus.setParams(P0, P1, P2, P3, P4, P5);
+	double ConstIntAm0 = curveAminus.calculateIntegral(0.00);
+		
+	double velocityAp = (curveAplus.calculateIntegral(1.00) - ConstIntAp0 ) * tphAp;
+	double velocityAm = (curveAminus.calculateIntegral(1.00) - ConstIntAm0) * tphAm;
+
+	//calculate time of constant acceleration to reach Vc
+	double tphAc = (Vc - (velocityAp + velocityAm)) / Ac;
+
+	//calculate distances
+
+	double distanceAp = tphAp * tphAp * (curveAplus.calculateSecondIntegral(1.00)  - curveAplus.calculateSecondIntegral(0.00));
 	
-	
+	//velocity part ( velocity is Vc during the whole period)
+	double distanceAm = Vc * tphAm - tphAm * tphAm * (curveAminus.calculateSecondIntegral(1.00) - curveAminus.calculateSecondIntegral(0.00));
+			
 
+	double distanceAc = abs(0.50 * Ac * tphAc * tphAc) + (velocityAp) * tphAc;
 
-	/*
-	P0 = Vc;
-	P1 = Vc ;
-
-	P2 = Vc;
-	P5 = f_vel;
-	P4 = f_vel - (f_accel / 5.00);
-	P3 = f_vel - 2.0 * (f_accel / 5.00);
-	*/
-
-	//QuinticBezierCurve curveB;
-	//curveB.setParams(P0, P1, P2, P3, P4, P5);
-	
-
-
-	//scale 
-
-
-	std::vector<double> roots;
-	
-	//curveA.findFirstDerRoots(roots);
-	 
+	tphAc += tphAp;
+	tphAm += tphAc;
 
 	Integrator integral;
+	integral.setParameters(IntegratorMethod::Trapezoidal, 0.0001, 1.00);
+	integral.setInitialConditions(0.00);
 
-	integral.setParameters(IntegratorMethod::BackwardEuler, 0.0001, 1.00);
-	integral.setInitialConditions(i_pos);
+	Integrator integral2;
+	integral2.setParameters(IntegratorMethod::Trapezoidal, 0.0001, 1.00);
+	integral2.setInitialConditions(i_pos);
 
-	
-	
+
 	for (double t = 0.0000; t < tphAp; t = t + 0.0001)
 	{
 		double tau = t * time_scale_factor1;
-		if (tau < 1.00)
-		{
-			x = curveAplus.calculateX(tau);
-
-			//x1 = curveAplus.calculateTimeScaledFirstDer(1.0 / time_scale_factor1, t);
-			x2 = tphAp * curveAplus.calculateIntegral(tau, 1.00);
-		}
 		
-		xt->set(x);
-		x1t->set(x1);
-		x2t->set(x2);
-		x3 = integral.process(x);
-		x3t->set(x3);
+		a = curveAplus.calculateX(tau);
+		v = ( tphAp * curveAplus.calculateIntegral(tau) - ConstIntAp0 );
+		s = tphAp * tphAp * ( curveAplus.calculateSecondIntegral(tau) - ConstIntAp0)   + t * ConstIntAp0;
+
+		trS->set(s);
+		trA->set(a);
+		trV->set(v);
+		
+		double intA = integral.process(a);
+		trVI->set(intA);
+		trSI->set(integral2.process(intA));
+		
+		trErrV->set(trVI->get() - v);
+		trErrS->set(trSI->get() - s);
 		tracer.trace();
+		tracer2.trace();
 	}
 
 	/*const acceleration*/
-
 	
-
 	//x1 = 0.00;
-	for (double t = tphAp; t < tphAc; t = t + 0.0001)
+	for (double t = tphAp; t < (tphAc); t = t + 0.0001)
 	{
-		x = Ac;
-		xt->set(x);
-		x2 = IntegralAp + Ac * (t - tphAp);
+		a = Ac;
+		v = (velocityAp) + Ac * (t - tphAp);
+		s = distanceAp + Ac * 0.5 * (t - tphAp) * (t - tphAp) + (velocityAp) * (t - tphAp);
+		
+		trS->set(s);
+		trA->set(a);
+		trV->set(v); 
+	
+		double intA = integral.process(a);
+		trVI->set(intA);
+		trSI->set(integral2.process(intA));
 
-		x1t->set(x1);
-		x2t->set(x2);
-		x3 = integral.process(x);
-		x3t->set(x3);
+
+		trErrV->set(trVI->get() - v);
+		trErrS->set(trSI->get() - s);
+
 		tracer.trace();
+		tracer2.trace();
 	}
 		
-	
+	double constantI2 = curveAminus.calculateSecondIntegral(0.00);
+
+	double velAc = velocityAp + Ac * (tphAc - tphAp);
+
+	//double velAc = v;
+
 	for (double t = tphAc; t < tphAm; t = t + 0.0001)
 	{
-		double tau = abs(t - tphAc) * time_scale_factor2;
-		if (tau < 1.00)
+		double tau = (t - tphAc ) * time_scale_factor2;
+		
+		if (tau <= 1.00)
 		{
-			x = curveAminus.calculateX(abs(tau));
-			//x1 = curveAminus.calculateTimeScaledFirstDer(1.0 / time_scale_factor2, t- tphAc);
-			double c1 = 0.00;
-			double delta = c1 + (tphAm - tphAc) * curveAminus.calculateIntegral( tau, +1.00) ;
-			//x2 += IntegralAp + Ac * (tphAm - tphAc);
-			x2 = IntegralAp + Ac * (tphAc - tphAp) /* + (t - tphAc) * Ac*/ + delta;
-		}
+			a = curveAminus.calculateX(abs(tau));
+			double delta = (tphAm - tphAc) * ( curveAminus.calculateIntegral( tau ) - ConstIntAm0 );
+			v = velAc + delta;
+			double val = constantI2 - curveAminus.calculateSecondIntegral(tau);
+			s = distanceAp + distanceAc +  velAc * (t - tphAc) - (tphAm - tphAc) * (tphAm - tphAc) * val - (t - tphAc) * (tphAm - tphAc) * ConstIntAm0;
+		} 
 
-		xt->set(x);
-		x1t->set(x1);
-		x2t->set(x2);
-		x3 = integral.process(x);
-		x3t->set(x3);
+		trS->set(s);
+		trA->set(a);
+		trV->set(v);
+		
+		double intA = integral.process(a);
+		trVI->set(intA);
+		trSI->set(integral2.process(intA));
+
+		trErrV->set(trVI->get() - v);
+		trErrS->set(trSI->get() - s);
 		tracer.trace();
+		tracer2.trace();
 	}
+
+	P0 = 0;
+	P1 = 0;
+	P2 = 0;
+	P3 = Dc;
+	P4 = Dc;
+	P5 = Dc;
+
+	QuinticBezierCurve curveDplus;
+	curveDplus.setParams(P0, P1, P2, P3, P4, P5);
+	double ConstIntDp0 = tphAp * curveDplus.calculateIntegral(0.00);
+	
+	P0 = Dc;
+	P1 = Dc;
+	P2 = Dc;
+	P3 = Dc;
+	P4 = f_accel;
+	P5 = f_accel;
+
+	QuinticBezierCurve curveDminus;
+	curveDminus.setParams(P0, P1, P2, P3, P4, P5);
+
+	double ConstIntDm0 = curveDminus.calculateIntegral(0.00);
+
+	double velocityDp = (curveAplus.calculateIntegral(1.00) - ConstIntDp0) * tphDp;
+	double velocityDm = (curveAminus.calculateIntegral(1.00) - ConstIntDm0) * tphDm;
+
+	//calculate time of constant deacceleration to reach final velocity
+	double tphDc = abs( (Vc - (velocityDp + velocityDm) - f_vel) / Dc );
+		
+	//tphDp, tphDm
+
+	//calculate distances
+	double distanceDp = abs( Vc * tphDp -  velocityDp * tphDp );
+	double distanceDm = abs( velocityDm * tphDm );
+	double distanceDc = abs( 0.50 * Dc * tphDc * tphDc);
+
+
+	double dis = i_pos + distanceAp + distanceAc + distanceAm + distanceDp + distanceDc + distanceDm;
+	//calculate constant velocity distance
+	double distToDo = f_pos - dis;
 
 }
 

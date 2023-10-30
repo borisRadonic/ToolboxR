@@ -12,11 +12,9 @@ set ylabel "Value"
 set key outside top left
 
 # Plot the data
-plot "TestBezierCurve.dat" using 1:2 with lines title "s", \
-	 "TestBezierCurve.dat" using 1:3 with lines title "sI", \
-     "TestBezierCurve.dat" using 1:4 with lines title "v", \
-	 "TestBezierCurve.dat" using 1:5 with lines title "vI", \
-     "TestBezierCurve.dat" using 1:6 with lines title "a"
+plot "TestBezierCurve2.dat" using 1:2 with lines title "Error V", \
+	 "TestBezierCurve2.dat" using 1:3 with lines title "Error S"
+    
 
 
 # Pause (for terminals that close immediately after displaying the plot)
