@@ -2,6 +2,11 @@
 #include <functional> 
 #include <cmath>
 #include <limits>
+#include "MathFunctionBase.h"
+
+#ifndef NO_EXCEPTION
+#include<stdexcept>
+#endif
 
 namespace CntrlLibrary
 {
@@ -9,7 +14,7 @@ namespace CntrlLibrary
     {
         namespace Polynomials
         {
-            class QuinticPolynomial
+            class QuinticPolynomial : public MathFunctionBase
             {
             public:
 
@@ -27,7 +32,7 @@ namespace CntrlLibrary
                 {
                 }
 
-                inline double calculateX(double t)
+                inline double compute(double t) override
                 {
                     double t_2 = t * t;
                     double t_3 = t_2 * t;
@@ -36,7 +41,7 @@ namespace CntrlLibrary
                     return (_a0 + _a1 * t + _a2 * t_2 + _a3 * t_3 + _a4 * t_4 + _a5 * t_5);
                 }
 
-                inline double calculateDerX(double t)
+                inline double firstDerivative(double t) override
                 {
                     double t_2 = t * t;
                     double t_3 = t_2 * t;
@@ -44,22 +49,40 @@ namespace CntrlLibrary
                     return (_a1 + 2.00 * _a2 * t + 3.00 * _a3 * t_2 + 4.00 * _a4 * t_3 + 5.00 * _a5 * t_4);
                 }
 
-                inline double calculateDerX2(double t)
+                inline double secondDerivative(double t) override
                 {
                     double t_2 = t * t;
                     double t_3 = t_2 * t;
                     return (2.00 * _a2 + 6.00 * _a3 * t + 12.00 * _a4 * t_2 + 20.00 * _a5 * t_3);
                 }
 
-                inline double calculateDerX3(double t)
+                inline double thirdDerivative(double t) override
                 {
                     double t_2 = t * t;
                     return (6.00 * _a3 + 24.00 * _a4 * t + 60.00 * _a5 * t_2 );
                 }
 
-                inline double calculateDerX4(double t)
+                inline double fourthDerivative(double t) override
                 {
                     return (24.00 * _a4 + 120.00 * _a5 * t);
+                }
+
+                virtual double firstIntegral(double t) override
+                {
+                    #ifndef NO_EXCEPTION
+                        throw std::runtime_error("fourthIntegral not implemented");
+                    #else
+                        return 0.00;
+                    #endif                    
+                }
+
+                virtual double secondIntegral(double t) override
+                {
+                    #ifndef NO_EXCEPTION
+                        throw std::runtime_error("fourthIntegral not implemented");
+                    #else
+                        return 0.00;
+                    #endif
                 }
 
                 inline void calculate(double t, double& x, double& x_der1, double& x_der2, double& x_der3)

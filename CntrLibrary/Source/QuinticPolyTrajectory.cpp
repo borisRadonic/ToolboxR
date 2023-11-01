@@ -43,10 +43,10 @@ namespace CntrlLibrary
                 return 0.00;
             }
             double delta_s = target_position - initial_position;
-            std::function<double(double)> funcCalcVel = std::bind(&QuinticPolynomial::calculateDerX, &poly, std::placeholders::_1);
-            std::function<double(double)> funcCalcAccel = std::bind(&QuinticPolynomial::calculateDerX2, &poly, std::placeholders::_1);
-            std::function<double(double)> funcCalcJerk = std::bind(&QuinticPolynomial::calculateDerX3, &poly, std::placeholders::_1);
-            std::function<double(double)> funcCalcJSnap = std::bind(&QuinticPolynomial::calculateDerX4, &poly, std::placeholders::_1);
+            std::function<double(double)> funcCalcVel = std::bind(&QuinticPolynomial::firstDerivative, &poly, std::placeholders::_1);
+            std::function<double(double)> funcCalcAccel = std::bind(&QuinticPolynomial::secondDerivative, &poly, std::placeholders::_1);
+            std::function<double(double)> funcCalcJerk = std::bind(&QuinticPolynomial::thirdDerivative, &poly, std::placeholders::_1);
+            std::function<double(double)> funcCalcJSnap = std::bind(&QuinticPolynomial::fourthDerivative, &poly, std::placeholders::_1);
 
             double time_min = delta_s / max_velocity;
             double time_max = 2.00 * (max_velocity / max_acceleration) + time_min * 2.00;

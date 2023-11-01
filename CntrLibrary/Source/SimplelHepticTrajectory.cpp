@@ -37,7 +37,7 @@ namespace CntrlLibrary
            
             while (max_steps > 1)
             {           
-                max_v = poly.calculateDerX(guess/2.0);
+                max_v = poly.firstDerivative(guess/2.0);
                 double error = abs(max_velocity) - abs(max_v);
 
                 if (abs(error) <= vel_tolerance)

@@ -217,6 +217,7 @@
     <ClInclude Include="Header\BasicNumMethods.h" />
     <ClInclude Include="Header\BellShapedFuzzySet.h" />
     <ClInclude Include="Header\Block.h" />
+    <ClInclude Include="Header\ConstFunction.h" />
     <ClInclude Include="Header\DCMotor.h" />
     <ClInclude Include="Header\Derivative.h" />
     <ClInclude Include="Header\Difference.h" />
@@ -246,7 +247,10 @@
     <ClInclude Include="Header\Integrator.h" />
     <ClInclude Include="Header\JerkLimitedTrajectory.h" />
     <ClInclude Include="Header\LargeFuzzySet.h" />
+    <ClInclude Include="Header\LinearFunction.h" />
     <ClInclude Include="Header\LinguisticVariable.h" />
+    <ClInclude Include="Header\MathFunctionBase.h" />
+    <ClInclude Include="Header\PathSegment.h" />
     <ClInclude Include="Header\PIDController.h" />
     <ClInclude Include="Header\PiShapedFuzzySet.h" />
     <ClInclude Include="Header\PMSMotor.h" />

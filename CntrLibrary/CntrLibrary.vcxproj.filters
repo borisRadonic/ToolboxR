@@ -371,5 +371,17 @@
     <ClInclude Include="Header\DiscreteRandomGenerator.h">
       <Filter>Header Files\DiscreteTime</Filter>
     </ClInclude>
+    <ClInclude Include="Header\PathSegment.h">
+      <Filter>Header Files\Trajectories</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MathFunctionBase.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\ConstFunction.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\LinearFunction.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,6 +5,11 @@
 #include <limits>
 #include "BasicNumMethods.h"
 #include <Eigen/Dense>
+#include "MathFunctionBase.h"
+
+#ifndef NO_EXCEPTION
+#include<stdexcept>
+#endif
 
 namespace CntrlLibrary
 {
@@ -12,7 +17,7 @@ namespace CntrlLibrary
     {
         namespace Bezier
         {
-            class QuinticBezierCurve
+            class QuinticBezierCurve : public MathFunctionBase
             {
             public:
                              
@@ -31,7 +36,71 @@ namespace CntrlLibrary
                 {
                 } 
 
-                inline double calculateIntegral(double t)
+                inline double compute(double t) override
+                {
+                    double t2 = t * t;
+                    double t3 = t2 * t;
+                    double t4 = t3 * t;
+                    double t5 = t4 * t;
+                    double t_2 = (1 - t) * (1 - t);
+                    double t_3 = t_2 * (1 - t);
+                    double t_4 = t_3 * (1 - t);
+                    double t_5 = t_4 * (1 - t);
+                    return (_P0 * t_5
+                        + 5.00 * _P1 * t_4 * t
+                        + 10.00 * t_3 * t2 * _P2
+                        + 10.00 * _P3 * t_2 * t3
+                        + 5.00 * (1 - t) * t4 * _P4
+                        + t5 * _P5);
+                }
+
+                inline double firstDerivative(double t) override
+                {
+                    double t2 = t * t;
+                    double t3 = t2 * t;
+                    double t4 = t3 * t;
+                    double t_2 = (1 - t) * (1 - t);
+                    double t_3 = t_2 * (1 - t);
+                    double t_4 = t_3 * (1 - t);
+
+                    return (5.00 * t_4 * (_P1 - _P0)
+                        + 20.00 * t_3 * t * (_P2 - _P1)
+                        + 30.00 * t_2 * t2 * (_P3 - _P2)
+                        + 20.00 * (1 - t) * t3 * (_P4 - _P3)
+                        + 5.00 * t4 * (_P5 - _P4));
+                }
+
+                inline double secondDerivative(double t) override
+                {
+                    double t2 = t * t;
+                    double t3 = t2 * t;
+                    double t_2 = (1 - t) * (1 - t);
+                    double t_3 = t_2 * (1 - t);
+                    return (20.00 * t_3 * (_P2 - 2.00 * _P1 + _P0)
+                        + 60 * t_2 * t * (_P3 - 2.00 * _P2 + _P1)
+                        + 60.00 * (1 - t) * t2 * (_P4 - 2.00 * _P3 + _P2)
+                        + 20.00 * t3 * (_P5 - _P4));
+                }
+
+                inline double thirdDerivative(double t) override
+                {
+                    #ifndef NO_EXCEPTION
+                        throw std::runtime_error("fourthIntegral not implemented");
+                    #else
+                        return 0.00;
+                    #endif
+                }
+
+                inline double fourthDerivative(double t) override
+                {
+                    #ifndef NO_EXCEPTION
+                        throw std::runtime_error("fourthIntegral not implemented");
+                    #else
+                        return 0.00;
+                    #endif
+                }
+
+                virtual double firstIntegral(double t) override
                 {
                     double t2 = t * t;
                     double t3 = t2 * t;
@@ -55,8 +124,7 @@ namespace CntrlLibrary
                         + _P5 * t6 / 6.00);
                 }
 
-
-                inline double calculateSecondIntegral(double t)
+                virtual double secondIntegral(double t) override
                 {
                     double t2 = t * t;
                     double t3 = t2 * t;
@@ -79,112 +147,7 @@ namespace CntrlLibrary
                         + (1.00/6.00) * _P4 * (t6 - 5.00 * (t7/7.00) )
                         + _P5 * t7 / 42.00);
                 }
-
-
-                inline double calculateX(double t)
-                {
-                    double t2 = t * t;
-                    double t3 = t2 * t;
-                    double t4 = t3 * t;
-                    double t5 = t4 * t;
-                    double t_2 = (1 - t) * (1 - t);
-                    double t_3 = t_2 * (1 - t);
-                    double t_4 = t_3 * (1 - t);
-                    double t_5 = t_4 * (1 - t);
-                    return (_P0 * t_5
-                        + 5.00 * _P1 * t_4 * t
-                        + 10.00 * t_3 * t2 * _P2
-                        + 10.00 * _P3 * t_2 * t3
-                        + 5.00 * (1 - t) * t4 * _P4
-                        + t5 * _P5);
-                }
-
-                inline double calculateDerX(double t)
-                {
-                    double t2 = t * t;
-                    double t3 = t2 * t;
-                    double t4 = t3 * t;
-                    double t_2 = (1 - t) * (1 - t);
-                    double t_3 = t_2 * (1 - t);
-                    double t_4 = t_3 * (1 - t);
-            
-                    return (5.00 * t_4 * (_P1 - _P0)
-                        + 20.00 * t_3 * t * (_P2 - _P1)
-                        + 30.00 * t_2 * t2 * (_P3 - _P2)
-                        + 20.00 * (1 - t) * t3 * (_P4 - _P3)
-                        + 5.00 * t4 * (_P5 - _P4));
-                }
-
-                inline double calculateDerX2(double t)
-                {
-                    double t2 = t * t;
-                    double t3 = t2 * t;
-                    double t_2 = (1 - t) * (1 - t);
-                    double t_3 = t_2 * (1 - t);
-                    return (20.00 * t_3 * (_P2 - 2.00 * _P1 + _P0)
-                        + 60 * t_2 * t * (_P3 - 2.00 * _P2 + _P1)
-                        + 60.00 * (1 - t) * t2 * (_P4 - 2.00 * _P3 + _P2)
-                        + 20.00 * t3 * (_P5 - _P4));
-                }
-
-                inline double calculateTimeScaledFirstDer(double scale, double t)
-                {
-                    double scaled_t = t / scale;  // Scale the input time
-
-                    if (scaled_t < 0.0) scaled_t = 0.0;
-                    if (scaled_t > 1.0) scaled_t = 1.0;
-
-
-                    double t2 = scaled_t * scaled_t;
-                    double t3 = t2 * scaled_t;
-                    double t4 = t3 * scaled_t;
-                    double t_2 = (1 - scaled_t) * (1 - scaled_t);
-                    double t_3 = t_2 * (1 - scaled_t);
-                    double t_4 = t_3 * (1 - scaled_t);
-
-                    // Multiply the result by the scale to adjust the rate of change
-                    return (5.00 * t_4 * (_P1 - _P0)
-                        + 20.00 * t_3 * scaled_t * (_P2 - _P1)
-                        + 30.00 * t_2 * t2 * (_P3 - _P2)
-                        + 20.00 * (1 - scaled_t) * t3 * (_P4 - _P3)
-                        + 5.00 * t4 * (_P5 - _P4)) / scale;
-                }
-
-                inline double calculateTimeScaledSecondDerX(double _P0, double _P1, double _P2, double _P3, double _P4, double _P5, double scale, double t)
-                {
-                    double scaled_t = t / scale;
-
-                    // Ensure scaled_t is within the [0, 1] interval
-                    if (scaled_t < 0.0) scaled_t = 0.0;
-                    if (scaled_t > 1.0) scaled_t = 1.0;
-
-                    double t2 = scaled_t * scaled_t;
-                    double t3 = t2 * scaled_t;
-                    double t_2 = (1 - scaled_t) * (1 - scaled_t);
-                    double t_3 = t_2 * (1 - scaled_t);
-
-                    // Calculate the second derivative and divide by the square of the scale
-                    return (20.00 * t_3 * (_P2 - 2.00 * _P1 + _P0)
-                        + 60.00 * t_2 * scaled_t * (_P3 - 2.00 * _P2 + _P1)
-                        + 60.00 * (1 - scaled_t) * t2 * (_P4 - 2.00 * _P3 + _P2)
-                        + 20.00 * t3 * (_P5 - 2.00 * _P4 + _P3)) / (scale * scale);
-                }
-
-                inline double calculateTimeScaledThirdDerX(double _P0, double _P1, double _P2, double _P3, double _P4, double _P5, double scale, double t)
-                {
-                    double scaled_t = t / scale;
-
-                    // Ensure scaled_t is within the [0, 1] interval
-                    if (scaled_t < 0.0) scaled_t = 0.0;
-                    if (scaled_t > 1.0) scaled_t = 1.0;
-
-                    double t2 = scaled_t * scaled_t;
-
-                    // Calculate the third derivative and divide by the cube of the scale
-                    return (60.00 * (1 - scaled_t) * t2 * (_P5 - 3.00 * _P4 + 3.00 * _P3 - _P2)
-                        + 60.00 * t2 * scaled_t * (_P4 - 3.00 * _P3 + 3.00 * _P2 - _P1)
-                        + 20.00 * scaled_t * scaled_t * (_P3 - 3.00 * _P2 + 3.00 * _P1 - _P0)) / (scale * scale * scale);
-                }
+                               
 
                 Math::BasicNumMethods::ResultType findFirstDerRoots(std::vector<double>& roots)
                 {
@@ -353,7 +316,8 @@ namespace CntrlLibrary
                 double _P3 = 0.00;
                 double _P4 = 0.00;
                 double _P5 = 0.00;
-            };
+
+             };
         }
     }
 }

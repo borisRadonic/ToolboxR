@@ -28,6 +28,8 @@
 #include "HepticPolynomial.h"
 #include "SimplelHepticTrajectory.h"
 #include "QuinticBezierCurve.h"
+#include "ConstFunction.h"
+#include "PathSegment.h"
 
 #include <Eigen/Dense>
 
@@ -45,6 +47,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 {
 	using namespace Math;
 	using namespace Bezier;
+	using namespace TrajectoryGeneration;
 
 	auto path = std::filesystem::current_path();
 
@@ -78,8 +81,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	double tf = 0.1;
 
-	double i_pos = 00.00;
-	double i_vel = 100.00;
+	double i_pos = 0.00;
+	double i_vel = 0.00;
 	double i_accel = 0.00;
 	double f_pos = 100.00;
 	double f_vel = 0.00;
@@ -123,15 +126,28 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	double aproxJerkDistAm = abs(0.25 * (Ac) * tphAm * tphAm);
 	double aproxJerkDistDp = abs(0.25 * (Dc - i_accel) * tphDp * tphDp);
 	double aproxJerkDistDm = abs(0.25 * (abs(Dc) - f_accel) * tphDm * tphDm);
+	
+	/*during A- and D+ velocity ist nearly Vc (we do not know Vc), but we take max_v*/
+	aproxJerkDistAp += abs( tphAp * i_vel);
+	aproxJerkDistAm += abs( tphAm * v_max );
+	aproxJerkDistDp += abs(tphDp * v_max);
+	aproxJerkDistDm += abs(tphDm * f_vel);
+
+
 	double aproxJerkDistance = aproxJerkDistAp + aproxJerkDistAm + aproxJerkDistDp + aproxJerkDistDm;
 
 	double min_max_vel_distance = abs((v_max * v_max - (i_vel * i_vel)) / (2.00 * a_max)
 		+ v_max * v_max / (2.00 * a_max));
 
+
+
 	min_max_vel_distance += aproxJerkDistance;
 
 	//the condition for 'triangular profile'
 	EXPECT_TRUE( abs(travel_distance) < min_max_vel_distance );
+
+
+
 
 	Tv = 0.00;
 	Vc = sign * sqrt((2.00 * a_max * a_max * (travel_distance - aproxJerkDistance) - a_max * i_vel * i_vel) / (a_max + a_max));
@@ -168,10 +184,11 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	double P5 = Ac; // it influence the final  phase
 	double P4 = Ac; // it influence the final  phase
 
-	
-	QuinticBezierCurve curveAplus;
-	curveAplus.setParams(P0, P1, P2, P3, P4, P5);
-	double ConstIntAp0 = curveAplus.calculateIntegral(0.00);
+
+	std::shared_ptr<QuinticBezierCurve> curveAplus = std::make_shared<QuinticBezierCurve>();
+	curveAplus->setParams(P0, P1, P2, P3, P4, P5);
+	PathSegment plusAccelPath(0.00, 1.00, 0.00, i_vel, i_pos, curveAplus);
+	double ConstIntAp0 = plusAccelPath.getFirstIntegralAtStart();
 
 
 	//test
@@ -184,8 +201,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	QuinticBezierCurve test1;
 	test1.setParams(P0, P1, P2, P3, P4, P5);
-	double in0 = test1.calculateIntegral(0.00);
-	double in1 = test1.calculateIntegral(1.00);
+	double in0 = test1.firstIntegral(0.00);
+	double in1 = test1.firstIntegral(1.00);
 	double myBConst = 0.6666666666666673;
 	double myBconst2 = 1.00 - myBConst;
 
@@ -199,35 +216,35 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	P5 = 0.00; //stop acceleration
 	
 
-	QuinticBezierCurve curveAminus;
-	curveAminus.setParams(P0, P1, P2, P3, P4, P5);
-	double ConstIntAm0 = curveAminus.calculateIntegral(0.00);
+	std::shared_ptr<QuinticBezierCurve> curveAminus = std::make_shared<QuinticBezierCurve>();
+	curveAminus->setParams(P0, P1, P2, P3, P4, P5);
+
+	double ConstIntAm0 = curveAminus->firstIntegral(0.00);
 		
-	double velocityAp = (curveAplus.calculateIntegral(1.00) - ConstIntAp0 ) * tphAp;
-	double velocityAm = (curveAminus.calculateIntegral(1.00) - ConstIntAm0) * tphAm;
+	double velocityAp = (curveAplus->firstIntegral(1.00) - ConstIntAp0 ) * tphAp;
+	double velocityAm = (curveAminus->firstIntegral(1.00) - ConstIntAm0) * tphAm;
 
 	//calculate time of constant acceleration to reach Vc
 	double tphAc = (Vc - (velocityAp + velocityAm)) / Ac;
 
 	//calculate distances
 
-	double distanceAp = tphAp * tphAp * (curveAplus.calculateSecondIntegral(1.00)  - curveAplus.calculateSecondIntegral(0.00));
+	double distanceAp = tphAp * tphAp * (curveAplus->secondIntegral(1.00)  - curveAplus->secondIntegral(0.00));
 	
 	//velocity part ( velocity is Vc during the whole period)
 	
 	double velAc = velocityAp + Ac * (tphAc);
 		
-	double constantI2 = curveAminus.calculateSecondIntegral(0.00);
+	double constantI2 = curveAminus->secondIntegral(0.00);
 
-	double valAm = constantI2 - curveAminus.calculateSecondIntegral(1.0);
+	double valAm = constantI2 - curveAminus->secondIntegral(1.0);
 	double distanceAm = velAc * tphAm - tphAm * tphAm  * valAm -  tphAm * tphAm * ConstIntAm0;
 
 	double distanceAc = abs(0.50 * Ac * tphAc * tphAc) + (velocityAp) * tphAc;
 
 	tphAc += tphAp;
 	tphAm += tphAc;
-
-	
+		
 
 	Integrator integral;
 	integral.setParameters(IntegratorMethod::BackwardEuler, 0.0001, 1.00);
@@ -236,18 +253,16 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	Integrator integral2;
 	integral2.setParameters(IntegratorMethod::BackwardEuler, 0.0001, 1.00);
 	integral2.setInitialConditions(i_pos);
-
+		
 
 	for (double t = 0.0001; t <= (tphAp + 0.000001); t = t + 0.0001)
 	{
 		double tau = t * time_scale_factor1;
 		
-		a = curveAplus.calculateX(tau);
-		double v1 = curveAplus.calculateIntegral(tau);
-		v = tphAp * (v1 - ConstIntAp0 );
+		a = plusAccelPath.getAccel(tau);
+		v = plusAccelPath.getVelocity(tau, tphAp);
+		s = plusAccelPath.getPosition(tau, tphAp, tphAp * tphAp);
 	
-		s = tphAp * tphAp * ( curveAplus.calculateSecondIntegral(tau) - ConstIntAp0)   + t * ConstIntAp0;
-
 		trS->set(s);
 		trA->set(a);
 		trV->set(v);
@@ -264,15 +279,18 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	/*const acceleration*/
 	
+	std::shared_ptr<ConstFunction> mathFuncConst = std::make_shared<ConstFunction>(Ac);
+	PathSegment constAccelPath(tphAp, tphAc, 0.00, velocityAp, distanceAp, mathFuncConst);
+		
 	integral.reset();
 	integral.setInitialConditions(v);
 	//x1 = 0.00;
 	for (double t = (tphAp + 0.0001); t < (tphAc + 0.000001); t = t + 0.0001)
 	{
-		a = Ac;
-		v = (velocityAp) + Ac * (t - tphAp);
-		s = distanceAp + Ac * 0.5 * (t - tphAp) * (t - tphAp) + (velocityAp) * (t - tphAp);
-		
+		a = constAccelPath.getAccel(t);
+		v = constAccelPath.getVelocity(t);
+		s = constAccelPath.getPosition(t);
+				
 		trS->set(s);
 		trA->set(a);
 		trV->set(v); 
@@ -281,19 +299,14 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 		trVI->set(intA);
 		trSI->set(integral2.process(intA));
 
-
 		trErrV->set(trVI->get() - v);
 		trErrS->set(trSI->get() - s);
 
 		tracer.trace();
 		tracer2.trace();
 	}
-		
 	
-
-	
-
-	//double velAc = v;
+	PathSegment minusAccelPath(0.00, 1.00, 0.00, velAc, distanceAp + distanceAc, curveAminus);
 
 	for (double t = (tphAc + 0.0001); t <= (tphAm + +0.000001); t = t + 0.0001)
 	{
@@ -302,11 +315,9 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 				
 		if (tau <= 1.00)
 		{
-			a = curveAminus.calculateX(abs(tau));
-			double delta = (tphAm - tphAc) * ( curveAminus.calculateIntegral( tau ) - ConstIntAm0 );
-			v = velAc + delta;
-			double val = constantI2 - curveAminus.calculateSecondIntegral(tau);
-			s = distanceAp + distanceAc +  velAc * delta_t - (tphAm - tphAc) * (tphAm - tphAc) * val - delta_t * (tphAm - tphAc) * ConstIntAm0;
+			a = minusAccelPath.getAccel(tau);
+			v = minusAccelPath.getVelocity(tau, tphAm - tphAc, true );
+			s = minusAccelPath.getPosition(tau, tphAm - tphAc, (tphAm - tphAc) * (tphAm - tphAc) );			
 		} 
 
 		trS->set(s);
@@ -326,36 +337,35 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	P0 = 0;
 	P1 = 0;
 	P2 = 0;
-	P3 = Dc;
-	P4 = Dc;
-	P5 = Dc;
-
-
-
+	P3 = abs(Dc);
+	P4 = abs(Dc);
+	P5 = abs(Dc);
 
 	//we can change the angle of view
-	QuinticBezierCurve curveDplus;
-	curveDplus.setParams(P0, P1, P2, P3, P4, P5);
-	double ConstIntDp0 = tphAp * curveDplus.calculateIntegral(0.00);
+
+	std::shared_ptr<QuinticBezierCurve> curveDplus = std::make_shared<QuinticBezierCurve>();
+
+	curveDplus->setParams(P0, P1, P2, P3, P4, P5);
+	double ConstIntDp0 = tphDp * curveDplus->firstIntegral(0.00);
 	
 	double deltaD = Dc - f_accel;
 	P0 = 0.00;
 	P1 = 0.00;
 	P2 = 0.00;
-	P3 = deltaD;
-	P4 = deltaD;
-	P5 = deltaD;
+	P3 = abs(deltaD);
+	P4 = abs(deltaD);
+	P5 = abs(deltaD);
 		
-	QuinticBezierCurve curveDminus;
-	curveDminus.setParams(P0, P1, P2, P3, P4, P5);
+	std::shared_ptr<QuinticBezierCurve> curveDminus = std::make_shared<QuinticBezierCurve>();
+	curveDminus->setParams(P0, P1, P2, P3, P4, P5);
 
-	double ConstIntDm0 = curveDminus.calculateIntegral(0.00);
+	double ConstIntDm0 = curveDminus->firstIntegral(0.00);
 
-	double velocityDp = (curveDplus.calculateIntegral(1.00) - ConstIntDp0) * tphDp;
-	double velocityDm = (curveDminus.calculateIntegral(1.00) - ConstIntDm0) * tphDm;
+	double velocityDp = (curveDplus->firstIntegral(1.00) - ConstIntDp0) * tphDp;
+	double velocityDm = (curveDminus->firstIntegral(1.00) - ConstIntDm0) * tphDm;
 
 	//correct Vc
-	Vc = velAc + (tphAm - tphAc) * (curveAminus.calculateIntegral(1.00) - ConstIntAm0);
+	Vc = velAc + (tphAm - tphAc) * (curveAminus->firstIntegral(1.00) - ConstIntAm0);
 
 
 	//calculate time of constant deacceleration to reach final velocity
@@ -364,19 +374,21 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	//tphDp, tphDm
 
 	//calculate distances
-	double distanceDp = abs(tphDp * tphDp * (curveDplus.calculateSecondIntegral(0.00) - curveDplus.calculateSecondIntegral(1.00)));
+	double ConstSecIntDp0 = curveDplus->secondIntegral(0.00);
+	double distanceDp = abs(tphDp * tphDp * (ConstSecIntDp0 - curveDplus->secondIntegral(1.00)));
 
 	double velDp = Vc - abs(velocityDp);
 
 	double distanceDc = (velDp)*tphDc - abs(0.50 * Dc * tphDc * tphDc);
 
-
 	
 	distanceDp = Vc * tphDp - distanceDp;
-	double distanceDm = abs(  tphDp * tphDp * (curveDminus.calculateSecondIntegral(1.00) - curveDminus.calculateSecondIntegral(0.00)) );
+	double distanceDm = abs(  tphDp * tphDp * (curveDminus->secondIntegral(1.00) - curveDminus->secondIntegral(0.00)) );
 	
-			
+
+				
 	double dis = i_pos + distanceAp + distanceAc + distanceAm + distanceDp + distanceDc + distanceDm;
+
 	//calculate constant velocity distance
 	double distToDo = f_pos - dis;
 
@@ -386,11 +398,14 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	double posAtStartDp = i_pos + distanceAp + distanceAc + distanceAm;
 	double tphVc = abs( distToDo / Vc );
 
-
+	
+	
 	/*const velocity Vc*/
 	double tAtVc = tphAm + tphVc;
 
-	double tAtDp = tAtVc + tphDc;
+	tphDp = tAtVc + tphDp;
+
+	tphDc += tphDp;
 
 		
 	for (double t = (tphAm+0.0001); t < (tAtVc + 0.000001); t = t + 0.0001)
@@ -413,6 +428,66 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 		tracer.trace();
 		tracer2.trace();
 	}
+
+	//phase D+
+
+	for (double t = (tAtVc + 0.0001); t <= (tphDp + 0.000001); t = t + 0.0001)
+	{
+		double delta_t = (t - tAtVc);
+		double tau = delta_t * time_scale_factor2;
+
+		double tp = tphDp - tAtVc;
+		if (tau <= 1.00)
+		{
+			a = -curveDplus->compute(abs(tau));
+			double delta = (tphDp - tAtVc) * (curveDplus->firstIntegral(tau) - ConstIntDp0);
+			v = Vc - delta;
+			double val = curveDplus->secondIntegral(tau) - ConstSecIntDp0;
+			s = posAtStartDp + abs(distToDo) + (Vc  * delta_t - tp * tp * val) + delta_t * (tphDp - tAtVc) * ConstIntDp0;
+		}
+
+		trS->set(s);
+		trA->set(a);
+		trV->set(v);
+
+		double intA = integral.process(a);
+		trVI->set(intA);
+		trSI->set(integral2.process(intA));
+
+		trErrV->set(trVI->get() - v);
+		trErrS->set(trSI->get() - s);
+		tracer.trace();
+		tracer2.trace();
+	}
+
+	//phase Dc (constant deacceleration)
+
+	double rateVel = (Vc - abs(velocityDp) - abs(velocityDm) - f_vel) / (tphDc- tphDp);
+	double velocityAtDp = (Vc - abs(velocityDp));
+
+	for (double t = (tphDp + 0.0001); t < (tphDc + 0.000001); t = t + 0.0001)
+	{
+		double delta_t = (t - tphDp);
+		a = deltaD;		
+		v = velocityAtDp - abs(rateVel) * delta_t;
+		s = posAtStartDp + abs(distToDo) + distanceDp + deltaD * 0.5 * delta_t * delta_t + abs(velocityAtDp) * delta_t;
+
+		trS->set(s);
+		trA->set(a);
+		trV->set(v);
+
+		double intA = integral.process(a);
+		trVI->set(intA);
+		trSI->set(integral2.process(intA));
+
+
+		trErrV->set(trVI->get() - v);
+		trErrS->set(trSI->get() - s);
+
+		tracer.trace();
+		tracer2.trace();
+	}
+		
 }
 
 TEST(TestHepticPolynomial, TestHepticPolynomial1)
