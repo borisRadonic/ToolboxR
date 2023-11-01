@@ -368,5 +368,8 @@
     <ClInclude Include="Header\QuinticBezierCurve.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Header\DiscreteRandomGenerator.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

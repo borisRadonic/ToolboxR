@@ -220,6 +220,7 @@
     <ClInclude Include="Header\DCMotor.h" />
     <ClInclude Include="Header\Derivative.h" />
     <ClInclude Include="Header\Difference.h" />
+    <ClInclude Include="Header\DiscreteRandomGenerator.h" />
     <ClInclude Include="Header\FIRFilter.h" />
     <ClInclude Include="Header\FisFileExport.h" />
     <ClInclude Include="Header\FisFileImport.h" />
