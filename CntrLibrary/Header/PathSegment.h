@@ -38,7 +38,7 @@ namespace CntrlLibrary
             double getAccel(double t)
             {
               
-                return _startAccel + _mathFunction->compute(getLocalTime(t));
+                return (_startAccel + _mathFunction->compute(getLocalTime(t)));
             }
 
             double getVelocity(double t, double scaleInt = 1.00, bool subtractInitialIntegral = false )
@@ -49,15 +49,23 @@ namespace CntrlLibrary
                 }
                 else
                 {
-                    return _startVel + scaleInt * _mathFunction->firstIntegral(getLocalTime(t));
+                    return ( _startVel + scaleInt * _mathFunction->firstIntegral(getLocalTime(t)) );
                 }
                 
             }
 
-            double getPosition( double t, double scale1 = 1.00, double scale2 = 1.00)
+            double getPosition(double t, double scale1 = 1.00, double scale2 = 1.00, bool subtractInitialIntegral = false)
             {
                 double lt = getLocalTime(t);
-                return _startPos + _startVel * lt * scale1 +  scale2 * _mathFunction->secondIntegral(lt);
+                if (subtractInitialIntegral)
+                {
+                    //double c1 = _firstIntEnd * lt * scale1;
+                    return ( _startPos  + _startVel * lt * scale1 + scale2 * (_mathFunction->secondIntegral(lt) - _secondIntStart) );
+                }
+                else
+                {
+                    return ( _startPos + _startVel * lt * scale1 + scale2 * _mathFunction->secondIntegral(lt) );
+                }
             }
 
             double getEndVelocity()
