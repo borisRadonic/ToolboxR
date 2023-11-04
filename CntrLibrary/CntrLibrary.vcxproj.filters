@@ -383,5 +383,11 @@
     <ClInclude Include="Header\LinearFunction.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Header\HyperbolicSecantSquared.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\LinearExponentialDecay.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

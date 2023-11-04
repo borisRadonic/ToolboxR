@@ -187,9 +187,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	std::shared_ptr<QuinticBezierCurve> curveAplus = std::make_shared<QuinticBezierCurve>();
 	curveAplus->setParams(P0, P1, P2, P3, P4, P5);
-	PathSegment plusAccelPath(0.00, 1.00, 0.00, i_vel, i_pos, curveAplus);
-	double ConstIntAp0 = plusAccelPath.getFirstIntegralAtStart();
-
+	
 
 	//test
 	P0 = 0;
@@ -218,17 +216,18 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	curveAminus->setParams(P0, P1, P2, P3, P4, P5);
 
 	double ConstIntAm0 = curveAminus->firstIntegral(0.00);
+	
+	PathSegment plusAccelPath(0.00, 1.00, 0.00, i_vel, i_pos, curveAplus);
 		
+	double ConstIntAp0 = plusAccelPath.getFirstIntegralAtStart();
+
 	double velocityAp = (curveAplus->firstIntegral(1.00) - ConstIntAp0 ) * tphAp;
 	double velocityAm = (curveAminus->firstIntegral(1.00) - ConstIntAm0) * tphAm;
 
 	//calculate time of constant acceleration to reach Vc
 	double tphAc = (Vc - (velocityAp + velocityAm)) / Ac;
 
-	//calculate distances
-
-	double distanceAp = tphAp * tphAp * (curveAplus->secondIntegral(1.00)  - curveAplus->secondIntegral(0.00));
-	
+		
 	//velocity part ( velocity is Vc during the whole period)
 	
 	double velAc = velocityAp + Ac * (tphAc);
@@ -236,7 +235,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	double constantI2 = curveAminus->secondIntegral(0.00);
 
 	double valAm = constantI2 - curveAminus->secondIntegral(1.0);
-	double distanceAm = velAc * tphAm - tphAm * tphAm  * valAm -  tphAm * tphAm * ConstIntAm0;
+	
 
 	double distanceAc = abs(0.50 * Ac * tphAc * tphAc) + (velocityAp) * tphAc;
 
@@ -253,14 +252,31 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	integral2.setInitialConditions(i_pos);
 		
 
-	for (double t = 0.00; t <= (tphAp - 0.000001); t = t + 0.0001)
+	//calculate distance Ap
+
+	double distanceAp = tphAp * tphAp * (curveAplus->secondIntegral(1.00) - curveAplus->secondIntegral(0.00));
+
+	
+
+	velocityAp = plusAccelPath.getVelocity(1.00, tphAp);
+	
+	double pos1 = 0.00;
+	double pos2 = 0.00;
+
+	for (double t = 0.00; t < (tphAp + 0.000001); t = t + 0.0001)
 	{
 		double tau = t * time_scale_factor1;
 		
 		a = plusAccelPath.getAccel(tau);
 		v = plusAccelPath.getVelocity(tau, tphAp);
 		s = plusAccelPath.getPosition(tau, tphAp, tphAp * tphAp);
-	
+		pos1 = s;
+		if (pos2 > pos1)
+		{
+			int a = 0;
+			a++;
+		}
+		pos2 = pos1;
 		trS->set(s);
 		trA->set(a);
 		trV->set(v);
@@ -276,7 +292,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 		tracer2.trace();
 	}
 	integral.reset();
-	integral.setInitialConditions(v);
+	integral.setInitialConditions(velocityAp);
 
 	integral2.reset();
 	integral2.setInitialConditions(distanceAp);
@@ -285,11 +301,12 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	
 	std::shared_ptr<ConstFunction> mathFuncConst = std::make_shared<ConstFunction>(Ac);
 	PathSegment constAccelPath(tphAp, tphAc, 0.00, velocityAp, distanceAp, mathFuncConst);
-		
-	integral.reset();
-	integral.setInitialConditions(v);
+
+	double testdiff = constAccelPath.getPosition(tphAc);
+
+
 	//x1 = 0.00;
-	for (double t = (tphAp ); t < (tphAc - 0.000001); t = t + 0.0001)
+	for (double t = (tphAp ); t < (tphAc + 0.000001); t = t + 0.0001)
 	{
 		a = constAccelPath.getAccel(t);
 		v = constAccelPath.getVelocity(t);
@@ -314,12 +331,14 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	integral.setInitialConditions(v);
 	
 	integral2.reset();
-	integral2.setInitialConditions(distanceAc);
+	integral2.setInitialConditions(distanceAc + distanceAp);
 
 
-	PathSegment minusAccelPath(0.00, 1.00, 0.00, velAc, distanceAc, curveAminus);
+	PathSegment minusAccelPath(0.00, 1.00, 0.00, velAc, distanceAc + distanceAp, curveAminus);
 
-	for (double t = (tphAc ); t < (tphAm -0.000001); t = t + 0.0001)
+	double distanceAm = minusAccelPath.getPosition(1.00, tphAm - tphAc, (tphAm - tphAc) * (tphAm - tphAc));
+
+	for (double t = (tphAc ); t < (tphAm +0.000001); t = t + 0.0001)
 	{
 		double delta_t = (t - tphAc);
 		double tau = delta_t * time_scale_factor2;
@@ -402,13 +421,16 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 
 	
-
+	double posAtStartDp = i_pos + distanceAm;
 	//calculate distances
+
+	
+
 	double ConstSecIntDp0 = curveDplus->secondIntegral(0.00);
 	double distanceDp = abs(tphDp * tphDp * (ConstSecIntDp0 - curveDplus->secondIntegral(1.00)));
 
 	double velDp = Vc - abs(velocityDp);
-
+	
 	
 
 
@@ -422,7 +444,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	
 
 				
-	double dis = i_pos + distanceAc + distanceAm + distanceDp + distanceDc + distanceDm;
+	double dis = i_pos + distanceAm + distanceDp + distanceDc + distanceDm;
 
 	//calculate constant velocity distance
 	double distToDo = f_pos - dis;
@@ -430,7 +452,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	EXPECT_TRUE(distToDo >= 0.00);
 		
 
-	double posAtStartDp = i_pos + distanceAc + distanceAm;
+	
 	double tphVc = abs( distToDo / Vc );
 		
 	/*const velocity Vc*/
@@ -442,7 +464,10 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	tphDm += tphDc;
 
+	//phase D+
+	PathSegment deaccelPlusPath(0.00, 1.00, 0.00, Vc, posAtStartDp + abs(distToDo), curveDminus);
 		
+
 	std::shared_ptr<ConstFunction> mathFuncConstAccel0 = std::make_shared<ConstFunction>(0.00);
 	PathSegment constAccel0Path(tphAm, tAtVc, 0.00, Vc, posAtStartDp, mathFuncConst);
 
@@ -472,8 +497,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	integral2.reset();
 	integral2.setInitialConditions(s);
 
-	//phase D+
-	PathSegment deaccelPlusPath(0.00, 1.00, 0.00, Vc, posAtStartDp + abs(distToDo), curveDminus);
+	
 
 	for (double t = (tAtVc + 0.0001); t <= (tphDp + 0.000001); t = t + 0.0001)
 	{
@@ -553,26 +577,29 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	PathSegment deaccelMinusPath(0.00, 1.00, 0.00, velocityDp, endStartPos, funcDminus);
 
-	double rest = f_pos - endStartPos;
+	double isFinal = deaccelMinusPath.getPosition(1.00, tphDm - tphDc, (tphDm - tphDc) * (tphDm - tphDc), true);
+	double test11 = f_pos - isFinal;
+	double lastScaling = 0.00;
+	if (test11 <= 0.00)
+	{
+		lastScaling = f_pos / isFinal;
+	}
+	else
+	{
+		lastScaling = isFinal / f_pos;
+	}
 
 	for (double t = (tphDc + 0.0001); t <= (tphDm + 0.000001); t = t + 0.0001)
 	{
 		double delta_t = (t - tphDc);
 		double tau = delta_t * time_scale_factor2;
-
 		double tp = tphDm - tphDc;
+		
 		if (tau <= 1.00)
 		{
 			a = deaccelMinusPath.getAccel(tau);
-			v = deaccelMinusPath.getVelocity(tau, tp, true);
-
-
-			//v = velocityDp + (tp * (funcDminus->firstIntegral(tau) - funcDminus->firstIntegral(0.0) ));
-
-
-			//s = deaccelMinusPath.getPosition(tau, tp, tp * tp, true);
-
-			s = endStartPos + rest * ( 1 - exp( -tau * (1.0/(5.0 * tp))) );
+			v = deaccelMinusPath.getVelocity(tau, tp, true);			
+			s = deaccelMinusPath.getPosition(tau, tp, tp * tp, true) * lastScaling;
 		}
 
 		trS->set(s);

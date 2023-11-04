@@ -67,7 +67,7 @@ namespace CntrlLibrary
                     return ( 24.00 * _a4 + 120.00 * _a5 * t + 360.00 * _a6 * t_2 + 840.00 * _a7 * t_3);
                 }
 
-                virtual double firstIntegral(double t) override
+                virtual double firstIntegral(double t, double c1) override
                 {
                     #ifndef NO_EXCEPTION
                         throw std::runtime_error("fourthIntegral not implemented");
@@ -76,7 +76,7 @@ namespace CntrlLibrary
                     #endif                    
                 }
 
-                virtual double secondIntegral(double t) override
+                virtual double secondIntegral(double t, double c1, double c2) override
                 {
                     #ifndef NO_EXCEPTION
                         throw std::runtime_error("fourthIntegral not implemented");

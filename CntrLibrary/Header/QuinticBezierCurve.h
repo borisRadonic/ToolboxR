@@ -100,7 +100,7 @@ namespace CntrlLibrary
                     #endif
                 }
 
-                virtual double firstIntegral(double t) override
+                virtual double firstIntegral(double t, double c1 = 0.00) override
                 {
                     double t2 = t * t;
                     double t3 = t2 * t;
@@ -121,10 +121,10 @@ namespace CntrlLibrary
                         - 10.00 * _P2 * (t6 / 6.00 - 3.00 * (t5 / 5.00) + 3.00 * (t4 / 4.00) - (t3 / 3.00))
                         + 10.00 * _P3 * (t6 / 6.00 - 2.00 * (t5 / 5.00) + (t4 / 4.00))
                         - 5.00 * _P4 * (t6 / 6.00 - t5 / 5.00)
-                        + _P5 * t6 / 6.00);
+                        + _P5 * t6 / 6.00 + c1);
                 }
 
-                virtual double secondIntegral(double t) override
+                virtual double secondIntegral(double t, double c1 = 0.00, double c2 = 0.00) override
                 {
                     double t2 = t * t;
                     double t3 = t2 * t;
@@ -145,7 +145,7 @@ namespace CntrlLibrary
                         - 1.66667 * _P2 * (0.142857 * t7 - 0.60 * t6 + 0.90 * t5 - 0.50 * t4)
                         + 1.66667 * _P3 * (0.142857 * t7 - 0.40 * t6 + 0.30 * t5)
                         + (1.00/6.00) * _P4 * (t6 - 5.00 * (t7/7.00) )
-                        + _P5 * t7 / 42.00);
+                        + _P5 * t7 / 42.00 + c1 * t + c2);
                 }
                                
 

@@ -240,6 +240,7 @@
     <ClInclude Include="Header\HBPWMDCMotor.h" />
     <ClInclude Include="Header\HepticPolynomial.h" />
     <ClInclude Include="Header\HexicPolynomial.h" />
+    <ClInclude Include="Header\HyperbolicSecantSquared.h" />
     <ClInclude Include="Header\IIRFilter.h" />
     <ClInclude Include="Header\IIRFilterButterSO.h" />
     <ClInclude Include="Header\IIRFilterFO.h" />
@@ -247,6 +248,7 @@
     <ClInclude Include="Header\Integrator.h" />
     <ClInclude Include="Header\JerkLimitedTrajectory.h" />
     <ClInclude Include="Header\LargeFuzzySet.h" />
+    <ClInclude Include="Header\LinearExponentialDecay.h" />
     <ClInclude Include="Header\LinearFunction.h" />
     <ClInclude Include="Header\LinguisticVariable.h" />
     <ClInclude Include="Header\MathFunctionBase.h" />

@@ -29,10 +29,10 @@ namespace CntrlLibrary
                 , _startVel(startVel)
                 , _startPos(startPos)
             {                 
-                _firstIntEnd = _mathFunction->firstIntegral(_endTime);
-                _secondIntEnd = _mathFunction->secondIntegral(_endTime);
-                _firstIntStart = _mathFunction->firstIntegral(_startTime);
-                _secondIntStart = _mathFunction->secondIntegral(_startTime);               
+                _firstIntEnd = _mathFunction->firstIntegral(_endTime, 0.00);
+                _secondIntEnd = _mathFunction->secondIntegral(_endTime, 0.00, 0.00);
+                _firstIntStart = _mathFunction->firstIntegral(_startTime, 0.00);
+                _secondIntStart = _mathFunction->secondIntegral(_startTime, 0.00, 0.00);
             }
 
             double getAccel(double t)
@@ -45,11 +45,11 @@ namespace CntrlLibrary
             {
                 if (subtractInitialIntegral)
                 {
-                    return (_startVel + scaleInt * ( _mathFunction->firstIntegral(getLocalTime(t)) - _firstIntStart) );
+                    return (_startVel + scaleInt * ( _mathFunction->firstIntegral(getLocalTime(t), 0.00 ) - _firstIntStart) );
                 }
                 else
                 {
-                    return ( _startVel + scaleInt * _mathFunction->firstIntegral(getLocalTime(t)) );
+                    return ( _startVel + scaleInt * _mathFunction->firstIntegral(getLocalTime(t), 0.00 ) );
                 }
                 
             }
@@ -60,11 +60,11 @@ namespace CntrlLibrary
                 if (subtractInitialIntegral)
                 {
                     //double c1 = _firstIntEnd * lt * scale1;
-                    return ( _startPos  + _startVel * lt * scale1 + scale2 * (_mathFunction->secondIntegral(lt) - _secondIntStart) );
+                    return ( _startPos  + _startVel * lt * scale1 + scale2 * (_mathFunction->secondIntegral(lt, 0.00, 0.00) - _secondIntStart) );
                 }
                 else
                 {
-                    return ( _startPos + _startVel * lt * scale1 + scale2 * _mathFunction->secondIntegral(lt) );
+                    return ( _startPos + _startVel * lt * scale1 + scale2 * _mathFunction->secondIntegral(lt, 0.00, 0.00) );
                 }
             }
 

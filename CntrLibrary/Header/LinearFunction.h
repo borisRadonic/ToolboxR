@@ -44,14 +44,14 @@ namespace CntrlLibrary
                 return 0.00;
             }
 
-            inline virtual double firstIntegral(double t) override
+            inline virtual double firstIntegral(double t, double c1 = 0.00) override
             {
-                return( 0.5 * _m * t * t + _b * t );
+                return( 0.5 * _m * t * t + _b * t + c1);
             }
 
-            inline virtual double secondIntegral(double t) override
+            inline virtual double secondIntegral(double t, double c1 = 0.00, double c2 = 0.00) override
             {
-                return( (0.5/3.0) * _m * t * t * t + 0.50 * _b * t * t);
+                return( (0.5/3.0) * _m * t * t * t + 0.50 * _b * t * t + c1 * t + c2);
             }
         };
     }

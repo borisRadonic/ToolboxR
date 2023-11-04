@@ -18,9 +18,9 @@ namespace CntrlLibrary
 
             virtual double fourthDerivative(double t)   = 0;
 
-            virtual double firstIntegral(double t)      = 0;
+            virtual double firstIntegral(double t, double c1) = 0;
 
-            virtual double secondIntegral(double t)     = 0;
+            virtual double secondIntegral(double t, double c1, double c2)     = 0;
             
             virtual ~MathFunctionBase() {}
         };

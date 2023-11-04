@@ -66,7 +66,7 @@ namespace CntrlLibrary
                 }
 
 
-                virtual double firstIntegral(double t) override
+                virtual double firstIntegral(double t, double c1) override
                 {
                     #ifndef NO_EXCEPTION
                         throw std::runtime_error("fourthIntegral not implemented");
@@ -75,7 +75,7 @@ namespace CntrlLibrary
                     #endif                    
                     }
 
-                    virtual double secondIntegral(double t) override
+                    virtual double secondIntegral(double t, double c1, double c2) override
                     {
                         #ifndef NO_EXCEPTION
                             throw std::runtime_error("fourthIntegral not implemented");
