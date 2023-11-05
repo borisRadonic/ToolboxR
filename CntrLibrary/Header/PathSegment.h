@@ -59,8 +59,8 @@ namespace CntrlLibrary
                 double lt = getLocalTime(t);
                 if (subtractInitialIntegral)
                 {
-                    //double c1 = _firstIntEnd * lt * scale1;
-                    return ( _startPos  + _startVel * lt * scale1 + scale2 * (_mathFunction->secondIntegral(lt, 0.00, 0.00) - _secondIntStart) );
+                    double c1 = _firstIntStart * scale2 * lt;
+                    return ( _startPos  + _startVel * lt * scale1 + scale2 * (_mathFunction->secondIntegral(lt, 0.00, 0.00) - _secondIntStart) - c1);
                 }
                 else
                 {

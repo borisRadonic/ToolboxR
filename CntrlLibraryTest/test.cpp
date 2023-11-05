@@ -42,6 +42,87 @@ using std::experimental::filesystem::path;
 
 using namespace DiscreteTime;
 
+using namespace Math;
+using namespace Bezier;
+using namespace TrajectoryGeneration;
+
+void pathFunc(PathSegment& pathSegment,
+				bool normalizedTime,
+				bool inverseFunc,			
+				bool subtractInitialIntegral,
+				double signA,
+				double signVel,
+				double signPos,
+				double scaleVel1,
+				double scalePos1,
+				double scalePos2,
+				Integrator& integral1,
+				Integrator& integral2,
+				WaveFormTracer& tracer1,
+				WaveFormTracer& tracer2,
+				std::shared_ptr<Signal<std::double_t>>& trA,
+				std::shared_ptr<Signal<std::double_t>>& trV,
+				std::shared_ptr<Signal<std::double_t>>& trS,
+				std::shared_ptr<Signal<std::double_t>>& trVI,
+				std::shared_ptr<Signal<std::double_t>>& trSI,
+				std::shared_ptr<Signal<std::double_t>>& trErrV,
+				std::shared_ptr<Signal<std::double_t>>& trErrS,
+				double startTime,
+				double endTime,
+				double& a,
+				double& v,
+				double& s,
+				double f_accel,
+				double f_vel,
+				double f_pos )
+{
+	
+	
+
+	double dtime = endTime - startTime;
+	double dtime_squared = dtime * dtime;
+	double time_scale_factor = 1.00 / dtime;;
+
+	for (double t = startTime; t < (endTime + 0.000001); t = t + 0.0001)
+	{
+		if (normalizedTime)
+		{
+			double delta_t = (t - startTime);
+			double tau = delta_t * time_scale_factor;
+			if (inverseFunc)
+			{
+				a = f_accel - signA * pathSegment.getAccel(1.00 - tau);
+				v = f_vel  + signVel * pathSegment.getVelocity(1.00 - tau, scaleVel1 * dtime, subtractInitialIntegral);
+				s = f_pos - signPos * pathSegment.getPosition(1.00 - tau, scalePos1 * dtime, scalePos2 * dtime_squared, subtractInitialIntegral);
+			}
+			else
+			{
+				a = signA * pathSegment.getAccel(tau);
+				v = signVel * pathSegment.getVelocity(tau, scaleVel1 * dtime, subtractInitialIntegral);
+				s = signPos * pathSegment.getPosition(tau, scalePos1 * dtime, scalePos2 * dtime_squared, subtractInitialIntegral);
+			}
+		}
+		else
+		{
+			a = signA * pathSegment.getAccel(t);
+			v = signVel * pathSegment.getVelocity(t, scaleVel1, subtractInitialIntegral);
+			s = signPos * pathSegment.getPosition(t, scalePos1, scalePos2, subtractInitialIntegral);
+		}
+
+		trS->set(s);
+		trA->set(a);
+		trV->set(v);
+
+		double intA = integral1.process(a);
+		trVI->set(intA);
+		trSI->set(integral2.process(v));
+
+		trErrV->set(trVI->get() - v);
+		trErrS->set(trSI->get() - s);
+		tracer1.trace();
+		tracer2.trace();
+	}
+}
 
 TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 {
@@ -62,6 +143,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	WaveFormTracer tracer2(fileName2, ts);
 	EXPECT_TRUE(tracer2.open());
+
+	
 
 	auto trS = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
 	auto trSI = tracer.addSignal<std::double_t>("xI", BaseSignal::SignalType::Double);
@@ -148,7 +231,6 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 
 
-
 	Tv = 0.00;
 	Vc = sign * sqrt((2.00 * a_max * a_max * (travel_distance - aproxJerkDistance) - a_max * i_vel * i_vel) / (a_max + a_max));
 		
@@ -215,14 +297,22 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	std::shared_ptr<QuinticBezierCurve> curveAminus = std::make_shared<QuinticBezierCurve>();
 	curveAminus->setParams(P0, P1, P2, P3, P4, P5);
 
-	double ConstIntAm0 = curveAminus->firstIntegral(0.00);
+	//double ConstIntAm0 = curveAminus->firstIntegral(0.00);
 	
 	PathSegment plusAccelPath(0.00, 1.00, 0.00, i_vel, i_pos, curveAplus);
 		
-	double ConstIntAp0 = plusAccelPath.getFirstIntegralAtStart();
+	//double ConstIntAp0 = plusAccelPath.getFirstIntegralAtStart();
 
-	double velocityAp = (curveAplus->firstIntegral(1.00) - ConstIntAp0 ) * tphAp;
-	double velocityAm = (curveAminus->firstIntegral(1.00) - ConstIntAm0) * tphAm;
+	
+	//it is 100% symmetry ( velocity is 0.5 * a * t, and average acceleration is 0.5 * a
+	
+	
+	double velocityAp = i_vel +  0.50 * (Ac - i_accel) * tphAp;
+	double velocityAm = i_vel + 0.50 * (Ac - i_accel) * tphAm;
+	//double distanceAp = i_vel * tphAp + 0.50 * 0.50 * (Ac - i_accel) * tphAp * tphAp;
+
+	double distanceAp = 0.50 * i_accel * tphAp * tphAp + i_vel * tphAp + plusAccelPath.geSecondIntegralAtEnd() * tphAp * tphAp;
+
 
 	//calculate time of constant acceleration to reach Vc
 	double tphAc = (Vc - (velocityAp + velocityAm)) / Ac;
@@ -245,130 +335,139 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	Integrator integral;
 	integral.setParameters(IntegratorMethod::BackwardEuler, 0.0001, 1.00);
-	integral.setInitialConditions(0.00);
+	integral.setInitialConditions(i_vel);
 
 	Integrator integral2;
 	integral2.setParameters(IntegratorMethod::BackwardEuler, 0.0001, 1.00);
 	integral2.setInitialConditions(i_pos);
-		
-
-	//calculate distance Ap
-
-	double distanceAp = tphAp * tphAp * (curveAplus->secondIntegral(1.00) - curveAplus->secondIntegral(0.00));
-
 	
-
-	velocityAp = plusAccelPath.getVelocity(1.00, tphAp);
 	
-	double pos1 = 0.00;
-	double pos2 = 0.00;
-
-	for (double t = 0.00; t < (tphAp + 0.000001); t = t + 0.0001)
-	{
-		double tau = t * time_scale_factor1;
-		
-		a = plusAccelPath.getAccel(tau);
-		v = plusAccelPath.getVelocity(tau, tphAp);
-		s = plusAccelPath.getPosition(tau, tphAp, tphAp * tphAp);
-		pos1 = s;
-		if (pos2 > pos1)
-		{
-			int a = 0;
-			a++;
-		}
-		pos2 = pos1;
-		trS->set(s);
-		trA->set(a);
-		trV->set(v);
-		
-		double intA = integral.process(a);
-		trVI->set(intA);
-		trSI->set(integral2.process(v));
-		//trSI->set(integral2.process(intA));
-		
-		trErrV->set(trVI->get() - v);
-		trErrS->set(trSI->get() - s);
-		tracer.trace();
-		tracer2.trace();
-	}
+	pathFunc(plusAccelPath,
+			true,
+			false,			
+			false,
+			1.00,
+			1.00,
+			1.00,
+			1.00,
+			1.00,
+			1.00,
+			integral,
+			integral2,
+			tracer,
+			tracer2,
+			trA,
+			trV,
+			trS,
+			trVI,
+			trSI,
+			trErrV,
+			trErrS,
+			0.00,
+			tphAp,
+			a,
+			v,
+			s,
+			f_accel,
+			f_vel,
+		    f_pos);
+	
+	
 	integral.reset();
-	integral.setInitialConditions(velocityAp);
+	integral.setInitialConditions(i_vel + velocityAp);
 
 	integral2.reset();
-	integral2.setInitialConditions(distanceAp);
+	integral2.setInitialConditions(i_pos + distanceAp);
 	
 	/*const acceleration*/
+
 	
 	std::shared_ptr<ConstFunction> mathFuncConst = std::make_shared<ConstFunction>(Ac);
+
+
 	PathSegment constAccelPath(tphAp, tphAc, 0.00, velocityAp, distanceAp, mathFuncConst);
+		
 
-	double testdiff = constAccelPath.getPosition(tphAc);
 
-
-	//x1 = 0.00;
-	for (double t = (tphAp ); t < (tphAc + 0.000001); t = t + 0.0001)
-	{
-		a = constAccelPath.getAccel(t);
-		v = constAccelPath.getVelocity(t);
-		s = constAccelPath.getPosition(t);
-				
-		trS->set(s);
-		trA->set(a);
-		trV->set(v); 
+	pathFunc(constAccelPath,
+		false,
+		false,		
+		false,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		integral,
+		integral2,
+		tracer,
+		tracer2,
+		trA,
+		trV,
+		trS,
+		trVI,
+		trSI,
+		trErrV,
+		trErrS,
+		tphAp,
+		tphAc,
+		a,
+		v,
+		s,
+		f_accel,
+		f_vel,
+		f_pos);
 	
-		double intA = integral.process(a);
-		trVI->set(intA);
-		trSI->set(integral2.process(v));
-		//trSI->set(integral2.process(intA));
+	
+	PathSegment minusAccelPath(0.00, 1.00, 0.00, velAc, distanceAc + distanceAp, curveAminus);
 
-		trErrV->set(trVI->get() - v);
-		trErrS->set(trSI->get() - s);
+	double distanceAm = distanceAc + distanceAp + Ac * 0.5 * 0.5 * (tphAm - tphAc) * (tphAm - tphAc) + (tphAm - tphAc) * velAc;
+	
 
-		tracer.trace();
-		tracer2.trace();
-	}
-	integral.reset();
-	integral.setInitialConditions(v);
+	//integral.reset();
+	//integral.setInitialConditions(v);
 	
 	integral2.reset();
 	integral2.setInitialConditions(distanceAc + distanceAp);
 
-
-	PathSegment minusAccelPath(0.00, 1.00, 0.00, velAc, distanceAc + distanceAp, curveAminus);
-
-	double distanceAm = minusAccelPath.getPosition(1.00, tphAm - tphAc, (tphAm - tphAc) * (tphAm - tphAc));
-
-	for (double t = (tphAc ); t < (tphAm +0.000001); t = t + 0.0001)
-	{
-		double delta_t = (t - tphAc);
-		double tau = delta_t * time_scale_factor2;
-				
-		if (tau <= 1.00)
-		{
-			a = minusAccelPath.getAccel(tau);
-			v = minusAccelPath.getVelocity(tau, tphAm - tphAc, true );
-			s = minusAccelPath.getPosition(tau, tphAm - tphAc, (tphAm - tphAc) * (tphAm - tphAc) );
-		} 
-
-		trS->set(s);
-		trA->set(a);
-		trV->set(v);
 		
-		double intA = integral.process(a);
-		trVI->set(intA);
-		trSI->set(integral2.process(v));
-		//trSI->set(integral2.process(intA));
+	pathFunc(minusAccelPath,
+		true,
+		false,		
+		true,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		integral,
+		integral2,
+		tracer,
+		tracer2,
+		trA,
+		trV,
+		trS,
+		trVI,
+		trSI,
+		trErrV,
+		trErrS,
+		tphAc,
+		tphAm,
+		a,
+		v,
+		s,
+		f_accel,
+		f_vel,
+		f_pos);
 
-		trErrV->set(trVI->get() - v);
-		trErrS->set(trSI->get() - s);
-		tracer.trace();
-		tracer2.trace();
-	}
-	//integral.reset();
-	//integral.setInitialConditions(v);
+		
+	integral.reset();
+	integral.setInitialConditions( velAc + velocityAm);
 	
-	//integral2.reset();
-	//integral2.setInitialConditions(s);
+	integral2.reset();
+	integral2.setInitialConditions( distanceAm);
 
 
 	double deltaD = Dc - f_accel;
@@ -416,24 +515,14 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	double velocityDp = (curveDplus->firstIntegral(1.00) - ConstIntDp0) * tphDp;
 	double velocityDm = (curveDminus->firstIntegral(1.00) - ConstIntDm0) * tphDm;
 
-	//correct Vc
-	Vc = velAc + (tphAm - tphAc) * (curveAminus->firstIntegral(1.00) - ConstIntAm0);
-
-
-	
 	double posAtStartDp = i_pos + distanceAm;
 	//calculate distances
-
 	
-
 	double ConstSecIntDp0 = curveDplus->secondIntegral(0.00);
 	double distanceDp = abs(tphDp * tphDp * (ConstSecIntDp0 - curveDplus->secondIntegral(1.00)));
 
 	double velDp = Vc - abs(velocityDp);
 	
-	
-
-
 	//calculate time of constant deacceleration to reach final velocity
 	double tphDc = abs((Vc - (abs(velocityDp) + abs(velocityDm)) - f_vel) / Dc);
 	double distanceDc = (velDp)*tphDc - abs(0.50 * Dc * tphDc * tphDc);
@@ -441,9 +530,6 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	
 	distanceDp = Vc * tphDp - distanceDp;
 	double distanceDm = abs(tphDm * tphDm * (curveDminus->secondIntegral(1.00) - curveDminus->secondIntegral(0.00)) );
-	
-
-				
 	double dis = i_pos + distanceAm + distanceDp + distanceDc + distanceDm;
 
 	//calculate constant velocity distance
@@ -464,68 +550,82 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	tphDm += tphDc;
 
-	//phase D+
-	PathSegment deaccelPlusPath(0.00, 1.00, 0.00, Vc, posAtStartDp + abs(distToDo), curveDminus);
 		
+	//const velocity
 
-	std::shared_ptr<ConstFunction> mathFuncConstAccel0 = std::make_shared<ConstFunction>(0.00);
-	PathSegment constAccel0Path(tphAm, tAtVc, 0.00, Vc, posAtStartDp, mathFuncConst);
+	std::shared_ptr<ConstFunction> mathFuncConstVel1 = std::make_shared<ConstFunction>(0.00);
 
-	for (double t = (tphAm+0.0001); t < (tAtVc + 0.000001); t = t + 0.0001)
-	{
-		s = constAccel0Path.getPosition(t, 1.00, 0.00);
+	PathSegment constVelPath( tphAm, tAtVc, 0.00, Vc, posAtStartDp, mathFuncConstVel1);
 
-		trS->set(s);
-		trA->set(a);
-		trV->set(v);
-
-		double intA = integral.process(a);
-		trVI->set(intA);
-		trSI->set(integral2.process(v));
-		//trSI->set(integral2.process(intA));
-
-
-		trErrV->set(trVI->get() - v);
-		trErrS->set(trSI->get() - s);
-
-		tracer.trace();
-		tracer2.trace();
-	}
+	pathFunc(constVelPath,
+		false,
+		false,		
+		false,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		integral,
+		integral2,
+		tracer,
+		tracer2,
+		trA,
+		trV,
+		trS,
+		trVI,
+		trSI,
+		trErrV,
+		trErrS,
+		tphAm,
+		tAtVc,
+		a,
+		v,
+		s,
+		f_accel,
+		f_vel,
+		f_pos);
+		
 	integral.reset();
-	integral.setInitialConditions(v);
+	integral.setInitialConditions(Vc);
 	
 	integral2.reset();
-	integral2.setInitialConditions(s);
+	integral2.setInitialConditions(posAtStartDp + abs(distToDo));
 
+	//phase D+
+	PathSegment deaccelPlusPath(0.00, 1.00, 0.00, Vc, posAtStartDp + abs(distToDo), curveDminus);
 	
+	pathFunc(deaccelPlusPath,
+		true,
+		false,		
+		true,
+		-1.00,
+		1.00,
+		1.00,
+		-1.00,
+		1.00,
+		-1.00,
+		integral,
+		integral2,
+		tracer,
+		tracer2,
+		trA,
+		trV,
+		trS,
+		trVI,
+		trSI,
+		trErrV,
+		trErrS,
+		tphAc,
+		tphAm,
+		a,
+		v,
+		s,
+		f_accel,
+		f_vel,
+		f_pos);
 
-	for (double t = (tAtVc + 0.0001); t <= (tphDp + 0.000001); t = t + 0.0001)
-	{
-		double delta_t = (t - tAtVc);
-		double tau = delta_t * time_scale_factor2;
-
-		double tp = tphDp - tAtVc;
-		if (tau <= 1.00)
-		{
-			a = -deaccelPlusPath.getAccel(tau);
-			v = deaccelPlusPath.getVelocity(tau, -(tphDp - tAtVc), true);
-			s = deaccelPlusPath.getPosition(tau, (tphDp - tAtVc), ((tphDp - tAtVc) * (tphDp - tAtVc)) );
-		}
-
-		trS->set(s);
-		trA->set(a);
-		trV->set(v);
-
-		double intA = integral.process(a);
-		trVI->set(intA);
-		trSI->set(integral2.process(v));
-		//trSI->set(integral2.process(intA));
-
-		trErrV->set(trVI->get() - v);
-		trErrS->set(trSI->get() - s);
-		tracer.trace();
-		tracer2.trace();
-	}
 	
 	double velocityAtDp = (Vc - abs(velocityDp));
 	integral.reset();
@@ -536,34 +636,42 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	integral2.setInitialConditions(posAtStartDp + abs(distToDo) + distanceDp);
 
 	//phase Dc (constant deacceleration)
-
 	/*const acceleration*/
 	
 	std::shared_ptr<ConstFunction> mathFuncConstD = std::make_shared<ConstFunction>(deltaD);
 	PathSegment constDeaccelPath(tphDp, tphDc, 0.00, velocityAtDp, posAtStartDp + abs(distToDo) + distanceDp, mathFuncConstD);
 
-	for (double t = (tphDp + 0.0001); t < (tphDc + 0.000001); t = t + 0.0001)
-	{		
-		a = constDeaccelPath.getAccel(t);
-		v = constDeaccelPath.getVelocity(t);
-		s = constDeaccelPath.getPosition(t);
-			
-		trS->set(s);
-		trA->set(a);
-		trV->set(v);
 
-		double intA = integral.process(a);
-		trVI->set(intA);
-		trSI->set(integral2.process(v));
-		//trSI->set(integral2.process(intA));
-
-
-		trErrV->set(trVI->get() - v);
-		trErrS->set(trSI->get() - s);
-
-		tracer.trace();
-		tracer2.trace();
-	}
+	pathFunc(constDeaccelPath,
+		false,
+		false,		
+		false,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		integral,
+		integral2,
+		tracer,
+		tracer2,
+		trA,
+		trV,
+		trS,
+		trVI,
+		trSI,
+		trErrV,
+		trErrS,
+		tphDp,
+		tphDc,
+		a,
+		v,
+		s,
+		f_accel,
+		f_vel,
+		f_pos);
+		
 	integral.reset();
 	integral.setInitialConditions(velocityDp);
 		
@@ -574,49 +682,37 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	//phase D-
 
 	double endStartPos = posAtStartDp + abs(distToDo) + distanceDp + distanceDc;
-
 	PathSegment deaccelMinusPath(0.00, 1.00, 0.00, velocityDp, endStartPos, funcDminus);
-
-	double isFinal = deaccelMinusPath.getPosition(1.00, tphDm - tphDc, (tphDm - tphDc) * (tphDm - tphDc), true);
-	double test11 = f_pos - isFinal;
-	double lastScaling = 0.00;
-	if (test11 <= 0.00)
-	{
-		lastScaling = f_pos / isFinal;
-	}
-	else
-	{
-		lastScaling = isFinal / f_pos;
-	}
-
-	for (double t = (tphDc + 0.0001); t <= (tphDm + 0.000001); t = t + 0.0001)
-	{
-		double delta_t = (t - tphDc);
-		double tau = delta_t * time_scale_factor2;
-		double tp = tphDm - tphDc;
 		
-		if (tau <= 1.00)
-		{
-			a = deaccelMinusPath.getAccel(tau);
-			v = deaccelMinusPath.getVelocity(tau, tp, true);			
-			s = deaccelMinusPath.getPosition(tau, tp, tp * tp, true) * lastScaling;
-		}
-
-		trS->set(s);
-		trA->set(a);
-		trV->set(v);
-
-		double intA = integral.process(a);
-		trVI->set(intA);
-		trSI->set(integral2.process(v));
-		//trSI->set(integral2.process(intA));
-
-		trErrV->set(trVI->get() - v);
-		trErrS->set(trSI->get() - s);
-		tracer.trace();
-		tracer2.trace();
-	}
-
+	pathFunc(plusAccelPath,
+		true,
+		true,
+		true,		
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		1.00,
+		integral,
+		integral2,
+		tracer,
+		tracer2,
+		trA,
+		trV,
+		trS,
+		trVI,
+		trSI,
+		trErrV,
+		trErrS,
+		tphDc,
+		tphDm,
+		a,
+		v,
+		s,
+		f_accel,
+		f_vel,
+		f_pos);
 }
 
 TEST(TestHepticPolynomial, TestHepticPolynomial1)
