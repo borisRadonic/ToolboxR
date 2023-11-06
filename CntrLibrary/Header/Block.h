@@ -78,9 +78,7 @@ namespace CntrlLibrary
 
 		SignalPtr _inputs;
 
-		SignalPtr _outputs;
-		//std::unique_ptr<BaseSignal> ddd;
-		//using VecInputsPtr = std::vector<std::unique_ptr<FuzzyInput>>;
+		SignalPtr _outputs;		
 
 	};
 

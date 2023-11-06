@@ -223,20 +223,18 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 		+ v_max * v_max / (2.00 * a_max));
 
 
-
 	min_max_vel_distance += aproxJerkDistance;
 
 	//the condition for 'triangular profile'
 	EXPECT_TRUE( abs(travel_distance) < min_max_vel_distance );
 
 
-
 	Tv = 0.00;
 	Vc = sign * sqrt((2.00 * a_max * a_max * (travel_distance - aproxJerkDistance) - a_max * i_vel * i_vel) / (a_max + a_max));
 		
-	double Ta = abs( (Vc - i_vel) / Ac);
+	//double Ta = abs( (Vc - i_vel) / Ac);
 
-	Td = abs( (Vc-f_vel) / Dc );
+	//Td = abs( (Vc-f_vel) / Dc );
 						
 
 
@@ -253,12 +251,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	Times: tphAp, tphAc, tphAm, tphVc, tphDp, tphDc, tphDm, 
 	*/
 
-	
-
-	//scale for total time
-	double time_scale_factor1 = 1.00 / tphAp;
-	double time_scale_factor2 = 1.00 / tphAm;
-
+		
 	double P0 = i_accel;  //start Acceleration
 	double P1 = i_accel;  //it influence the initial rise phase
 	double P2 = i_accel;  //it shapes the middle part of the curve
@@ -269,22 +262,7 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	std::shared_ptr<QuinticBezierCurve> curveAplus = std::make_shared<QuinticBezierCurve>();
 	curveAplus->setParams(P0, P1, P2, P3, P4, P5);
-	
-
-	//test
-	P0 = 0;
-	P1 = 0;
-	P2 = 0;
-	P3 = 1.00;
-	P4 = 1.00; // /it influence the final  phase
-	P5 = 1.00; //stop acceleration
-
-	QuinticBezierCurve test1;
-	test1.setParams(P0, P1, P2, P3, P4, P5);
-	double in0 = test1.firstIntegral(0.00);
-	double in1 = test1.firstIntegral(1.00);
-	double myBConst = 0.6666666666666673;
-	double myBconst2 = 1.00 - myBConst;
+		
 
 	P0 = Ac; //start Acceleration
 	P1 = Ac; //it influence the initial phase
@@ -299,7 +277,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	//double ConstIntAm0 = curveAminus->firstIntegral(0.00);
 	
-	PathSegment plusAccelPath(0.00, 1.00, 0.00, i_vel, i_pos, curveAplus);
+	PathSegment plusAccelPath;
+	plusAccelPath.create(0.00, 1.00, 0.00, i_vel, i_pos, curveAplus);
 		
 	//double ConstIntAp0 = plusAccelPath.getFirstIntegralAtStart();
 
@@ -385,7 +364,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	std::shared_ptr<ConstFunction> mathFuncConst = std::make_shared<ConstFunction>(Ac);
 
 
-	PathSegment constAccelPath(tphAp, tphAc, 0.00, velocityAp, distanceAp, mathFuncConst);
+	PathSegment constAccelPath;
+	constAccelPath.create(tphAp, tphAc, 0.00, velocityAp, distanceAp, mathFuncConst);
 		
 
 
@@ -420,7 +400,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 		f_pos);
 	
 	
-	PathSegment minusAccelPath(0.00, 1.00, 0.00, velAc, distanceAc + distanceAp, curveAminus);
+	PathSegment minusAccelPath;
+	minusAccelPath.create(0.00, 1.00, 0.00, velAc, distanceAc + distanceAp, curveAminus);
 
 	double distanceAm = distanceAc + distanceAp + Ac * 0.5 * 0.5 * (tphAm - tphAc) * (tphAm - tphAc) + (tphAm - tphAc) * velAc;
 	
@@ -555,7 +536,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 
 	std::shared_ptr<ConstFunction> mathFuncConstVel1 = std::make_shared<ConstFunction>(0.00);
 
-	PathSegment constVelPath( tphAm, tAtVc, 0.00, Vc, posAtStartDp, mathFuncConstVel1);
+	PathSegment constVelPath;
+	constVelPath.create(tphAm, tAtVc, 0.00, Vc, posAtStartDp, mathFuncConstVel1);
 
 	pathFunc(constVelPath,
 		false,
@@ -594,8 +576,9 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	integral2.setInitialConditions(posAtStartDp + abs(distToDo));
 
 	//phase D+
-	PathSegment deaccelPlusPath(0.00, 1.00, 0.00, Vc, posAtStartDp + abs(distToDo), curveDminus);
-	
+	PathSegment deaccelPlusPath;	
+	deaccelPlusPath.create(0.00, 1.00, 0.00, Vc, posAtStartDp + abs(distToDo), curveDminus);
+
 	pathFunc(deaccelPlusPath,
 		true,
 		false,		
@@ -639,7 +622,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	/*const acceleration*/
 	
 	std::shared_ptr<ConstFunction> mathFuncConstD = std::make_shared<ConstFunction>(deltaD);
-	PathSegment constDeaccelPath(tphDp, tphDc, 0.00, velocityAtDp, posAtStartDp + abs(distToDo) + distanceDp, mathFuncConstD);
+	PathSegment constDeaccelPath;
+	constDeaccelPath.create(tphDp, tphDc, 0.00, velocityAtDp, posAtStartDp + abs(distToDo) + distanceDp, mathFuncConstD);
 
 
 	pathFunc(constDeaccelPath,
@@ -682,7 +666,8 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	//phase D-
 
 	double endStartPos = posAtStartDp + abs(distToDo) + distanceDp + distanceDc;
-	PathSegment deaccelMinusPath(0.00, 1.00, 0.00, velocityDp, endStartPos, funcDminus);
+	PathSegment deaccelMinusPath;
+	deaccelMinusPath.create(0.00, 1.00, 0.00, velocityDp, endStartPos, funcDminus);
 		
 	pathFunc(plusAccelPath,
 		true,

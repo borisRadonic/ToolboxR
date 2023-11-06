@@ -16,88 +16,127 @@ namespace CntrlLibrary
 
         public:
 
-            PathSegment(    double startTime,
-                            double endTime,
-                            double startAccel,
-                            double startVel,
-                            double startPos,
-                            std::shared_ptr<MathFunctionBase> mathFunc)
-                : _mathFunction(mathFunc)
-                , _startTime(startTime)
-                , _endTime(endTime)
-                , _startAccel(startAccel)
-                , _startVel(startVel)
-                , _startPos(startPos)
-            {                 
+            PathSegment()
+            {
+            }
+
+            void create(double startTime,
+                        double endTime,
+                        double startAccel,
+                        double startVel,
+                        double startPos,
+                        std::shared_ptr<MathFunctionBase> mathFunc)
+            {
+
+                _mathFunction = mathFunc;
+                _startTime = startTime;
+                _endTime = endTime;
+                _startAccel = startAccel;
+                _startVel = startVel;
+                _startPos = startPos;
                 _firstIntEnd = _mathFunction->firstIntegral(_endTime, 0.00);
                 _secondIntEnd = _mathFunction->secondIntegral(_endTime, 0.00, 0.00);
                 _firstIntStart = _mathFunction->firstIntegral(_startTime, 0.00);
                 _secondIntStart = _mathFunction->secondIntegral(_startTime, 0.00, 0.00);
+                _created = true;
             }
 
             double getAccel(double t)
             {
-              
-                return (_startAccel + _mathFunction->compute(getLocalTime(t)));
+                if (_created)
+                {
+                    return (_startAccel + _mathFunction->compute(getLocalTime(t)));
+                }
+                return 0.00;
             }
 
             double getVelocity(double t, double scaleInt = 1.00, bool subtractInitialIntegral = false )
             {
-                if (subtractInitialIntegral)
+                if (_created)
                 {
-                    return (_startVel + scaleInt * ( _mathFunction->firstIntegral(getLocalTime(t), 0.00 ) - _firstIntStart) );
+                    if (subtractInitialIntegral)
+                    {
+                        return (_startVel + scaleInt * (_mathFunction->firstIntegral(getLocalTime(t), 0.00) - _firstIntStart));
+                    }
+                    else
+                    {
+                        return (_startVel + scaleInt * _mathFunction->firstIntegral(getLocalTime(t), 0.00));
+                    }
                 }
-                else
-                {
-                    return ( _startVel + scaleInt * _mathFunction->firstIntegral(getLocalTime(t), 0.00 ) );
-                }
-                
+                return 0.00;
             }
 
             double getPosition(double t, double scale1 = 1.00, double scale2 = 1.00, bool subtractInitialIntegral = false)
             {
-                double lt = getLocalTime(t);
-                if (subtractInitialIntegral)
+                if (_created)
                 {
-                    double c1 = _firstIntStart * scale2 * lt;
-                    return ( _startPos  + _startVel * lt * scale1 + scale2 * (_mathFunction->secondIntegral(lt, 0.00, 0.00) - _secondIntStart) - c1);
+                    double lt = getLocalTime(t);
+                    if (subtractInitialIntegral)
+                    {
+                        double c1 = _firstIntStart * scale2 * lt;
+                        return (_startPos + _startVel * lt * scale1 + scale2 * (_mathFunction->secondIntegral(lt, 0.00, 0.00) - _secondIntStart) - c1);
+                    }
+                    else
+                    {
+                        return (_startPos + _startVel * lt * scale1 + scale2 * _mathFunction->secondIntegral(lt, 0.00, 0.00));
+                    }
                 }
-                else
-                {
-                    return ( _startPos + _startVel * lt * scale1 + scale2 * _mathFunction->secondIntegral(lt, 0.00, 0.00) );
-                }
+                return 0.00;
             }
 
             double getEndVelocity()
             {
-                return (_firstIntEnd + _startVel);
+                if (_created)
+                {
+                    return (_firstIntEnd + _startVel);
+                }
+                return 0.00;
             }
 
             double getEndPositiony()
             {
-                return (_secondIntEnd + _startPos);
+                if (_created)
+                {
+                    return (_secondIntEnd + _startPos);
+                }
+                return 0.00;
             }
 
             double getFirstIntegralAtStart()
             {
-                return (_firstIntStart);
+                if (_created)
+                {
+                    return (_firstIntStart);
+                }
+                return 0.00;
             }
 
             double geSecondIntegralAtStart()
             {
-                return (_secondIntStart);
+                if (_created)
+                {
+                    return (_secondIntStart);
+                }
+                return 0.00;
             }
 
             double geFirstIntegralAtEnd()
             {
-                return (_firstIntEnd);
+                if (_created)
+                {
+                    return (_firstIntEnd);
+                }
+                return 0.00;
             }
 
             double geSecondIntegralAtEnd()
             {
-                return (_secondIntEnd);
+                if (_created)
+                {
+                    return (_secondIntEnd);
+                }
+                return 0.00;
             }
-                      
 
         private:
 
@@ -128,6 +167,7 @@ namespace CntrlLibrary
             double _secondIntEnd    = 0.00;
             double _firstIntStart    = 0.00;
             double _secondIntStart = 0.00;
+            bool _created = false;
         };
 
     }

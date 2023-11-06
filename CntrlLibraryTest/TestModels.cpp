@@ -177,21 +177,23 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 	JerkLimitedTrajectory traj;  
 
 
-	double i_pos = -20.00;
-	double i_vel = 10.00;
-	double i_accel = 10.00;
-	double f_pos = 300.00;
-	double f_vel = 200.00;
-	double f_accel = 15.00;
-	double f_time = 1.50;
+	double i_pos = 0.00;
+	double i_vel = 100.00;
+	double i_accel = 0.00;
+	double f_pos = 2.00;
+	double f_vel = 0.00;
+	double f_accel = 0.00;
+	double f_time = 0.10;
+	
 
-	traj.setParameters(100000.0, 1000.0, 300.00, f_time); // Max jerk, acceleration, velocity and processing time 
-	traj.setInitialConditions(i_pos, i_vel, i_accel);
-	traj.setTargetPosition(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
-	EXPECT_TRUE(traj.prepare());
+	traj.setParameters(20000.0, 1000.0, 300.00, 0.000001); // Max jerk, acceleration, velocity and processing time 
+	traj.setInitialValues( i_pos, i_vel, i_accel);
+	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
+
+	traj.prepare(f_time);
 
 	double pos, vel, accel;
-	for (double t = 0.000; t <= 7.0; t = t + 0.001)
+	for (double t = 0.000; t <= f_time; t = t + 0.001)
 	{
 		traj.process(t, pos, vel, accel);
 		acceleration->set(accel);
@@ -199,6 +201,7 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 		position->set(pos);
 		tracer.trace();
 	}
+
 }
 //#endif
 TEST(TestCaseDCMotor, TestDCMotor1)
