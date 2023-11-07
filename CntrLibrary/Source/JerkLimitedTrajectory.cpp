@@ -1,6 +1,5 @@
 ﻿
 #include "JerkLimitedTrajectory.h"
-#include "QuinticBezierCurve.h"
 #include "ConstFunction.h"
 #include <cmath>
 #include <algorithm>
@@ -180,9 +179,54 @@ namespace CntrlLibrary
             return false;
         }
 
-        void JerkLimitedTrajectory::addDMinusFuncParams()
+        void JerkLimitedTrajectory::addAPlusFuncParams(double startTime)
         {
-            double tphDm = _times[DMINUS] - _times[DCONST];
+            double tphAp = _times[APLUS] - startTime;
+            _funcParams[APLUS] = std::make_shared<FUNC_PARAMS>();
+            _funcParams[APLUS]->normalizedTime = true;
+            _funcParams[APLUS]->inverseFunc = false;
+            _funcParams[APLUS]->subtractInitialIntegral = true;
+            _funcParams[APLUS]->signA = 1.00;
+            _funcParams[APLUS]->signVel = 1.00;
+            _funcParams[APLUS]->signPos = 1.00;
+            _funcParams[APLUS]->scaleVel1 = 1.00;
+            _funcParams[APLUS]->scalePos1 = 1.00;
+            _funcParams[APLUS]->scalePos2 = 1.00;
+            _funcParams[APLUS]->startTime = startTime;
+            _funcParams[APLUS]->endTime = _times[APLUS];
+            _funcParams[APLUS]->dtime = tphAp;
+            _funcParams[APLUS]->dtime_squared = tphAp * tphAp;
+            _funcParams[APLUS]->f_accel = 0.00;
+            _funcParams[APLUS]->f_vel = 0.00;
+            _funcParams[APLUS]->f_pos = 0.00;
+        }
+
+        void JerkLimitedTrajectory::addAMinusFuncParams(double startTime)
+        {
+            double tphDp = _times[AMINUS]- startTime;
+            _funcParams[AMINUS] = std::make_shared<FUNC_PARAMS>();
+            _funcParams[AMINUS]->normalizedTime = true;
+            _funcParams[AMINUS]->inverseFunc = false;
+            _funcParams[AMINUS]->subtractInitialIntegral = true;
+            _funcParams[AMINUS]->signA = 1.00;
+            _funcParams[AMINUS]->signVel = 1.00;
+            _funcParams[AMINUS]->signPos = 1.00;
+            _funcParams[AMINUS]->scaleVel1 = 1.00;
+            _funcParams[AMINUS]->scalePos1 = 1.00;
+            _funcParams[AMINUS]->scalePos2 = 1.00;
+            _funcParams[AMINUS]->startTime = startTime;
+            _funcParams[AMINUS]->endTime = _times[AMINUS];
+            _funcParams[AMINUS]->dtime = tphDp;
+            _funcParams[AMINUS]->dtime_squared = tphDp * tphDp;
+            _funcParams[AMINUS]->f_accel = 0.00;
+            _funcParams[AMINUS]->f_vel = 0.00;
+            _funcParams[AMINUS]->f_pos = 0.00;
+        }
+
+
+        void JerkLimitedTrajectory::addDMinusFuncParams(double startTime)
+        {
+            double tphDm = _times[DMINUS] - startTime;
             _funcParams[DMINUS] = std::make_shared<FUNC_PARAMS>();
             _funcParams[DMINUS]->normalizedTime = true;
             _funcParams[DMINUS]->inverseFunc = true;
@@ -193,18 +237,18 @@ namespace CntrlLibrary
             _funcParams[DMINUS]->scaleVel1 = 1.00;
             _funcParams[DMINUS]->scalePos1 = 1.00;
             _funcParams[DMINUS]->scalePos2 = 1.00;
-            _funcParams[DMINUS]->startTime = _times[DCONST];
+            _funcParams[DMINUS]->startTime = startTime;
             _funcParams[DMINUS]->endTime = _times[DMINUS];
             _funcParams[DMINUS]->dtime = tphDm;
             _funcParams[DMINUS]->dtime_squared = tphDm * tphDm;
-            _funcParams[DMINUS]->f_accel = _accel[END];
+            _funcParams[DMINUS]->f_accel = _accel[DCONST];
             _funcParams[DMINUS]->f_vel = _vel[END];
             _funcParams[DMINUS]->f_pos = _pos[END];
         }
 
-        void JerkLimitedTrajectory::addDPlusFuncParams()
+        void JerkLimitedTrajectory::addDPlusFuncParams(double startTime)
         {
-            double tphDp = _times[DPLUS];
+            double tphDp = _times[DPLUS] - startTime;
             _funcParams[DPLUS] = std::make_shared<FUNC_PARAMS>();
             _funcParams[DPLUS]->normalizedTime = true;
             _funcParams[DPLUS]->inverseFunc = false;
@@ -224,9 +268,9 @@ namespace CntrlLibrary
             _funcParams[DPLUS]->f_pos = 0.00;
         }
 
-        void JerkLimitedTrajectory::addDConstFuncParams()
+        void JerkLimitedTrajectory::addDConstFuncParams(double startTime)
         {
-            double tphDc = _times[DCONST] - _times[DPLUS];
+            double tphDc = _times[DCONST] - startTime;
             _funcParams[DCONST] = std::make_shared<FUNC_PARAMS>();
             _funcParams[DCONST]->normalizedTime = false;
             _funcParams[DCONST]->inverseFunc = false;
@@ -237,7 +281,7 @@ namespace CntrlLibrary
             _funcParams[DCONST]->scaleVel1 = 1.00;
             _funcParams[DCONST]->scalePos1 = 1.00;
             _funcParams[DCONST]->scalePos2 = 1.00;
-            _funcParams[DCONST]->startTime = _times[DPLUS];
+            _funcParams[DCONST]->startTime = startTime;
             _funcParams[DCONST]->endTime = _times[DCONST];
             _funcParams[DCONST]->dtime = tphDc;
             _funcParams[DCONST]->dtime_squared = tphDc * tphDc;
@@ -246,7 +290,16 @@ namespace CntrlLibrary
             _funcParams[DCONST]->f_pos = 0.00;
         }
                       
-        double JerkLimitedTrajectory::createStopTrajectory(double max_stop_distance)
+        double JerkLimitedTrajectory::createStopTrajectory(double max_stop_distance, 
+                                                           double Dc,
+                                                           double tphDp,
+                                                           double tphDm,
+                                                           double tphDc,
+                                                           double velocityDp,
+                                                           double velocityDm,
+                                                            double posDp,
+                                                           std::shared_ptr<QuinticBezierCurve> fpdm,
+                                                           std::shared_ptr<QuinticBezierCurve> fpdp)
         {
             //create stop trajectory
                        
@@ -267,39 +320,21 @@ namespace CntrlLibrary
             {
                 sign = -1.00;
             }
-            double Dc = -sign * _max_accel;
-
-            double tphDp = abs(Dc) / _max_jerk;  //max. duration of + jerk phase for deacceleration
-            double tphDm = tphDp; //max. duration of - jerk phase for deacceleration
-             
+             Dc = -sign * abs(Dc);
+                      
             //Phases D+, Dconst, D-
 
             //time at the end od D+
+            _functions[DPLUS] = fpdp;
             _times[DPLUS] = tphDp;
-            _durations[DPLUS] = tphDp;
-            
-            _functions[DPLUS] = std::make_shared<QuinticBezierCurve>();
-            auto derived_ptr_dp = std::static_pointer_cast<QuinticBezierCurve>(_functions[DPLUS]);
-            derived_ptr_dp->setParams(0.00, 0.00, 0.00, Dc, Dc, Dc);
-            double velocityDp = (_functions[DPLUS]->firstIntegral(1.00, 0.00)
-                - _functions[DPLUS]->firstIntegral(0.00, 0.00)) * tphDp;
+            _durations[DPLUS] = tphDp;            
+            _vel[DPLUS] = _vel[START] + velocityDp;
+            _pos[DPLUS] = posDp;
+                       
+            _functions[DMINUS] = fpdm;
+            _vel[DMINUS] = velocityDm;
 
-            _vel[DPLUS] = _accel[START] * tphDp + _vel[START] - sign * abs(velocityDp);
-
-
-            _functions[DMINUS] = std::make_shared<QuinticBezierCurve>();
-            auto derived_ptr_dm_inv = std::static_pointer_cast<QuinticBezierCurve>(_functions[DMINUS]);
-            derived_ptr_dm_inv->setParams(0.00, 0.00, 0.00, Dc, Dc, Dc);
-            double velocityDm = ( _functions[DMINUS]->firstIntegral(1.00, 0.00) 
-                                    - _functions[DMINUS]->firstIntegral(0.00, 0.00) ) * tphDm;
-            _vel[DMINUS] = - sign * abs(velocityDm);
-
-            //calculate constant deacceleration time
-            //calculate time of constant deacceleration to reach 0 velocity
-            double tphDc = abs((_vel[START] - (abs(velocityDp) + abs(velocityDm))) / Dc);
-            double distanceDc = (_vel[DPLUS]) * tphDc - abs(0.50 * Dc * tphDc * tphDc);
-
-            _ptrSegments[DPLUS]->create(0.00, 1.00, _accel[START], _vel[START], _pos[START], _functions[DPLUS]);          
+            _ptrSegments[DPLUS]->create(0.00, 1.00, _accel[START], _vel[START], _pos[START], _functions[DPLUS]);
 
             _durations[DCONST] = tphDc;
             //time at the end of D const
@@ -310,16 +345,17 @@ namespace CntrlLibrary
             //time at the end of D-  (End Time)
             _times[DMINUS] = _times[DCONST] + tphDm;
             
+            _accel[DPLUS] = Dc;
             _accel[DCONST] = Dc;
             _functions[DCONST] = std::make_shared<ConstFunction>(Dc);
             _ptrSegments[DCONST]->create(_times[DPLUS], _times[DCONST], 0.00, _vel[DPLUS], _pos[DPLUS], _functions[DCONST]);
             
             _vel[DCONST] = _vel[START] - sign * abs(_vel[DPLUS]);
-            _ptrSegments[DMINUS]->create(0.00, 1.00, _accel[DCONST], _vel[DCONST], _pos[DCONST], _functions[DMINUS]);
+            _ptrSegments[DMINUS]->create(0.00, 1.00, _accel[DCONST], 0.00, 0.00, _functions[DMINUS]);
 
-            addDPlusFuncParams();
-            addDConstFuncParams();
-            addDMinusFuncParams();
+            addDPlusFuncParams(0.00);
+            addDConstFuncParams(_times[DPLUS]);
+            addDMinusFuncParams(_times[DCONST]);
 
             return (_times[DMINUS]);
         }
@@ -405,18 +441,7 @@ namespace CntrlLibrary
 
             double start_velocity_squ = _vel[START] * _vel[START];
 
-            double max_stop_distance = start_velocity_squ / (2.00 * _max_accel);
-
-            if (in_out_time > std::numeric_limits<double>::min())
-            {
-                //time is given (check safety conditions )
-                if (abs(travel_distance) <= max_stop_distance)
-                {
-                    in_out_time = createStopTrajectory(max_stop_distance);
-                    return ResultTrajectory::SafetyStop;
-                }
-            }
-
+        
             /*effect of jerk phases*/
             double Tjv      = abs(Ac / _max_jerk);
             double Tjd      = abs((Dc - _accel[START]) / _max_jerk);
@@ -425,6 +450,49 @@ namespace CntrlLibrary
             double tphAm(0.00);
             double tphDp(0.00);
             double tphDm(0.00);
+
+
+          
+            /*check if safety stop required*/
+            tphDp = abs( Dc - _accel[START] ) / _max_jerk; 
+            tphDm = abs(Dc) / _max_jerk;
+            
+            std::shared_ptr<QuinticBezierCurve> fpdm = std::make_shared<QuinticBezierCurve>();
+            fpdm->setParams(0.00, 0.00, 0.00, -Dc, -Dc, -Dc);
+            double velocityDm = (fpdm->firstIntegral(1.00, 0.00) - fpdm->firstIntegral(0.00, 0.00)) * tphDm;
+            double posDm = (fpdm->secondIntegral(1.00, 0.00, 0.00) - fpdm->secondIntegral(0.00, 0.00, 0.00)) * tphDm * tphDm;
+
+            std::shared_ptr<QuinticBezierCurve> fpdp = std::make_shared<QuinticBezierCurve>();
+            fpdp->setParams(0.00, 0.00, 0.00, Dc - _accel[START], Dc - _accel[START], Dc - _accel[START]);
+            double velocityDp = (fpdp->firstIntegral(1.00, 0.00) - fpdp->firstIntegral(0.00, 0.00)) * tphDp;
+
+            double pdp = (fpdp->secondIntegral(1.00, 0.00, 0.00) - fpdp->secondIntegral(0.00, 0.00, 0.00)) * tphDp * tphDp;
+            double posDp = pdp + 0.50 * _accel[START] * tphDp * tphDp + _vel[START] * tphDp;
+
+            //calculate constant deacceleration time
+            //calculate time of constant deacceleration to reach 0 velocity
+            double tphDc = abs((_vel[START] - (velocityDm - velocityDp)) / Dc);
+            double distanceDc = (_vel[START] + velocityDp) * tphDc + 0.50 * Dc * tphDc * tphDc;
+            double max_stop_distance = abs(distanceDc) + abs(posDp) + abs(posDm);
+
+            if (in_out_time > std::numeric_limits<double>::min())
+            {
+                //time is given (check safety conditions )
+                if (abs(travel_distance) <= abs(max_stop_distance) )
+                {
+                    in_out_time = createStopTrajectory(max_stop_distance,
+                                                        Dc,
+                                                        tphDp,
+                                                        tphDm,
+                                                        tphDc,
+                                                        velocityDp,
+                                                        velocityDm,
+                                                        posDp,
+                                                        fpdm,
+                                                        fpdp);
+                    return ResultTrajectory::SafetyStop;
+                }
+            }
 
             calculateJerkTimes(Ac, Dc, tphAp, tphAm, tphDp, tphDm);
 
@@ -435,6 +503,10 @@ namespace CntrlLibrary
             double aproxJerkDistance(0.00);
 
             calculateJerkDistances(Ac, Dc, tphAp, tphAm, tphDp, tphDm, aproxJerkDistAp, aproxJerkDistAm, aproxJerkDistDp, aproxJerkDistDm, aproxJerkDistance);
+
+
+            tphAp = abs(Ac - _accel[START]) / _max_jerk; //max. duration of + jerk phase
+            tphAm = abs(Ac) / _max_jerk; //max. duration of - jerk phase
 
             bool reducedMaxAccel(false);
             if (abs(travel_distance) <= abs(aproxJerkDistAp))
@@ -483,22 +555,22 @@ namespace CntrlLibrary
                     return ResultTrajectory::NotPossible;
                 }
             }               
-
             double max_velocity_squ = new_max_velocity * new_max_velocity;
-
-            double min_max_vel_distance = abs((max_velocity_squ - start_velocity_squ) / (abs(Ac)+abs(Dc))
-                                            + max_velocity_squ / (abs(Ac) + abs(Dc)));
-
+            double min_max_vel_distance = abs((max_velocity_squ - start_velocity_squ) / (abs(Ac)+abs(Dc)) + max_velocity_squ / (abs(Ac) + abs(Dc)));
             min_max_vel_distance += abs(aproxJerkDistance);
 
+
+            ///TODO!!!!!!!
             //check if the velocity exceeded max_velocity - safety condition2
             if (_vel[START] > _max_vel)
             {
+                ///TODO!!!!!!!
                 //deaccelerate to _max_velocity
                 double dvel = abs(_vel[START]) - _max_vel;
                 double max_reduce_vel_distance = (dvel * dvel) / (2.00 * _max_accel);
                 //deacceleration...
             }
+            ///TODO!!!!!!!
 
             if (reducedMaxAccel)
             {                   
@@ -508,10 +580,10 @@ namespace CntrlLibrary
                 _times[DPLUS]   = _times[AMINUS] + tphDp;
                 _times[DMINUS]  = _times[DPLUS] + tphDm;
 
-                _durations[APLUS] = tphAp;
-                _durations[AMINUS] = tphAm;
-                _durations[DPLUS] = tphDp;
-                _durations[DMINUS] = tphDm;
+                _durations[APLUS]   = tphAp;
+                _durations[AMINUS]  = tphAm;
+                _durations[DPLUS]   = tphDp;
+                _durations[DMINUS]  = tphDm;
             }
             else
             {

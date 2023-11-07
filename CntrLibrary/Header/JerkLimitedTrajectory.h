@@ -6,11 +6,15 @@
 #include <memory>
 #include <unordered_map>
 #include "PathSegment.h"
+#include "QuinticBezierCurve.h"
 
 namespace CntrlLibrary
 {
     namespace TrajectoryGeneration
     {
+        using namespace Math;
+        using namespace Bezier;
+
         /*very simple trajectory generation (Only velocity profile should be used in combination with additional position controller*/
         class JerkLimitedTrajectory
         {
@@ -126,14 +130,26 @@ namespace CntrlLibrary
                 double& tphDm,
                 bool& reduced);
             
-            void addDMinusFuncParams();
+            void addAPlusFuncParams(double startTime);
+            
+            void addAMinusFuncParams(double startTime);
 
-            void addDPlusFuncParams();
+            void addDMinusFuncParams(double startTime);
 
-            void addDConstFuncParams();
+            void addDPlusFuncParams(double startTime);
 
-            double createStopTrajectory(double max_stop_distance);
+            void addDConstFuncParams(double startTime);
 
+            double createStopTrajectory(double max_stop_distance,
+                                        double Dc,
+                                        double tphDp,
+                                        double tphDm,
+                                        double tphDc,
+                                        double velocityDp,
+                                        double velocityDm,
+                                        double posDp,
+                                        std::shared_ptr<QuinticBezierCurve> fpdm,
+                                        std::shared_ptr<QuinticBezierCurve> fpdp);
             void clearMaps();
 
             void pathFunc(  double t, PathSegment* pathSegment, FUNC_PARAMS* params, double& a, double& v, double& s );
