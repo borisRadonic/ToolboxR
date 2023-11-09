@@ -170,8 +170,7 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	}
 }
 
-//#ifdef TEST_7453457849
-TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
+TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectorySmallDistance)
 {
 	using namespace TrajectoryGeneration;
 
@@ -203,7 +202,7 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 	double f_time = 0.10;
 	
 
-	traj.setParameters(20000.0, 1000.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, acceleration, velocity and processing time 
+	traj.setParameters(20000.0, 1000.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
 	traj.setInitialValues( i_pos, i_vel, i_accel);
 	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
 
@@ -220,7 +219,56 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 	}
 
 }
-//#endif
+
+
+TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTrapezoidalProfile)
+{
+	using namespace TrajectoryGeneration;
+
+	auto path = std::filesystem::current_path();
+
+	std::string strpath = path.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/TestTrajectory2.dat";
+
+	double ts = 0.001;
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
+
+
+	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
+	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
+	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
+
+
+	JerkLimitedTrajectory traj;
+
+	double i_pos = 0.00;
+	double i_vel = 0.00;
+	double i_accel = 0.00;
+	double f_pos = 500.;
+	double f_vel = 0.00;
+	double f_accel = 0.00;
+	double f_time = 1.0;
+
+
+	traj.setParameters(20000.0, 250.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
+	traj.setInitialValues(i_pos, i_vel, i_accel);
+	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
+
+	traj.prepare(f_time);
+
+	double pos(0.00), vel(0.00), accel(0.00);
+	for (double t = 0.00001; t <= f_time + 0.00001; t = t + 0.001)
+	{
+		traj.process(t, pos, vel, accel);
+		acceleration->set(accel);
+		velocity->set(vel);
+		position->set(pos);
+		tracer.trace();
+	}
+
+}
 TEST(TestCaseDCMotor, TestDCMotor1)
 {
 	DCMotor motor;

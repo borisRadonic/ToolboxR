@@ -114,6 +114,8 @@ namespace CntrlLibrary
                 double& tphDp,
                 double& tphDm);
 
+            void calculateAccelTimes(double Ac, double Dc, double tphAp, double tphDp, double& tphAc, double& tphDc, double max_v);
+
             void calculateJerkDistances(double Ac,
                 double Dc,
                 double tphAp,
@@ -165,15 +167,15 @@ namespace CntrlLibrary
 
             void addAConstFuncParams(double startTime);
 
-            /*
+            void addVConstFuncParams(double startTime);
+
             double createTrajectory(double Ac,
                                     double Dc,
                                     double tphAp,
                                     double tphAm,
                                     double tphDp,
                                     double tphDm,
-                                    double new_max_velocity);
-            */
+                                    double Vc);
 
             double createStopTrajectory(double max_stop_distance,
                                         double Dc,
