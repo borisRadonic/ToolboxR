@@ -1,4 +1,14 @@
-//#ifdef TEST_VERSION
+
+
+
+//////////////////////////////////////////
+//////WORK IN PROGRESS
+// 
+// Please do not use at the moment!
+// ///////////////////////////////////////
+///////////// NOT READY //////////////////
+//////////////////////////////////////////
+
 
 #pragma once
 #include <cmath>
@@ -7,6 +17,7 @@
 #include <unordered_map>
 #include "PathSegment.h"
 #include "QuinticBezierCurve.h"
+#include "QuinticPolyTrajectory.h"
 
 namespace CntrlLibrary
 {
@@ -24,6 +35,7 @@ namespace CntrlLibrary
             {
                 SafetyStop,
                 SafetyVelocityReduction,
+                QPolyTrajectory,
                 TrangularTrajectory,
                 TrapezoidTrajectory,
                 AccelerationTrajectory,
@@ -47,12 +59,19 @@ namespace CntrlLibrary
                 _accel[END]   = accel;
             }
 
-            inline void setParameters(double max_j, double max_a, double max_v, double max_position_error)
+            inline void setParameters(  double max_j,
+                                        double max_a,
+                                        double max_v,
+                                        double max_position_error,
+                                        double max_vel_error,
+                                        double max_accel_error )
             {               
-                _max_jerk        = max_j;
-                _max_accel       = max_a;
-                _max_vel         = max_v;
-                _max_pos_error   = max_position_error;
+                _max_jerk           = max_j;
+                _max_accel          = max_a;
+                _max_vel            = max_v;
+                _max_pos_error      = max_position_error;
+                _max_vel_error      = max_vel_error;
+                _max_accel_error    = max_accel_error;
             }
                    
 
@@ -97,15 +116,19 @@ namespace CntrlLibrary
 
             void calculateJerkDistances(double Ac,
                 double Dc,
-                double& tphAp,
-                double& tphAm,
-                double& tphDp,
-                double& tphDm,
+                double tphAp,
+                double tphAm,
+                double tphDp,
+                double tphDm,
                 double& aproxJerkDistAp,
                 double& aproxJerkDistAm,
                 double& aproxJerkDistDp,
                 double& aproxJerkDistDm,
-                double& aproxJerkDistance);
+                double& aproxJerkDistance,
+                double& velAp,
+                double& velAm,
+                double& velDp,
+                double& velDm);
 
             bool findNewMaxVelocity(double travel_distance,
                 double Ac,
@@ -140,6 +163,18 @@ namespace CntrlLibrary
 
             void addDConstFuncParams(double startTime);
 
+            void addAConstFuncParams(double startTime);
+
+            
+            double createReducedAccelTrajectory(double Ac,
+                                                double Dc,
+                                                double tphAp,
+                                                double tphAm,
+                                                double tphDp,
+                                                double tphDm,
+                                                double new_max_velocity);
+            
+
             double createStopTrajectory(double max_stop_distance,
                                         double Dc,
                                         double tphDp,
@@ -156,12 +191,13 @@ namespace CntrlLibrary
 
          private:
 
-                        
-
             double _max_jerk         = 0.00;
             double _max_accel        = 0.00;
             double _max_vel          = 0.00;
+
             double _max_pos_error    = 0.000000001;
+            double _max_vel_error    = 0.00001;
+            double _max_accel_error  = 0.01;
                        
             //Segments
             // 0 - start of initial position, vlocity and acceleration
@@ -185,16 +221,19 @@ namespace CntrlLibrary
             //contains only the end times of each segment
             std::unordered_map<int, double>     _times;
             std::unordered_map<int, double>     _durations;
-
-            std::unordered_map<int, double> _accel;
-            std::unordered_map<int, double> _vel;
-            std::unordered_map<int, double> _pos;
+            std::unordered_map<int, double>     _accel;
+            std::unordered_map<int, double>     _vel;
+            std::unordered_map<int, double>     _pos;
             
-            std::unordered_map<int, std::unique_ptr<PathSegment>> _ptrSegments;
+            std::unordered_map<int, std::unique_ptr<PathSegment>>       _ptrSegments;
+            std::unordered_map<int, std::shared_ptr<MathFunctionBase>>  _functions;
+            std::unordered_map<int, std::shared_ptr<FUNC_PARAMS>>       _funcParams;
 
-            std::unordered_map<int, std::shared_ptr<MathFunctionBase>> _functions;
+            QuinticBezierCurve _utilBazierCurve;
 
-            std::unordered_map<int, std::shared_ptr<FUNC_PARAMS>> _funcParams;
+            QuinticPolyTrajectory _quinticPolyTrajectory;
+
+            bool _use_quinticPoly = false;
 
           };
     }

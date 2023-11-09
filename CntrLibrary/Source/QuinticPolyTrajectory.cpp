@@ -16,31 +16,50 @@ namespace CntrlLibrary
     namespace TrajectoryGeneration
     {
 
-        QuinticPolyTrajectory::QuinticPolyTrajectory( double i_pos,
-                                                      double i_vel,
-                                                      double i_accel,
-                                                      double f_pos,
-                                                      double f_vel,
-                                                      double f_accel,
-                                                      double m_accel,
-                                                      double m_vel )
+        QuinticPolyTrajectory::QuinticPolyTrajectory(   double i_pos,
+                                                        double i_vel,
+                                                        double i_accel,
+                                                        double f_pos,
+                                                        double f_vel,
+                                                        double f_accel,
+                                                        double m_accel,
+                                                        double m_vel)
             : initial_position(i_pos)
-            ,initial_velocity(i_vel)
-            ,initial_acceleration(i_accel)
-            ,target_position(f_pos)
-            ,target_velocity(f_vel)
-            ,target_acceleration(f_accel)
-            ,max_acceleration(m_accel)
-            ,max_velocity(m_vel)
+            , initial_velocity(i_vel)
+            , initial_acceleration(i_accel)
+            , target_position(f_pos)
+            , target_velocity(f_vel)
+            , target_acceleration(f_accel)
+            , max_acceleration(m_accel)
+            , max_velocity(m_vel)
         {
         }
 
-        double QuinticPolyTrajectory::calculateMinTime(double vel_tolerance, double accel_tolerance)
+        void QuinticPolyTrajectory::setParameters(  double i_pos,
+                                                    double i_vel,
+                                                    double i_accel,
+                                                    double f_pos,
+                                                    double f_vel,
+                                                    double f_accel,
+                                                    double m_accel,
+                                                    double m_vel)
+        {
+            initial_position = i_pos;
+            initial_velocity = i_vel;
+            initial_acceleration = i_accel;
+            target_position = f_pos;
+            target_velocity = f_vel;
+            target_acceleration = f_accel;
+            max_acceleration = m_accel;
+            max_velocity = m_vel;
+        }
+
+        QuinticPolyTrajectory::OptTimeResult  QuinticPolyTrajectory::calculateMinTime(double& minTime, double vel_tolerance, double accel_tolerance)
         {
             if ((max_velocity <= abs(std::numeric_limits<double>::min()))
                 || (max_acceleration <= abs(std::numeric_limits<double>::min())))
             {
-                return 0.00;
+                return OptTimeResult::Error;
             }
             double delta_s = target_position - initial_position;
             std::function<double(double)> funcCalcVel = std::bind(&QuinticPolynomial::firstDerivative, &poly, std::placeholders::_1);
@@ -48,7 +67,7 @@ namespace CntrlLibrary
             std::function<double(double)> funcCalcJerk = std::bind(&QuinticPolynomial::thirdDerivative, &poly, std::placeholders::_1);
             std::function<double(double)> funcCalcJSnap = std::bind(&QuinticPolynomial::fourthDerivative, &poly, std::placeholders::_1);
 
-            double time_min = delta_s / max_velocity;
+            double time_min = minTime;
             double time_max = 2.00 * (max_velocity / max_acceleration) + time_min * 2.00;
             double guess = (time_min + time_max ) / 2.0;
             create(guess);
@@ -64,23 +83,32 @@ namespace CntrlLibrary
             bool small = false;
             double last = 0.00;
 
+            double min_error = std::numeric_limits<double>::max();
+
+
             bool ok = false;
             while (max_steps > 1)
             {
                 Math::BasicNumMethods::ResultType result = findExtremaNewtonRaphson(max_velo, max_accels);
-                                
+
                 if (result != Math::BasicNumMethods::ResultType::Ok)
                 {
-                    return 0.00;
+                    return OptTimeResult::Error;
                 }
 
                 max_v = max_velo.first;
 
                 double error = abs(max_velocity) - abs(max_v);
+                if (abs(error) < abs(min_error))
+                {
+                    min_error = error;
+                    minTime = guess;
+                }
 
                 if ( abs(error) <= vel_tolerance)
                 {
                     time_optimal = 2.0 * max_velo.second;
+                    minTime = time_optimal;
                     ok = true;
                     break;
                 }
@@ -107,7 +135,8 @@ namespace CntrlLibrary
             }
             if (!ok)
             {
-                return 0.00;
+                time_optimal = minTime;
+                //return OptTimeResult::NotConverged;
             }
             max_steps = 200;
             create(time_optimal);
@@ -128,7 +157,7 @@ namespace CntrlLibrary
 
                 if (result != Math::BasicNumMethods::ResultType::Ok)
                 {
-                    return 0.00;
+                    return OptTimeResult::NotConverged;
                 }
                 if (abs(max_accels.first.first) > abs(max_accels.second.first))
                 {
@@ -145,7 +174,8 @@ namespace CntrlLibrary
                 if (abs(error) <= abs(accel_tolerance))
                 {
                     time_optimal = guess;
-                    return time_optimal;
+                    minTime = time_optimal;
+                    return OptTimeResult::Converged;
                 }
 
                 // Adjust step if error is oscillating or not decreasing fast enough
@@ -163,7 +193,7 @@ namespace CntrlLibrary
                 create(guess);
                 max_steps--;
             }
-            return 0.00;
+            return OptTimeResult::NotConverged;
         }
 
 
@@ -230,6 +260,10 @@ namespace CntrlLibrary
             {
                 return (24.00 * a4 + 120.0 * a5 * x);
             };
+            if (_final_time <= MIN_TIME_DIFFERENCE)
+            {
+                return Math::BasicNumMethods::ResultType::NotPossible;
+            }
             double step = _final_time / 16.00;
 
             std::vector<double> rootsAccel;

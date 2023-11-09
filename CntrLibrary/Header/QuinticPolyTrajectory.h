@@ -16,7 +16,19 @@ namespace CntrlLibrary
         class QuinticPolyTrajectory
         {
         public:
-            QuinticPolyTrajectory() = delete;
+
+
+            enum OptTimeResult
+            {
+                Converged = 1,
+                NotConverged = 2,
+                Error = 3
+            };
+
+            QuinticPolyTrajectory()
+            {
+            }
+
 
             /**
             * @brief Constructs a Quintic Polynomial Trajectory.
@@ -32,16 +44,25 @@ namespace CntrlLibrary
             * @param f_accel  Final acceleration value for the trajectory.
             * @param f_time   Time duration for which the trajectory is defined.
             */
-            explicit QuinticPolyTrajectory( double i_pos,
-                                            double i_vel,
-                                            double i_accel,
-                                            double f_pos,
-                                            double f_vel,
-                                            double f_accel,
-                                            double m_accel,
-                                            double m_vel );
+            QuinticPolyTrajectory( double i_pos,
+                                   double i_vel,
+                                   double i_accel,
+                                   double f_pos,
+                                   double f_vel,
+                                   double f_accel,
+                                   double m_accel,
+                                   double m_vel );
 
-            double calculateMinTime(double vel_tolerance, double accel_tolerance);
+            void setParameters( double i_pos,
+                                double i_vel,
+                                double i_accel,
+                                double f_pos,
+                                double f_vel,
+                                double f_accel,
+                                double m_accel,
+                                double m_vel);
+            
+            OptTimeResult calculateMinTime(double& minTime, double vel_tolerance, double accel_tolerance);
             
             /**
             * @brief Creates trajectory from final time

@@ -389,5 +389,8 @@
     <ClInclude Include="Header\LinearExponentialDecay.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Header\QuinticPolynomialOptimizer.h">
+      <Filter>Header Files\Trajectories</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

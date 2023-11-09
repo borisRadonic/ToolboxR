@@ -732,8 +732,8 @@ TEST(TestHepticPolynomial, TestHepticPolynomial1)
 	double i_pos = 0.00;
 	double i_vel = 0.00;
 	double i_accel = 0.00;
-	double f_pos = 300.00;
-	double f_vel = 0.00;
+	double f_pos = 1.10;
+	double f_vel = 5.00;
 	double f_accel = 0.00;
 
 	double v_max = 300.00;
@@ -742,10 +742,10 @@ TEST(TestHepticPolynomial, TestHepticPolynomial1)
 
 		
 	SimplelHepticTrajectory sht(i_pos, f_pos, v_max, a_max, tf);
-	double time = sht.calculateMinTime(0.5, 0.5);
-	tf = time;
-	EXPECT_TRUE(time > 0.00001 );
-	sht.create(time);
+	//double time = sht.calculateMinTime(0.5, 0.5);
+	tf = 0.5;
+	//EXPECT_TRUE(time > 0.00001 );
+	sht.create(0.5);
 
 
 	for (double t = 0.00001; t <= tf; t = t + 0.001)

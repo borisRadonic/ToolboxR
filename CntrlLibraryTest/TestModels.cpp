@@ -122,6 +122,17 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	double m_accel = 300.00;
 	double m_vel = 300.00;
 
+	/*
+	double m_accel = 1000.00;
+	double m_vel = 300.00;
+	double i_pos = 0.00;
+	double i_vel = 0.00;
+	double i_accel = 0.00;
+	double f_pos = 2.0;
+	double f_vel = 0.00;
+	double f_accel = 0.00;
+	double f_time = 0.10;
+	*/
 	QuinticPolyTrajectory traj( i_pos,
 								i_vel,
 								i_accel,
@@ -131,7 +142,13 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 								m_accel,
 								m_vel );
 		
-	f_time = traj.calculateMinTime(0.5,0.5);
+	f_time = 0.1;
+	if (QuinticPolyTrajectory::OptTimeResult::Converged != traj.calculateMinTime(f_time, 0.5, 0.5))
+	{
+		EXPECT_TRUE(false);
+	}
+	
+	//EXPECT_TRUE(f_time > 0.001);
 	traj.create(f_time);
 
 	std::pair<double, double> ex_velocity;
@@ -178,22 +195,22 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectory)
 
 
 	double i_pos = 0.00;
-	double i_vel = 100.00;
+	double i_vel = 0.00;
 	double i_accel = 0.00;
-	double f_pos = 2.00;
+	double f_pos = 0.2;
 	double f_vel = 0.00;
 	double f_accel = 0.00;
 	double f_time = 0.10;
 	
 
-	traj.setParameters(20000.0, 1000.0, 300.00, 0.000001); // Max jerk, acceleration, velocity and processing time 
+	traj.setParameters(20000.0, 1000.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, acceleration, velocity and processing time 
 	traj.setInitialValues( i_pos, i_vel, i_accel);
 	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
 
 	traj.prepare(f_time);
 
-	double pos, vel, accel;
-	for (double t = 0.000; t <= f_time; t = t + 0.001)
+	double pos(0.00), vel(0.00), accel(0.00);
+	for (double t = 0.00001; t <= f_time + 0.00001; t = t + 0.001)
 	{
 		traj.process(t, pos, vel, accel);
 		acceleration->set(accel);

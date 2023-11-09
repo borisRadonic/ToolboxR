@@ -259,6 +259,7 @@
     <ClInclude Include="Header\PMSMPICurrentController.h" />
     <ClInclude Include="Header\QuinticBezierCurve.h" />
     <ClInclude Include="Header\QuinticPolynomial.h" />
+    <ClInclude Include="Header\QuinticPolynomialOptimizer.h" />
     <ClInclude Include="Header\QuinticPolyTrajectory.h" />
     <ClInclude Include="Header\Rule.h" />
     <ClInclude Include="Header\Rules.h" />
