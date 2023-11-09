@@ -165,15 +165,15 @@ namespace CntrlLibrary
 
             void addAConstFuncParams(double startTime);
 
-            
-            double createReducedAccelTrajectory(double Ac,
-                                                double Dc,
-                                                double tphAp,
-                                                double tphAm,
-                                                double tphDp,
-                                                double tphDm,
-                                                double new_max_velocity);
-            
+            /*
+            double createTrajectory(double Ac,
+                                    double Dc,
+                                    double tphAp,
+                                    double tphAm,
+                                    double tphDp,
+                                    double tphDm,
+                                    double new_max_velocity);
+            */
 
             double createStopTrajectory(double max_stop_distance,
                                         double Dc,

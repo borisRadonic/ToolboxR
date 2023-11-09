@@ -951,13 +951,8 @@ namespace CntrlLibrary
             }
             ///TODO!!!!!!!
 
-            if (reducedMaxAccel)
-            {
-                createReducedAccelTrajectory(Ac, Dc, tphAp, tphAm, tphDp, tphDm, new_max_velocity);
-               
-            }
-            else
-            {
+           
+
                 if (reducedMaxVelocity)
                 {
                     if( abs(travel_distance) < min_max_vel_distance )
@@ -1002,7 +997,7 @@ namespace CntrlLibrary
                    //_times[DMINUS] = _times[DPLUS] + tphDp;
                     //_times[END] = _times[DMINUS] + tphDm;
                 }
-            }
+
 
             if (in_out_time <= std::numeric_limits<double>::min())
             {
