@@ -53,8 +53,8 @@ namespace CntrlLibrary
         
         void JerkLimitedTrajectory::calculateAccelTimes(double Ac, double Dc, double tphAp, double tphDp, double& tphAc, double& tphDc, double max_v)
         {
-            tphAc = (max_v - _vel[START]) / Ac - tphAp;
-            tphDc = (max_v - _vel[END]) / Dc - tphDp;
+            tphAc = abs((max_v - _vel[START]) / Ac) - tphAp;
+            tphDc = abs(abs(max_v - _vel[END]) / Dc) - tphDp;
         }
 
         void JerkLimitedTrajectory::calculateJerkDistances( double Ac,
@@ -97,6 +97,59 @@ namespace CntrlLibrary
 
             aproxJerkDistance = aproxJerkDistAp + aproxJerkDistAm + aproxJerkDistDp + aproxJerkDistDm; 
         }
+
+
+        void JerkLimitedTrajectory::calculateConstVelTime(  double Ac,
+                                                            double Dc,
+                                                            double Vc,
+                                                            double tphAp,
+                                                            double tphAc,
+                                                            double tphAm,
+                                                            double tphDp,
+                                                            double tphDc,
+                                                            double tphDm,
+                                                            double& vc_time,
+                                                            double& vc_dist,
+                                                            double& velDp,
+                                                            double& posAtEndAm)
+        {
+            //calculate time for const velocity phase
+
+            //correct jerk distances for velocities
+
+            _utilBazierCurve.setParams(0.00, 0.00, 0.00, Ac, Ac, Ac);
+            double sint = (_utilBazierCurve.secondIntegral(1.00) - _utilBazierCurve.secondIntegral(0.00)) * tphAp * tphAp;
+            double distAp  = tphAp * _vel[START] + sint + 0.50 * _accel[START] * tphAp * tphAp;
+            double velAp = _vel[START] + (_utilBazierCurve.firstIntegral(1.00) - _utilBazierCurve.firstIntegral(0.00)) * tphAp + _accel[START] * tphAp;
+            
+            double distAc = abs(0.50 * Ac * tphAc * tphAc) + velAp * tphAc;
+            double velAc = velAp + Ac * tphAc;
+
+            double distAm = velAc * tphAm + sint;
+            double velAm = velAc + (_utilBazierCurve.firstIntegral(1.00) - _utilBazierCurve.firstIntegral(0.00)) * tphAm;
+
+            _utilBazierCurve.setParams(0.00, 0.00, 0.00, Dc, Dc, Dc);
+            sint = (_utilBazierCurve.secondIntegral(1.00) - _utilBazierCurve.secondIntegral(0.00)) * tphDp * tphDp;
+            double distDp =  velAm * tphDp + sint;
+            velDp =  velAm + (_utilBazierCurve.firstIntegral(1.00) - _utilBazierCurve.firstIntegral(0.00)) * tphDp;
+
+             double distDc = velDp * tphDc - abs(0.50 * Dc * tphDc * tphDc);
+            double velDc = velDp + Dc * tphAc;
+
+            //just another angle of view (view from back)
+            _utilBazierCurve.setParams(0.00, 0.00, 0.00, Dc - _accel[END], Dc - _accel[END], Dc - _accel[END]);
+            sint = (_utilBazierCurve.secondIntegral(1.00) - _utilBazierCurve.secondIntegral(0.00)) * tphDm * tphDm;
+            double distDm = _vel[END] * tphDm - sint;
+          
+            double dis = distAp + distAc + distAm + distDp + distDc + distDm;
+
+            posAtEndAm = _pos[START] + distAp + distAc + distAm;
+
+            //calculate constant velocity distance
+            vc_dist = abs(_pos[END] - _pos[START]) - abs(dis);
+            vc_time = abs(vc_dist / Vc);
+         }
+
 
         bool JerkLimitedTrajectory::findNewMaxVelocity(double travel_distance,
             double Ac,
@@ -415,13 +468,7 @@ namespace CntrlLibrary
             _funcParams[VCONST]->f_pos = 0.00;
         }
 
-           double JerkLimitedTrajectory::createTrajectory( double Ac,
-                                                           double Dc,
-                                                           double tphAp,
-                                                           double tphAm,
-                                                           double tphDp,
-                                                           double tphDm,
-                                                           double Vc)
+           double JerkLimitedTrajectory::createTrajectory(double Ac, double Dc, double Vc)
         {            
             double distAp(0.00);
             double distAm(0.00);
@@ -432,30 +479,34 @@ namespace CntrlLibrary
             double velDp(0.00);
             double velDm(0.00);
             double distance(0.00);
-           
+            double tphAp(0.00);
+            double tphAm(0.00);
+            double tphDp(0.00);
+            double tphDm(0.00);
+
+            double posAtEndAm(0.00);
+
+            
+            calculateJerkTimes(Ac, Dc, tphAp, tphAm, tphDp, tphDm);
+                       
             double distance_to_do = _pos[END] - _pos[START];
             
             calculateJerkDistances(Ac, Dc, tphAp, tphAm, tphDp, tphDm, distAp, distAm, distDp, distDm, distance, velAp, velAm, velDp, velDm);
- 
-            double dv = _vel[END] - velDm;
-            double tDv(0.00);
 
-            bool acRequired(false);
-            double adConst(0.00);
-            bool isDec(false);
+            double delta_v_Ap = velAp;
+            double delta_v_Am = velAm - velAp;
 
             //acceleration phase A+
             if (tphAp > std::numeric_limits<double>::min())
             {
                 _times[APLUS] = tphAp;
-                _durations[APLUS] = tphAp;
                 std::shared_ptr<QuinticBezierCurve> fpap = std::make_shared<QuinticBezierCurve>();
                 fpap->setParams(0.00, 0.00, 0.00, Ac, Ac, Ac);
                 _functions[APLUS] = fpap;
                 _ptrSegments[APLUS]->create(0.00, 1.00, _accel[START], _vel[START], _pos[START], _functions[APLUS]);
                 addAPlusFuncParams(0.00);
                 _vel[APLUS] = velAp;
-                _accel[APLUS] = velAp;
+                _accel[APLUS] = Ac;
                 _pos[APLUS] = _pos[START] + distAp;
             }
             else
@@ -469,79 +520,83 @@ namespace CntrlLibrary
             
             //const acceleration phase
             assert(tphAc > std::numeric_limits<double>::min());
-            _functions[ACONST] = std::make_shared<ConstFunction>(adConst);
-            _accel[ACONST] = adConst;
-            _times[ACONST] = _times[APLUS] + tDv;
-            _durations[ACONST] = tDv;
+            _functions[ACONST] = std::make_shared<ConstFunction>(Ac);
+            _accel[ACONST] = Ac;
+            _times[ACONST] = _times[APLUS] + tphAc;
             _ptrSegments[ACONST]->create(_times[APLUS], _times[ACONST], 0.00, _vel[APLUS], _pos[APLUS], _functions[ACONST]);
             addAConstFuncParams(_times[APLUS]);
-            _vel[ACONST] = velAp + dv;
-            _pos[ACONST] = _pos[APLUS] + 0.50 * Dc * tDv * tDv;
+            _vel[ACONST] = velAp + Ac * tphAc;
+            _pos[ACONST] = _pos[APLUS] + 0.50 * Ac * tphAc * tphAc + velAp * tphAc;
 
 
             //acceleration phase A-
             assert(tphAm > std::numeric_limits<double>::min());
             std::shared_ptr<QuinticBezierCurve> fpam = std::make_shared<QuinticBezierCurve>();
-            fpam->setParams(0.00, 0.00, 0.00, Ac, Ac, Ac);
+            fpam->setParams(Ac, Ac, Ac, 0.00, 0.00, 0.00 );
             _functions[AMINUS] = fpam;
-            _ptrSegments[AMINUS]->create(0.00, 1.00, _accel[ACONST], _vel[ACONST], _pos[ACONST], _functions[AMINUS]);
+            _ptrSegments[AMINUS]->create(0.00, 1.00, 0.00, _vel[ACONST], _pos[ACONST], _functions[AMINUS]);
             _times[AMINUS] = _times[ACONST] + tphAm;
             addAMinusFuncParams(_times[ACONST]);
-            _vel[AMINUS] = velAm;
-            _pos[AMINUS] = _pos[ACONST] + distAm;
+            _vel[AMINUS] = _vel[ACONST] + delta_v_Am;
+                       
             _accel[AMINUS] = 0.00;
 
-            assert( abs( abs(_vel[AMINUS]) - abs(Vc))  >= _max_vel_error);
+            assert( abs( abs(_vel[AMINUS]) - abs(Vc))  <= _max_vel_error);
 
             //const velocity phase
-            //calculate time
-            double dis = tphAc * Ac + tphDc * Dc + distance;
-            //calculate constant velocity distance
-            double distToDo = _pos[END] - dis;
-            double tphVc = abs(distToDo / Vc);
+            double tphVc(0.00);
+            double vc_dist(0.00);
+
+            calculateConstVelTime(Ac,Dc,Vc,tphAp,tphAc,tphAm,tphDp,tphDc,tphDm, tphVc, vc_dist, velDp, posAtEndAm);
+            _pos[AMINUS] = posAtEndAm;
           
             _functions[VCONST] = std::make_shared<ConstFunction>(0.00);
-            _ptrSegments[VCONST]->create(0.00, 1.00, 0.00, Vc, _pos[AMINUS], _functions[VCONST]);
             _times[VCONST] = _times[AMINUS] + tphVc;
+            _ptrSegments[VCONST]->create(_times[AMINUS], _times[VCONST], 0.00, Vc, _pos[AMINUS], _functions[VCONST]);
             addVConstFuncParams(_times[AMINUS]);
-           
             _vel[VCONST] = Vc;
-            _pos[VCONST] = _pos[AMINUS] + distToDo;
+            _pos[VCONST] = _pos[AMINUS] + Vc * tphVc;
             _accel[VCONST] = 0.00;
-                    
 
             assert(tphDp > std::numeric_limits<double>::min());
             //deceleration D+ phase
             std::shared_ptr<QuinticBezierCurve> fpdp = std::make_shared<QuinticBezierCurve>();
             fpdp->setParams(0.00, 0.00, 0.00, Dc, Dc, Dc);
             _functions[DPLUS] = fpdp;
-            _ptrSegments[DPLUS]->create(0.00, 1.00, _accel[VCONST], _vel[VCONST], _pos[VCONST], _functions[DPLUS]);
+            _ptrSegments[DPLUS]->create(0.00, 1.00, 0.00, _vel[VCONST], _pos[VCONST], _functions[DPLUS]);
             _times[DPLUS] = _times[VCONST] + tphDp;
             addDPlusFuncParams(_times[VCONST]);
             _vel[DPLUS] = velDp;
-            _pos[DPLUS] = _pos[APLUS] + distDp;
+            _pos[DPLUS] = _pos[VCONST] + (Vc * tphDp);
             _accel[DPLUS] = Dc;
 
             //constant deceleration  phase
-            /*
+            assert(tphDc > std::numeric_limits<double>::min());
+            _functions[DCONST] = std::make_shared<ConstFunction>(Dc);
+            _accel[DCONST] = Dc;
+            _times[DCONST] = _times[DPLUS] + tphDc;
+            _ptrSegments[DCONST]->create(_times[DPLUS], _times[DCONST], 0.00, _vel[DPLUS], _pos[DPLUS], _functions[DCONST]);
+            addDConstFuncParams(_times[DPLUS]);
+            _vel[DCONST] = velDm;
+            _pos[DCONST] = _pos[DPLUS] + 0.50 * Dc * tphDc * tphDc + velDp * tphDc;
 
-            _vel[DCONST] = _vel[DPLUS];
-            _pos[DCONST] = _pos[DPLUS];
+           
             std::shared_ptr<QuinticBezierCurve> fpdm = std::make_shared<QuinticBezierCurve>();
-            fpdm->setParams(0.00, 0.00, 0.00, -Dc, -Dc, -Dc);
+            fpdm->setParams(0.00, 0.00, 0.00, -Dc + _accel[END], -Dc + _accel[END], -Dc + _accel[END]);
             _functions[DMINUS] = fpdm;
             _ptrSegments[DMINUS]->create(0.00, 1.00, _accel[DCONST], 0.00, 0.00, _functions[DMINUS]);
-            _times[DMINUS] = _times[DPLUS] + tphDm;
-            addDMinusFuncParams(_times[VCONST]);
-            _vel[DMINUS] = velDm;
-            _pos[DMINUS] = _pos[VCONST] + distDm;
-            _accel[DMINUS] = Dc;
+            _times[DMINUS] = _times[DCONST] + tphDm;
+            addDMinusFuncParams(_times[DCONST]);
+            //_vel[DMINUS] = velDm;
+            _pos[DMINUS] = _pos[DCONST] + distDm;
+            _accel[DMINUS] = _accel[END];
 
-            assert((abs(abs(velDm) - abs(_vel[END]))) < _max_vel_error);
-            */
-                
+            //TODO!!!!!
+            //assert((abs(abs(velDm) - abs(_vel[END]))) < _max_vel_error);
+         
+            double endTime = tphAp + tphAm + tphAc + tphDp + tphDc + tphDm + tphVc;
                      
-            return 0.00;
+            return (endTime);
         }
 
        
@@ -583,7 +638,6 @@ namespace CntrlLibrary
             //time at the end od D+
             _functions[DPLUS] = fpdp;
             _times[DPLUS] = tphDp;
-            _durations[DPLUS] = tphDp;            
             _vel[DPLUS] = _vel[START] + velocityDp;
             _pos[DPLUS] = posDp;
                        
@@ -592,12 +646,10 @@ namespace CntrlLibrary
 
             _ptrSegments[DPLUS]->create(0.00, 1.00, _accel[START], _vel[START], _pos[START], _functions[DPLUS]);
 
-            _durations[DCONST] = tphDc;
             //time at the end of D const
             _times[DCONST] = _times[DPLUS] + tphDc;
 
-            _durations[DMINUS] = tphDm;
-            
+           
             //time at the end of D-  (End Time)
             _times[DMINUS] = _times[DCONST] + tphDm;
             
@@ -630,7 +682,6 @@ namespace CntrlLibrary
             }
             
             _funcParams.clear();
-            _durations.clear();
             _times.clear();
 
             /*clear all values, but not START and END */
@@ -919,9 +970,13 @@ namespace CntrlLibrary
                 {
                     return ResultTrajectory::NotPossible;
                 }
-            }               
+            }
+            double end_velocity_squ = _vel[END] * _vel[END];
             double max_velocity_squ = new_max_velocity * new_max_velocity;
-            double min_max_vel_distance = abs((max_velocity_squ - start_velocity_squ) / (abs(Ac)+abs(Dc)) + max_velocity_squ / (abs(Ac) + abs(Dc)));
+            double min_max_vel_distance = abs(max_velocity_squ - start_velocity_squ) / (2.0 * abs(Ac) ) + abs(max_velocity_squ - end_velocity_squ) / (2.0 * abs(Dc) );
+
+
+
             min_max_vel_distance += abs(aproxJerkDistance);
 
 
@@ -960,7 +1015,7 @@ namespace CntrlLibrary
                 }
                 else
                 {
-                    //can not be TODO
+                    assert(false);
                 }
             }
             else
@@ -977,20 +1032,10 @@ namespace CntrlLibrary
                     Vc = sign * _max_vel;
                 }
                
-                //_times[DPLUS] = _times[APLUS] + tphAm;
-                //_times[DMINUS] = _times[DPLUS] + tphDp;
-                //_times[END] = _times[DMINUS] + tphDm;
             }
+            createTrajectory(Ac, Dc, Vc);
 
-
-            if (in_out_time <= std::numeric_limits<double>::min())
-            {
-                //Min time must be calculated
-                //Ta = Ta + tphAp + tphAm;
-                //Td = Td + tphDp + tphDm;
-            }
-
-            return ResultTrajectory::NotPossible;
+            return ResultTrajectory::BTrajectory;
         }
 
         void  JerkLimitedTrajectory::pathFunc(double t, PathSegment* pathSegment, FUNC_PARAMS* params, double& a, double& v, double& s)
@@ -1041,6 +1086,12 @@ namespace CntrlLibrary
                     if (t < (time.second + std::numeric_limits<double>::min()))
                     {
                         int si = time.first;
+
+                        if (si == DCONST)
+                        {
+                            int a = 0;
+                            a++;
+                        }
                         PathSegment* segment = _ptrSegments[si].get();
                         if (segment != nullptr)
                         {

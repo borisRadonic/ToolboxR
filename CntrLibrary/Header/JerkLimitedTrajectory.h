@@ -36,8 +36,7 @@ namespace CntrlLibrary
                 SafetyStop,
                 SafetyVelocityReduction,
                 QPolyTrajectory,
-                TrangularTrajectory,
-                TrapezoidTrajectory,
+                BTrajectory,
                 AccelerationTrajectory,
                 DeaccelerationTrajectory,
                 NotPossible
@@ -132,6 +131,21 @@ namespace CntrlLibrary
                 double& velDp,
                 double& velDm);
 
+            void calculateConstVelTime(double Ac,
+                double Dc,
+                double Vc,
+                double tphAp,
+                double tphAc,
+                double tphAm,
+                double tphDp,
+                double tphDc,
+                double tphDm,
+                double& vc_time,
+                double& vc_dist,
+                double& velDp,
+                double& posAtEndAm);
+
+
             bool findNewMaxVelocity(double travel_distance,
                 double Ac,
                 double Dc,
@@ -169,13 +183,7 @@ namespace CntrlLibrary
 
             void addVConstFuncParams(double startTime);
 
-            double createTrajectory(double Ac,
-                                    double Dc,
-                                    double tphAp,
-                                    double tphAm,
-                                    double tphDp,
-                                    double tphDm,
-                                    double Vc);
+            double createTrajectory(double Ac, double Dc, double Vc);
 
             double createStopTrajectory(double max_stop_distance,
                                         double Dc,
@@ -222,7 +230,6 @@ namespace CntrlLibrary
 
             //contains only the end times of each segment
             std::unordered_map<int, double>     _times;
-            std::unordered_map<int, double>     _durations;
             std::unordered_map<int, double>     _accel;
             std::unordered_map<int, double>     _vel;
             std::unordered_map<int, double>     _pos;

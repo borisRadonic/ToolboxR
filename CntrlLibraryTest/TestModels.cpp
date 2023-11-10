@@ -243,16 +243,16 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTrapezoidalPro
 
 	JerkLimitedTrajectory traj;
 
-	double i_pos = 0.00;
-	double i_vel = 0.00;
+	double i_pos = -100.00;
+	double i_vel = 50.00;
 	double i_accel = 0.00;
 	double f_pos = 500.;
 	double f_vel = 0.00;
 	double f_accel = 0.00;
-	double f_time = 1.0;
+	double f_time = 4.0;
 
 
-	traj.setParameters(20000.0, 250.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
+	traj.setParameters(5000.0, 250.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
 	traj.setInitialValues(i_pos, i_vel, i_accel);
 	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
 
