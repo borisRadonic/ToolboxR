@@ -73,9 +73,7 @@ namespace CntrlLibrary
                                                             double& velDp,
                                                             double& velDm )
         {
-            //during the jerk phase average acceleration is 50% of max ( for our Bazier sigmoid function )
-
-            //const acceleration and const deacceleration phases can not be calculated at this stage
+           //const acceleration and const deacceleration phases can not be calculated at this stage
 
             _utilBazierCurve.setParams(0.00, 0.00, 0.00, Ac, Ac, Ac );
             double sint = (_utilBazierCurve.secondIntegral(1.00) - _utilBazierCurve.secondIntegral(0.00)) * tphAp * tphAp;
@@ -114,7 +112,6 @@ namespace CntrlLibrary
                                                             double& posAtEndAm)
         {
             //calculate time for const velocity phase
-
             //correct jerk distances for velocities
 
             _utilBazierCurve.setParams(0.00, 0.00, 0.00, Ac, Ac, Ac);
@@ -133,7 +130,7 @@ namespace CntrlLibrary
             double distDp =  velAm * tphDp + sint;
             velDp =  velAm + (_utilBazierCurve.firstIntegral(1.00) - _utilBazierCurve.firstIntegral(0.00)) * tphDp;
 
-             double distDc = velDp * tphDc - abs(0.50 * Dc * tphDc * tphDc);
+            double distDc = velDp * tphDc - abs(0.50 * Dc * tphDc * tphDc);
             double velDc = velDp + Dc * tphAc;
 
             //just another angle of view (view from back)
@@ -1005,13 +1002,6 @@ namespace CntrlLibrary
                     {
                         Vc = sign * new_max_velocity;
                     }
-                     
-                    _times[APLUS] = tphAp;
-                    //_times[ACONST] = _times[APLUS] + 
-                        _times[DPLUS] = _times[ACONST] + tphAm;
-                    //_times[DCONST] = _times[DPLUS] + 
-                    _times[DMINUS] = _times[DCONST] + tphDp;
-                      
                 }
                 else
                 {
@@ -1020,7 +1010,6 @@ namespace CntrlLibrary
             }
             else
             {
-                    
                 if (abs(travel_distance) < min_max_vel_distance)
                 {
                     //triangular profile
@@ -1031,10 +1020,8 @@ namespace CntrlLibrary
                 {
                     Vc = sign * _max_vel;
                 }
-               
             }
             createTrajectory(Ac, Dc, Vc);
-
             return ResultTrajectory::BTrajectory;
         }
 
@@ -1086,12 +1073,6 @@ namespace CntrlLibrary
                     if (t < (time.second + std::numeric_limits<double>::min()))
                     {
                         int si = time.first;
-
-                        if (si == DCONST)
-                        {
-                            int a = 0;
-                            a++;
-                        }
                         PathSegment* segment = _ptrSegments[si].get();
                         if (segment != nullptr)
                         {
