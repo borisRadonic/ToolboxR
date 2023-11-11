@@ -146,19 +146,7 @@ namespace CntrlLibrary
                 double& posAtEndAm);
 
 
-            bool findNewMaxVelocity(double travel_distance,
-                double Ac,
-                double Dc,
-                double& new_max_velocity,
-                double& aproxJerkDistAp,
-                double& tphAp,
-                double& tphAm,
-                double& tphDp,
-                double& tphDm,
-                double& aproxJerkDistAm,
-                double& aproxJerkDistDp,
-                double& aproxJerkDistDm,
-                double& aproxJerkDistance);
+            bool findPeakVelocity(double travel_distance, double Ac, double Dc, double& p_velocity);
 
             bool findMaxAccelTimes(double travel_distance,
                 double& Ac,

@@ -148,19 +148,7 @@ namespace CntrlLibrary
          }
 
 
-        bool JerkLimitedTrajectory::findNewMaxVelocity(double travel_distance,
-            double Ac,
-            double Dc,
-            double& new_max_velocity,
-            double& aproxJerkDistAp,
-            double& tphAp,
-            double& tphAm,
-            double& tphDp,
-            double& tphDm,
-            double& aproxJerkDistAm,
-            double& aproxJerkDistDp,
-            double& aproxJerkDistDm,
-            double& aproxJerkDistance)
+        bool JerkLimitedTrajectory::findPeakVelocity(double travel_distance, double Ac, double Dc, double& p_velocity)
         {
             //find appropriate velocity
             const int MAX_STEPS = 1000;
@@ -168,51 +156,97 @@ namespace CntrlLibrary
             double max_v = _max_vel;
             bool reduced(false);
             uint32_t counter(0);
+
+            double tphAp(0.00);
+            double tphAm(0.00);
+            double tphDp(0.00);
+            double tphDm(0.00);
+            double tphAc(0.00);
+            double tphDc(0.00);
+
+            double aproxJerkDistAp(0.00);
+            double aproxJerkDistAm(0.00);
+            double aproxJerkDistDp(0.00);
+            double aproxJerkDistDm(0.00);
+            double aproxJerkDistance(0.00);
+            
             double velAp(0.00);
             double velAm(0.00);
             double velDp(0.00);
             double velDm(0.00);
-            calculateJerkDistances(Ac, Dc, tphAp, tphAm, tphDp, tphDm, aproxJerkDistAp, aproxJerkDistAm, aproxJerkDistDp, aproxJerkDistDm, aproxJerkDistance, velAp, velAm, velDp, velDm);
-            double dist = 0.00;
+            double velAc(0.00);
+            double velDc(0.00);
 
-            double deltaV = _vel[END] - _vel[START];
-            double deltaV_squ = deltaV * deltaV;
-            double distDv(0.00);
-          
+            double distAp(0.00);
+            double distAc(0.00);
+            double distAm(0.00);
+            double distDp(0.00);
+            double distDc(0.00);
+            double distDm(0.00);
+            double dis(0.00);
+            double sint(0.00);
+
+            calculateJerkTimes(Ac, Dc, tphAp, tphAm, tphDp, tphDm);
+
+            //calculateJerkDistances(Ac, Dc, tphAp, tphAm, tphDp, tphDm, aproxJerkDistAp, aproxJerkDistAm, aproxJerkDistDp, aproxJerkDistDm, aproxJerkDistance, velAp, velAm, velDp, velDm);
+                     
             while (counter < MAX_STEPS)
             {
                 counter++;
                 
+                calculateAccelTimes(Ac, Dc, tphAp, tphDp, tphAc, tphDc, p_velocity);
 
-                //calculate the impact of velocity change
-                if (deltaV < 0.00)
+                _utilBazierCurve.setParams(0.00, 0.00, 0.00, Ac, Ac, Ac);
+                sint = (_utilBazierCurve.secondIntegral(1.00) - _utilBazierCurve.secondIntegral(0.00)) * tphAp * tphAp;
+                distAp = tphAp * _vel[START] + sint + 0.50 * _accel[START] * tphAp * tphAp;
+                velAp = _vel[START] + (_utilBazierCurve.firstIntegral(1.00) - _utilBazierCurve.firstIntegral(0.00)) * tphAp + _accel[START] * tphAp;
+
+                distAc = abs(0.50 * Ac * tphAc * tphAc) + velAp * tphAc;
+                velAc = velAp + Ac * tphAc;
+
+                distAm = velAc * tphAm + sint;
+                velAm = velAc + (_utilBazierCurve.firstIntegral(1.00) - _utilBazierCurve.firstIntegral(0.00)) * tphAm;
+
+                _utilBazierCurve.setParams(0.00, 0.00, 0.00, Dc, Dc, Dc);
+                sint = (_utilBazierCurve.secondIntegral(1.00) - _utilBazierCurve.secondIntegral(0.00)) * tphDp * tphDp;
+                distDp = velAm * tphDp + sint;
+                velDp = velAm + (_utilBazierCurve.firstIntegral(1.00) - _utilBazierCurve.firstIntegral(0.00)) * tphDp;
+
+                distDc = velDp * tphDc - abs(0.50 * Dc * tphDc * tphDc);
+                velDc = velDp + Dc * tphAc;
+
+                //just another angle of view (view from back)
+                _utilBazierCurve.setParams(0.00, 0.00, 0.00, Dc - _accel[END], Dc - _accel[END], Dc - _accel[END]);
+                sint = (_utilBazierCurve.secondIntegral(1.00) - _utilBazierCurve.secondIntegral(0.00)) * tphDm * tphDm;
+                distDm = _vel[END] * tphDm - sint;
+
+                dis = distAp + distAc + distAm + distDp + distDc + distDm;
+
+
+                //calculate constant velocity distance
+                double vc_dist = abs(_pos[END] - _pos[START]) - abs(dis);
+
+                double difference = travel_distance - dis;
+                if ( abs(difference) < _max_pos_error)
                 {
-                    distDv = deltaV_squ / (2.0 * abs(Dc));
+                    return true;
                 }
-                else
-                {
-                    distDv = deltaV_squ / (2.0 * abs(Ac));
-                }
-
-                dist = aproxJerkDistAp + aproxJerkDistAm + aproxJerkDistDp + aproxJerkDistDm + new_max_velocity * (tphAm + tphDp) - distDv;
-
-                double difference = travel_distance - dist;
                 if (difference <= 0.00)
                 {
                     reduced = true;
-                    max_v = new_max_velocity;
-                    new_max_velocity = (min_v + max_v) / 2.00;
+                    max_v = p_velocity;
+                    p_velocity = (min_v + max_v) / 2.00;
                 }
                 else
                 {
-                    if (abs(difference) <= abs(_max_pos_error))
+                    if (p_velocity >= (_max_vel - _max_vel_error))
                     {
                         return true;
                     }
-                    //if (reduced)
+                    if (reduced)
                     {
-                        min_v = new_max_velocity;
-                        new_max_velocity = (min_v + max_v) / 2.00;
+                        min_v = p_velocity;
+                        p_velocity = (min_v + max_v) / 2.00;
                     }
                 }
             }
@@ -483,6 +517,49 @@ namespace CntrlLibrary
 
             double posAtEndAm(0.00);
 
+            /*
+            * Velocity
+            *
+            *                ********
+            * ^            *           *
+            *            *               *
+            * |        *                   *
+            * |       *                      *
+            * |     *                          *
+            * |   *                              *
+            * |*A+   Ac    A-*    Vc   D+    Dc  D-*
+            * +--------------------------------------->
+           
+            /*
+            * Acceleration
+            * ^
+            * |      ***
+            * |    *     *
+            * |   *       *
+            * |  *         *
+            * |*A+   Ac    A-*    Vc   D+    Dc   D-
+            * +--------------------------------------->
+            * |                        *            *
+            * |                          *        *
+            * |                           *      *
+            * |                            *    *
+            * |                             ***
+
+            /*
+            * Jerk
+            * ^
+            * |  **                    **
+            * | *  *                  *  *
+            * | *  *                  *  *
+            * | *  *                  *  *
+            * |* A+ *                * D+ *
+            * +------------------------------------->
+            * |          * A- *               * D- *
+            * |           *  *                 *  *
+            * |           *  *                 *  *
+            * |           *  *                 *  *
+            * |            **                   **
+            */
             
             calculateJerkTimes(Ac, Dc, tphAp, tphAm, tphDp, tphDm);
                        
@@ -540,6 +617,32 @@ namespace CntrlLibrary
 
             assert( abs( abs(_vel[AMINUS]) - abs(Vc))  <= _max_vel_error);
 
+            /*
+            If we can not reach max velocity :
+
+
+            We determine Feasible Peak Velocity calculating the highest velocity that can be achieved given the constraints.
+
+                Adjust Accelerationand Deceleration Phases  so that the system smoothly accelerates to this peak velocityand then decelerates to the final velocity.
+
+                Eliminate Constant Velocity Phase!If the maximum velocity cannot be reached, there will be no constant velocity phase.
+
+                The durations of the accelerationand deceleration segments need to be recalculated based on the new velocity profile.
+                Check that the recalculated trajectory meets the desired end conditions for positionand velocity.If not, further adjustments may be necessary.
+
+                Checking is there a need for a constant velocity phase :
+
+            1. Calculate the Distance Required for Acceleration determining the distance needed to accelerate from the initial velocity to the maximum velocity under the maximum allowable accelerationand jerk.
+
+                2. Calculate the Distance Required for Deceleration calculating the distance required to decelerate from the maximum velocity to the final velocity under the maximum allowable decelerationand jerk.
+
+                3. Add the distances calculated for accelerationand deceleration.If the sum is less than the total distance to be covered, there is room for a constant velocity phase
+
+                4. If the sum of the acceleration and deceleration distances is less than the total distance, but the maximum velocity is too high to be sustained(due to other constraints like system limitations or a speed limit),
+                we may need to calculate a lower 'feasible' maximum velocity.
+                */
+
+
             //const velocity phase
             double tphVc(0.00);
             double vc_dist(0.00);
@@ -556,6 +659,7 @@ namespace CntrlLibrary
             _accel[VCONST] = 0.00;
 
             assert(tphDp > std::numeric_limits<double>::min());
+
             //deceleration D+ phase
             std::shared_ptr<QuinticBezierCurve> fpdp = std::make_shared<QuinticBezierCurve>();
             fpdp->setParams(0.00, 0.00, 0.00, Dc, Dc, Dc);
@@ -762,54 +866,24 @@ namespace CntrlLibrary
                     return ResultTrajectory::NotPossible;
                 }
             }
-
-            // Can we reach max acceleration?
-                //If not::
+                        
             /*
+            When we can not reach max acceleration:
             
                 Recalculate Maximum Feasible Acceleration:
                 Determine the highest acceleration that can be achieved without violating the jerk constraint over the distance to be covered. 
                 This can be done by considering the initial and final velocities, the distance to be covered, and the maximum jerk.
             
                 If the maximum acceleration cannot be reached, there may not be a constant acceleration phase.
-                Instead, we transition directly from increasing acceleration to decreasing acceleration (from jerk ramp-up to jerk ramp-down).
+
 
                 With the new acceleration profiles, recalculate the velocity profiles.
                 The maximum velocity achieved may be less than the maximum allowable velocity due to the lower acceleration.
             
                 The durations of each segment need to be recalculated based on the new acceleration and velocity profiles. Ensure that the sum of the distances covered
                 in all segments equals the total distance.
-
-            */
-           
-            // Can we reach max velocity?
-            // If not
-            /*
+           */
             
-                Determine Feasible Peak Velocity calculating the highest velocity that can be achieved given the constraints. 
-                Adjust Acceleration and Deceleration Phases  so that the system smoothly accelerates to this peak velocity and then decelerates to the final velocity.
-                Eliminate Constant Velocity Phase! If the maximum velocity cannot be reached, there will be no constant velocity phase.
-                The durations of the acceleration and deceleration segments need to be recalculated based on the new velocity profile.
-                Check that the recalculated trajectory meets the desired end conditions for position and velocity. If not, further adjustments may be necessary.
-            
-            
-            */
-           
-            // Is there a need for a constant velocity phase?
-            /*
-            
-                1. Calculate the Distance Required for Acceleration determining the distance needed to accelerate from the initial velocity to the maximum velocity under the maximum allowable acceleration and jerk. 
-            
-                2. Calculate the Distance Required for Deceleration calculating the distance required to decelerate from the maximum velocity to the final velocity under the maximum allowable deceleration and jerk.
-
-                3. Add the distances calculated for acceleration and deceleration. If the sum is less than the total distance to be covered, there is room for a constant velocity phase
-            
-                4. If the sum of the acceleration and deceleration distances is less than the total distance, but the maximum velocity is too high to be sustained (due to other constraints like system limitations or a speed limit), 
-                    we may need to calculate a lower 'feasible' maximum velocity.
-            */
-            
-
-
             double Ac = 0.00;
             double Dc = 0.00;
             double Vc = 0.00;
@@ -918,8 +992,7 @@ namespace CntrlLibrary
                                         reducedMaxAccel);
                 
                     
-                /*this is a special case where we have funny initial and final conditions and very strange constrains
-                -> QuinticPolyTrajectory will be used.*/
+                /*In this special case where we have funny initial and final conditions and very strange constrains QuinticPolyTrajectory will be used.*/
                 _use_quinticPoly = true;
                 _quinticPolyTrajectory.setParameters(_pos[START], _vel[START], _accel[START], _pos[END], _vel[END], _accel[END], abs(Ac), _max_vel);                         
                 double mt = tphAp + tphAm + tphDp + tphDm;
@@ -933,50 +1006,21 @@ namespace CntrlLibrary
 
                 _quinticPolyTrajectory.create(mt);
                 in_out_time = mt;
-            
-               //createReducedAccelTrajectory(Ac, Dc, tphAp, tphAm, tphDp, tphDm, _max_vel);
 
                 return QPolyTrajectory;
             }
 
-            //add velocity impact (in case of max velocity
-            /*during A- and D+ velocity ist nearly Vc (we do not know Vc), but we take max_v*/
-            aproxJerkDistAm += abs(tphAm * _max_vel);
-            aproxJerkDistDp += abs(tphDp * _max_vel);
-            double new_max_velocity = _max_vel;
-
-            aproxJerkDistance = aproxJerkDistAp + aproxJerkDistAm + aproxJerkDistDp + aproxJerkDistDm;
-
+            //searching for peak velocity
+            double p_velocity = _max_vel;
             bool reducedMaxVelocity(false);
-            if (abs(travel_distance) < abs(aproxJerkDistance))
+
+            if (false == findPeakVelocity(travel_distance, Ac, Dc, p_velocity))
             {
-                reducedMaxVelocity = true;
-                if (false == findNewMaxVelocity(travel_distance,
-                    Ac,
-                    Dc,
-                    new_max_velocity,
-                    aproxJerkDistAp,
-                    tphAp,
-                    tphAm,
-                    tphDp,
-                    tphDm,
-                    aproxJerkDistAm,
-                    aproxJerkDistDp,
-                    aproxJerkDistDm,
-                    aproxJerkDistance))
-                {
-                    return ResultTrajectory::NotPossible;
-                }
+                return ResultTrajectory::NotPossible;
             }
-            double end_velocity_squ = _vel[END] * _vel[END];
-            double max_velocity_squ = new_max_velocity * new_max_velocity;
-            double min_max_vel_distance = abs(max_velocity_squ - start_velocity_squ) / (2.0 * abs(Ac) ) + abs(max_velocity_squ - end_velocity_squ) / (2.0 * abs(Dc) );
-
-
-
-            min_max_vel_distance += abs(aproxJerkDistance);
-
-
+            
+            reducedMaxVelocity = (p_velocity < _max_vel);
+              
             ///TODO!!!!!!!
             //check if the velocity exceeded max_velocity - safety condition2
             if (_vel[START] > _max_vel)
@@ -987,41 +1031,10 @@ namespace CntrlLibrary
                 double max_reduce_vel_distance = (dvel * dvel) / (2.00 * _max_accel);
                 //deacceleration...
                  ///TODO!!!!!!!
-            }
- 
-            if (reducedMaxVelocity)
-            {
-                if( abs(travel_distance) < min_max_vel_distance )
-                {
-                    //triangular profile
-                    if ((travel_distance - aproxJerkDistance) > 0.00)
-                    {
-                        Vc = sign * sqrt((2.00 * max_velocity_squ * (travel_distance - aproxJerkDistance) - Ac * start_velocity_squ) / (Ac + abs(Dc)));
-                    }
-                    if (Vc < new_max_velocity)
-                    {
-                        Vc = sign * new_max_velocity;
-                    }
-                }
-                else
-                {
-                    assert(false);
-                }
-            }
-            else
-            {
-                if (abs(travel_distance) < min_max_vel_distance)
-                {
-                    //triangular profile
-                    Vc = sign * sqrt((2.00 * max_velocity_squ * (travel_distance - aproxJerkDistance) - Ac * start_velocity_squ) / (Ac + abs(Dc)));
-                    //we do not have real const velocity phase (may be a small one for corrections if something was not calculated right)
-                }
-                else
-                {
-                    Vc = sign * _max_vel;
-                }
-            }
-            createTrajectory(Ac, Dc, Vc);
+            } 
+            
+            
+            createTrajectory(Ac, Dc, p_velocity);
             return ResultTrajectory::BTrajectory;
         }
 
