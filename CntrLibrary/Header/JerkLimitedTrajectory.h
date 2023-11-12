@@ -161,6 +161,8 @@ namespace CntrlLibrary
             
             void addAMinusFuncParams(double startTime);
 
+            void addDMinusFuncParamsStop(double startTime);
+
             void addDMinusFuncParams(double startTime);
 
             void addDPlusFuncParams(double startTime);
