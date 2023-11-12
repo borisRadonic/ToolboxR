@@ -195,6 +195,9 @@
     <ClCompile Include="Source\StringUtil.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Source\FFTUtility.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\framework.h">
@@ -391,6 +394,9 @@
     </ClInclude>
     <ClInclude Include="Header\QuinticPolynomialOptimizer.h">
       <Filter>Header Files\Trajectories</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FFTUtility.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
