@@ -1,4 +1,4 @@
-set terminal wxt size 800,600 
+set terminal wxt size 1600,1200 
 
 # Set the grid
 set grid
@@ -12,11 +12,12 @@ set ylabel "Value"
 set key outside top left
 
 # Plot the data
-plot "TestPMSM.dat" using 1:2 with lines title "Id", \
-	 "TestPMSM.dat" using 1:3 with lines title "refIq", \
-     "TestPMSM.dat" using 1:4 with lines title "Iq", \
-     "TestPMSM.dat" using 1:5 with lines title "refVel", \
-     "TestPMSM.dat" using 1:6 with lines title "Vel"
+plot "TestPMSM.dat" using 1:2 with lines title "Id" lc "blue", \
+     "TestPMSM.dat" using 1:5 with lines title "refVel" lc "red", \
+     "TestPMSM.dat" using 1:6 with lines title "Vel" lc "green", \
+     "TestPMSM.dat" using 1:($3*30) with lines title "refIq" lc "purple", \
+     "TestPMSM.dat" using 1:($4*30) with lines title "Iq" lc "orange" lw 2
+    
 
 # Pause (for terminals that close immediately after displaying the plot)
 pause -1 "Press any key to continue"
