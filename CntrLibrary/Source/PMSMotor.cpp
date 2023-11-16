@@ -70,7 +70,7 @@ namespace CntrlLibrary
 			if (_isParamsSet)
 			{
 				std::double_t id_der = _invLd * (_ud - (_R * _id1) + _polePairs * _wM * _Lq * _iq1);
-				std::double_t iq_der = _invLq * ( _uq - (_R * _iq1) - _wM * (_polePairs * _Ld * _id1 - _Kemf) );
+				std::double_t iq_der = _invLq * ( _uq - (_R * _iq1) - _wM * (_polePairs * _Ld * _id1 + _Kemf) );
 				_id = _pIntegratorId->process(id_der);
 				_iq = _pIntegratorIq->process(iq_der);
 				_aM = _invJ * (_Ktq * _iq - _B * _wM1 - _Tf - _lt);
