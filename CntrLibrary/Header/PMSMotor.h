@@ -28,9 +28,8 @@ namespace CntrlLibrary
 			//Lq  - Inductance of stator in dq frame (q part) in [H]
 			//Ld  - Inductance of stator in dq frame (d part) in [H]
 			//Ktq - Torque constant in [A/Nm]
-			//Tf  - Static friction torque in [Nm]
 
-			void setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq, std::double_t Tf);
+			void setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq);
 
 			void reset();
 

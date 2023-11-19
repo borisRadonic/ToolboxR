@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Block.h"
+#include "IIRFilterFO.h"
 #include "IIRFilterSO.h"
 
 namespace CntrlLibrary

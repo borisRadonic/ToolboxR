@@ -13,7 +13,7 @@ namespace CntrlLibrary
 			_pPosController = std::make_unique<PIDController>();
 			_pVelController = std::make_unique<PIDController>();
 			_pIRFltVel = std::make_unique<Filters::ButterworthLowPassII>();
-			_pIRFltNotch = std::make_unique<Filters::IIRSecondOrderFilter>();
+			_pIRFltNotch = std::make_unique<Filters::ButterworthBandStopII>();
 		}
 
 		void PMSMPositionController::setPosVelControllerParameters(std::double_t pos_kp, std::double_t vel_kp, std::double_t vel_ki, std::double_t vel_cntrl_pre_filt_frequency, std::double_t Ktq)
@@ -29,11 +29,11 @@ namespace CntrlLibrary
 			}
 		}
 
-		void PMSMPositionController::setNotchFilterParameters(const std::double_t a1, const std::double_t a2, const std::double_t b0, const std::double_t b1, const std::double_t b2)
+		void PMSMPositionController::setNotchFilterParameters(const std::double_t omega_c, const std::double_t bw)
 		{
 			if (_isSamplingPeriodSet)
-			{
-				_pIRFltNotch->setParameters(a1, a2, b0, b1, b2, "");
+			{				
+				_pIRFltNotch->setBandStopParameters(omega_c, bw,_Ts, "");
 			}
 		}
 
@@ -86,8 +86,6 @@ namespace CntrlLibrary
 		// Reset: Reset all the parameters, filters, and controllers to default or zero values.
 		void PMSMPositionController::reset()
 		{
-			_u_q = 0.00;
-			_u_d = 0.00;
 			_pCurrentController->reset();
 			_pPosController->reset();
 			_pVelController->reset();
@@ -112,10 +110,6 @@ namespace CntrlLibrary
 				_isPosVelControllerParametersSet &&
 				is_CurrentControllerParameters )
 			{
-				std::double_t tq_ref = 0.00;
-				std::double_t iq_ref = 0.00;
-				std::double_t id_ref = 0.00; //0.00 for working in const Torque area
-			
 				ref_position = std::clamp( ref_position, _pos_limit_neg, _pos_limit_pos ); //limit position
 				std::double_t errorPos = ref_position - s_position;
 				std::double_t posCntrlOut = _pPosController->process(errorPos); // process position P controller
@@ -124,15 +118,10 @@ namespace CntrlLibrary
 				velRef = _pIRFltVel->process(velRef); //velocity PI controller pre-filter
 				std::double_t errorVel = velRef - s_velocity;
 				std::double_t veCntrllOut = _pVelController->process(errorVel); //process PI velocity controller
-				std::double_t refTq = veCntrllOut + ff_acceleration * _ff_accel_gain + ff_torque_offset + ff_torque_compensations;
-				refTq = std::clamp(refTq, -_max_torque, _max_torque); //limit torque 
-				iq_ref = refTq / _Ktq;				
+				tq_ref = veCntrllOut + ff_acceleration * _ff_accel_gain + ff_torque_offset + ff_torque_compensations;
+				tq_ref = std::clamp(tq_ref, -_max_torque, _max_torque); //limit torque 
+				iq_ref = tq_ref / _Ktq;
 				_pCurrentController->process(iq_ref, id_ref, iq_s, id_s, s_position); //process current controller
-				_u_q = _pCurrentController->getUq();
-				_u_d = _pCurrentController->getUd();
-				
-				_v_alpha = _pCurrentController->get_v_alpha();
-				_v_beta = _pCurrentController->get_v_beta();
 			}
 		}
 	}

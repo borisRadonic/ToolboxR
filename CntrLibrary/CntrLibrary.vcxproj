@@ -107,6 +107,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\IIRFilterButterFO.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\IIRFilterButterSO.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -251,6 +255,7 @@
     <ClInclude Include="Header\HexicPolynomial.h" />
     <ClInclude Include="Header\HyperbolicSecantSquared.h" />
     <ClInclude Include="Header\IIRFilter.h" />
+    <ClInclude Include="Header\IIRFilterButterFO.h" />
     <ClInclude Include="Header\IIRFilterButterSO.h" />
     <ClInclude Include="Header\IIRFilterFO.h" />
     <ClInclude Include="Header\IIRFilterSO.h" />

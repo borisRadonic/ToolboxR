@@ -21,7 +21,7 @@ namespace CntrlLibrary
 		{
 		}
 
-		void PMSMotor::setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq, std::double_t Tf)
+		void PMSMotor::setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq)
 		{
 			_Ts = ts;					
 			_polePairs = p;
@@ -33,8 +33,7 @@ namespace CntrlLibrary
 			_Ld = Ld;
 			_invLq = 1.00/Lq;
 			_invLd = 1.00/Ld;
-			_Ktq = Ktq;
-			_Tf = Tf;
+			_Ktq = Ktq;			
 			_pIntegratorIq->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
 			_pIntegratorId->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
 			_pIntegratorW->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
@@ -73,7 +72,7 @@ namespace CntrlLibrary
 				std::double_t iq_der = _invLq * ( _uq - (_R * _iq1) - _wM * (_polePairs * _Ld * _id1 + _Kemf) );
 				_id = _pIntegratorId->process(id_der);
 				_iq = _pIntegratorIq->process(iq_der);
-				_aM = _invJ * (_Ktq * _iq - _B * _wM1 - _Tf - _lt);
+				_aM = _invJ * (_Ktq * _iq - _B * _wM1 - _lt);
 				_wM = _pIntegratorW->process(_aM);
 				_angleM = _pIntegratorR->process(_wM);
 				double angleE = _angleM * _polePairs;

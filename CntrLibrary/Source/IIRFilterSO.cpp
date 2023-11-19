@@ -44,6 +44,10 @@ namespace CntrlLibrary
 					_x2 = _x1;
 					_x1 = u;
 				}
+				else
+				{
+					_y0 = u;
+				}
 				_ptrIn->set(u);
 				_ptrOut->set(_y0);
 				return _y0;

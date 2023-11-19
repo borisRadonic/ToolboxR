@@ -31,7 +31,7 @@ namespace CntrlLibrary
 				b1 = -b0;
 				a1 = (1 - w_p * ts)/(1 + w_p * ts)
 			*/
-			class IIRFirstOrderFilter final : public Block
+			class IIRFirstOrderFilter : public Block
 			{
 			public:
 
@@ -61,7 +61,7 @@ namespace CntrlLibrary
 					return _b1;
 				}
 
-			private:
+			protected:
 
 				std::shared_ptr<Signal<std::double_t>> _ptrIn;
 				std::shared_ptr<Signal<std::double_t>> _ptrOut;

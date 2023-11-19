@@ -201,6 +201,9 @@
     <ClCompile Include="Source\PMSMPositionController.cpp">
       <Filter>Source Files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="Source\IIRFilterButterFO.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\framework.h">
@@ -403,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="Header\PMSMPositionController.h">
       <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\IIRFilterButterFO.h">
+      <Filter>Header Files\DiscreteTime</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
