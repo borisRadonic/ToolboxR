@@ -143,7 +143,10 @@ namespace CntrlLibrary
                 double& vc_time,
                 double& vc_dist,
                 double& velDp,
-                double& posAtEndAm);
+                double& posAtEndAm,
+                double& distDm,
+                double& distDc,
+                double& distDp);
 
 
             bool findPeakVelocity(double travel_distance, double Ac, double Dc, double& p_velocity);

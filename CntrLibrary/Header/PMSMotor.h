@@ -28,8 +28,9 @@ namespace CntrlLibrary
 			//Lq  - Inductance of stator in dq frame (q part) in [H]
 			//Ld  - Inductance of stator in dq frame (d part) in [H]
 			//Ktq - Torque constant in [A/Nm]
+			//Fs - Static driction in Nm
 
-			void setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq);
+			void setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq, std::double_t Tsf);
 
 			void reset();
 
@@ -67,7 +68,7 @@ namespace CntrlLibrary
 			std::double_t _invLq = 1.00; //Inverse inductance of stator in dq frame (q part) in [H]
 			std::double_t _invLd = 1.00; //Inverse inductance of stator in dq frame (d part) in [H]
 			std::double_t _Ktq = 1.00; //Torque constant in[A / Nm]
-			std::double_t _Tf = 1.00; //static friction of shaft in [Nm]
+			std::double_t _Tsf = 1.00; //static friction of shaft in [Nm]
 
 			bool _isParamsSet = false;
 

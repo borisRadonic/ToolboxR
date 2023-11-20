@@ -234,22 +234,27 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTrapezoidalPro
 	double ts = 0.001;
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
-
-
+	
+	
 	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
 	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
 	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
+	auto iposition = tracer.addSignal<std::double_t>("Iposition", BaseSignal::SignalType::Double);
 
 
 	JerkLimitedTrajectory traj;
 
-	double i_pos = -100.00;
-	double i_vel = 50.00;
+	double i_pos = 0.00;
+	double i_vel = 0.00;
 	double i_accel = 0.00;
 	double f_pos = 500.;
 	double f_vel = 0.00;
 	double f_accel = 0.00;
 	double f_time = 4.0;
+
+	Integrator integral;
+	integral.setParameters(IntegratorMethod::BackwardEuler, 0.001, 1.00);
+	integral.setInitialConditions(i_vel);
 
 
 	traj.setParameters(5000.0, 250.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
@@ -265,6 +270,7 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTrapezoidalPro
 		acceleration->set(accel);
 		velocity->set(vel);
 		position->set(pos);
+		iposition->set(integral.process(vel));
 		tracer.trace();
 	}
 

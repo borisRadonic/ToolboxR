@@ -40,13 +40,15 @@ TEST(TestCasePMSM, TestPMSMVelCurrentCntr)
 	std::double_t Lq = 7.84e-3; //Inductance of stator in dq frame (q part) in [H]
 	std::double_t Ld = 7.14e-3; //Inductance of stator in dq frame (d part) in [H]
 	std::double_t Kt = 0.83; //Torque constant in [A/Nm]
-	//std::double_t Tf = 0.0135; //Static friction torque in [Nm]
+	std::double_t Tf = 0.0135; //Static friction torque in [Nm]
 	std::double_t dcBusVoltage = 320.00; //const at the moment
 
 	std::double_t peakTq = 14.3; //Peak torque in Nm ( Base speed 2000 rpm )
+
+	std::double_t Tsf = 0.02; //static friction
 	//Nominal torque 7.16 Nm, Nominal speed 2000 rpm, Maximum current Irms 20.00 A
 	//Maximum winding voltage VDC 360
-	motor.setParameters(ts, pole_pairs, b, Kemf, J, Rs, Lq, Ld, Kt);
+	motor.setParameters(ts, pole_pairs, b, Kemf, J, Rs, Lq, Ld, Kt, Tsf);
 
 	PIDController piVel;
 	PMSMPICurrentController tqController;
@@ -180,22 +182,21 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	std::double_t ts = 0.0001; //100 us
 	//PMSM parameters
 	std::uint16_t pole_pairs = 1; //number of pole pairs
-	std::double_t b = 0.00097; //Combined friction of rotor and load
+	std::double_t b = 0.00047; //Combined friction of rotor and load
 	std::double_t Kemf = 0.1327; //in Vs/rad
 	std::double_t J = 0.0047; //Combined moment of inertia of rotor and load
 	std::double_t Rs = 0.74; //Stator resistance in [Ohm]
 	std::double_t Lq = 7.84e-3; //Inductance of stator in dq frame (q part) in [H]
 	std::double_t Ld = 7.14e-3; //Inductance of stator in dq frame (d part) in [H]
 	std::double_t Kt = 0.83; //Torque constant in [A/Nm]
-	
+	std::double_t Tsf = 0.01; //static friction
 	std::double_t dcBusVoltage = 320.00; //const at the moment
 
 	std::double_t peakTq = 14.3; //Peak torque in Nm ( Base speed 2000 rpm )
 	//Nominal torque 7.16 Nm, Nominal speed 2000 rpm, Maximum current Irms 20.00 A
 	//Maximum winding voltage VDC 360
-	motor.setParameters(ts, pole_pairs, b, Kemf, J, Rs, Lq, Ld, Kt);
-
-	
+	motor.setParameters(ts, pole_pairs, b, Kemf, J, Rs, Lq, Ld, Kt, Tsf);
+		
 	std::double_t posLimitPos = 10000.00;
 	std::double_t posLimitNeg = -10000.00;
 
@@ -205,10 +206,10 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	std::double_t ff_vel_gain = 1.00; //in this case 1.00
 	std::double_t ff_accel_gain = J; // to convert acceleration to Feed Forward Torque
 	
-	std::double_t pos_kp = 1.1;
+	std::double_t pos_kp = 0.35;
 
-	std::double_t vel_kp = 0.86;	
-	std::double_t vel_ki = 1.3;
+	std::double_t vel_kp = 0.46;
+	std::double_t vel_ki = 8.3;
 
 	std::double_t kd = 0.00;
 	std::double_t kb = 1.00;
@@ -311,21 +312,26 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	double i_pos = 0.00;
 	double i_vel = 0.00;
 	double i_accel = 0.00;
-	double f_pos = 1000.;
+	double f_pos = 200.00;
 	double f_vel = 0.00;
 	double f_accel = 0.00;
 	double f_time = 10.0;
 
-
-	traj.setParameters(5000.0, 200.0, 300.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
+	traj.setParameters(5000.0, 200.0, 100.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
 	traj.setInitialValues(i_pos, i_vel, i_accel);
 	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
 
 	traj.prepare(f_time);
 
 
-	for (double t = 0.00001; t <= f_time + 0.00001; t = t + 0.0001)
+	for (double t = 0.00001; t <= f_time + 0.00001; t = t + ts)
 	{
+
+		if (t > (f_time- 0.0004) && t < (f_time + 0.00001))
+		{
+			int a = 0;
+			a++;
+		}
 		traj.process(t, ref_position, ff_velocity, ff_acceleration);
  		
 		positionController.process(ref_position,

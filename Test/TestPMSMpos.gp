@@ -12,11 +12,13 @@ set ylabel "Value"
 set key outside top left
 
 # Plot the data
-plot "TestPMSMPos.dat" using 1:2 with lines title "Id" lc "blue", \
+plot "TestPMSMPos.dat" using 1:10 with lines title "Pos" lc "blue", \
+	 "TestPMSMPos.dat" using 1:9 with lines title "refPOs" lc "black", \
      "TestPMSMPos.dat" using 1:5 with lines title "refVel" lc "red", \
      "TestPMSMPos.dat" using 1:6 with lines title "Vel" lc "green", \
      "TestPMSMPos.dat" using 1:3 with lines title "refIq" lc "purple", \
-     "TestPMSMPos.dat" using 1:4 with lines title "Iq" lc "orange" lw 2
+     "TestPMSMPos.dat" using 1:4 with lines title "Iq" lc "orange"
+
     
 
 # Pause (for terminals that close immediately after displaying the plot)

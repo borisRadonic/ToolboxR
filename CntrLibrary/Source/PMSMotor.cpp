@@ -21,7 +21,7 @@ namespace CntrlLibrary
 		{
 		}
 
-		void PMSMotor::setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq)
+		void PMSMotor::setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq, std::double_t Tsf)
 		{
 			_Ts = ts;					
 			_polePairs = p;
@@ -33,7 +33,8 @@ namespace CntrlLibrary
 			_Ld = Ld;
 			_invLq = 1.00/Lq;
 			_invLd = 1.00/Ld;
-			_Ktq = Ktq;			
+			_Ktq = Ktq;
+			_Tsf = Tsf;
 			_pIntegratorIq->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
 			_pIntegratorId->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
 			_pIntegratorW->setParameters(IntegratorMethod::ForwardEuler, _Ts, 1.00);
@@ -72,7 +73,60 @@ namespace CntrlLibrary
 				std::double_t iq_der = _invLq * ( _uq - (_R * _iq1) - _wM * (_polePairs * _Ld * _id1 + _Kemf) );
 				_id = _pIntegratorId->process(id_der);
 				_iq = _pIntegratorIq->process(iq_der);
-				_aM = _invJ * (_Ktq * _iq - _B * _wM1 - _lt);
+				
+				
+				//Ts - static friction
+				//Tc - Coulomb or kinetic friction
+				
+				std::double_t  tc = 0.00;				
+				std::double_t  ts = 0.00;
+				std::double_t  signW = 1.00;
+				std::double_t  signT = 1.00;
+
+				if (std::signbit(_wM1))
+				{
+					//negative velocity
+					signW = -1.00;
+				}
+
+				if (std::signbit(_iq))
+				{
+					//negative input torque
+					signT = -1.00;
+				}
+
+				if (std::abs(_aM) < std::numeric_limits<std::double_t>::min())
+				{
+					//acceleration is != 0
+					if (abs( (_iq * _Ktq) - ( (1.00/ _invJ) * _aM)) < _Tsf)
+					{
+						ts = _iq * _Ktq;
+					}
+					else
+					{
+						ts = _Tsf * signW;
+					}
+				}
+				else
+				{
+					if (abs(_iq * _Ktq) < _Tsf)
+					{
+						ts = _iq * _Ktq;
+					}
+					else
+					{
+						ts = _Tsf * signT;
+					}
+				}
+
+				if (std::abs(_wM) >= std::numeric_limits<std::double_t>::min())
+				{
+					ts = 0.00;
+				}
+				
+				_aM = _invJ * (_Ktq * _iq - ts - _B * _wM1 - _lt);
+
+
 				_wM = _pIntegratorW->process(_aM);
 				_angleM = _pIntegratorR->process(_wM);
 				double angleE = _angleM * _polePairs;
