@@ -10,6 +10,34 @@ namespace CntrlLibrary
         namespace BasicNumMethods
         {
 
+            class Pow2Util
+            {
+            public:
+
+                static uint32_t nextPow2(uint32_t value)
+                {
+                    if (value == 0)
+                    {
+                        return 1U;
+                    }
+
+                    // Decrement the value
+                    value--;
+
+                    // Set all bits below the highest set bit
+                    value |= value >> 1;
+                    value |= value >> 2;
+                    value |= value >> 4;
+                    value |= value >> 8;
+                    value |= value >> 16;
+
+                    // Increment to get the next power of 2
+                    return value + 1U;
+                }
+            };
+
+
+
             enum class ResultType
             {
                 Ok = 0,

@@ -2,7 +2,6 @@
 #include <numbers>
 #include <assert.h>
 
-
 namespace CntrlLibrary
 {
     namespace Math

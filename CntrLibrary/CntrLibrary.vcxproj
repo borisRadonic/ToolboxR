@@ -59,6 +59,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\FrequencyResponseManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\FrictionModelCV.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -179,6 +183,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\SineWaveGenerator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\SingletonFuzzySet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -219,6 +227,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\window.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\ZShapedFuzzySet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -239,6 +251,7 @@
     <ClInclude Include="Header\FisFileExport.h" />
     <ClInclude Include="Header\FisFileImport.h" />
     <ClInclude Include="Header\framework.h" />
+    <ClInclude Include="Header\FrequencyResponseManager.h" />
     <ClInclude Include="Header\FrictionModelCV.h" />
     <ClInclude Include="Header\FuzzyController.h" />
     <ClInclude Include="Header\FuzzyControllerFactory.h" />
@@ -281,6 +294,7 @@
     <ClInclude Include="Header\SigmoidalFuzzySet.h" />
     <ClInclude Include="Header\Signal.h" />
     <ClInclude Include="Header\SimplelHepticTrajectory.h" />
+    <ClInclude Include="Header\SineWaveGenerator.h" />
     <ClInclude Include="Header\SingletonFuzzySet.h" />
     <ClInclude Include="Header\SmallFuzzySet.h" />
     <ClInclude Include="Header\SShapedFuzzySet.h" />
@@ -292,6 +306,7 @@
     <ClInclude Include="Header\TrapezoidalIFuzzySetInfR.h" />
     <ClInclude Include="Header\TriangularFuzzySet.h" />
     <ClInclude Include="Header\WaveFormTracer.h" />
+    <ClInclude Include="Header\window.h" />
     <ClInclude Include="Header\ZShapedFuzzySet.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
