@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 #include <cfloat> 
+#include <functional> 
 
 
 namespace CntrlLibrary
@@ -22,16 +23,7 @@ namespace CntrlLibrary
         class FrequencyResponseManager
         {
         public:
-
-            struct ProcessResult
-            {
-                ProcessResult() :sineValue(0.00), currentFrequency(0.00), isFinished(false)
-                {
-                }
-                std::double_t sineValue;         // The generated sine wave value
-                std::double_t currentFrequency;  // The frequency in Hz being used in the current sequence                
-                bool isFinished;                 // Flag to indicate if the frequency response test is complete
-            };
+                        
 
             struct FrequencyBand
             {
@@ -56,7 +48,7 @@ namespace CntrlLibrary
             
              * @param freqBands Vector of frequency bands for the response test.
              */
-            FrequencyResponseManager(std::double_t sampling_period, const std::vector<FrequencyBand>& freqBands);
+            FrequencyResponseManager(std::double_t sampling_period, const std::vector<FrequencyBand>& freqBands, std::function<std::double_t(std::double_t)> function);
 
             /**
              * @brief Get the total duration of all frequency sequences.
@@ -64,21 +56,13 @@ namespace CntrlLibrary
              * @return std::double_t Total duration of the test sequences.
              */
             std::double_t getDuration() const;
-
-           
-            /**
-            * @brief Processes the next step in the frequency response test and updates the result.
-            *
-            * This method updates the provided ProcessResult object with the current state of the
-            * frequency response test, including the sine wave value, the current frequency,
-            * the cycle number, and a flag indicating if the test is complete.
-            *
-            * @param result A reference to a ProcessResult object that will be updated with
-            *               the current test results.
-            */
-            void process(ProcessResult& result);
+                      
+        
+            bool process();
 
         private:
+
+            std::function<std::double_t(std::double_t)> _process_function;
 
             void updateFrequency();
                       

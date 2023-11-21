@@ -4,7 +4,9 @@ namespace CntrlLibrary
 {
     namespace DiscreteTime
     {
-        FrequencyResponseManager::FrequencyResponseManager(std::double_t sampling_period, const std::vector<FrequencyBand>& freqBands)
+        FrequencyResponseManager::FrequencyResponseManager(std::double_t sampling_period,
+                                                           const std::vector<FrequencyBand>& freqBands,
+                                                           std::function<std::double_t(std::double_t)> function)
             :_samplingPeriod(sampling_period)
             , _freq_bands(freqBands)
             ,_currentFrequencyIndex(0)
@@ -13,6 +15,7 @@ namespace CntrlLibrary
             , _totTime(0.00)
             ,_finished(false)
             ,_nextSequenceTime(0.00)
+            ,_process_function(function)
         {
             for (auto band : _freq_bands)
             {
@@ -37,25 +40,26 @@ namespace CntrlLibrary
             return _totalDuration;
         }
 
-        void FrequencyResponseManager::process(ProcessResult& result)
+        bool FrequencyResponseManager::process()
         {
             if (_finished)
-            {
-                result.isFinished = true;
-                return;
+            {               
+                return true;
             }
 
             if (_currentFrequencyIndex > _toMeasure.size())
             {
-                result.isFinished = true;
-                return;
+                return true;
             }
-            result.sineValue = _generator.process(_currentTime);
+            double sineValue = _generator.process(_currentTime);
+            double resValue = _process_function(sineValue);
+
             _currentTime += _samplingPeriod;
 
             _totTime += _samplingPeriod;
             
-            result.currentFrequency = _toMeasure[_currentFrequencyIndex].first;
+            double amplitude = _toMeasure[_currentFrequencyIndex].second;
+            double freq = _toMeasure[_currentFrequencyIndex].first;
                         
 
             if (_currentTime >= _nextSequenceTime)
@@ -64,7 +68,6 @@ namespace CntrlLibrary
             }
 
             _finished = (_currentFrequencyIndex == 0 && _totTime >= _totalDuration);
-            result.isFinished = _finished;
         }
 
         void FrequencyResponseManager::updateFrequency()
