@@ -17,11 +17,12 @@ namespace CntrlLibrary
 
             ~SineWaveGenerator();
 
-            inline void setParameters(std::double_t amplitude, std::double_t frequency, std::double_t phaseOffset, const std::string& name)
+            inline void setParameters(std::double_t amplitude, std::double_t frequency, std::double_t phaseOffset, std::double_t samplingPeriod, const std::string& name)
             {
                 _amplitude = amplitude;
                 _frequency = frequency;
                 _phaseOffset = phaseOffset;
+                _samplingPeriod = samplingPeriod;
                 _isParamsSet = true;
                 setName(name);
             }
@@ -30,7 +31,7 @@ namespace CntrlLibrary
             {
 
             }
-            std::double_t process(std::double_t time);
+            std::double_t process(std::double_t time, bool& maximum);
 
         private:
 
@@ -40,6 +41,8 @@ namespace CntrlLibrary
             std::double_t _amplitude = 1.00;
             std::double_t _frequency = 1.00;
             std::double_t _phaseOffset = 0.00;
+            std::double_t _samplingPeriod = 1.00;
+
             bool _isParamsSet = false;
 		};
 	}

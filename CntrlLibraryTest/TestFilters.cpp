@@ -13,6 +13,9 @@
 #include "BasicNumMethods.h"
 #include "window.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 using namespace CntrlLibrary;
 using std::experimental::filesystem::path;
 
@@ -33,29 +36,42 @@ TEST(TestButterworthLowPassI, TestLowPass1)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto sin = tracer.addSignal<std::double_t>("sin", BaseSignal::SignalType::Double);
-	auto filt = tracer.addSignal<std::double_t>("filt", BaseSignal::SignalType::Double);
+	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
+	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
+	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
 	
 	//define filter and main process function
 	ButterworthLowPassI filter;
-	filter.setCutoffFrequency(628, ts, "TestLowPassB1"); //100 Hz
+	std::double_t filt_fc = 100; //100 Hz
+	filter.setCutoffFrequency(filt_fc * 2.00 * M_PI , ts, "TestLowPassB1"); //100 Hz
 	auto procFunc = [&filter](double val) -> double
 	{
 		return filter.process(val);
 	};
-	//
 
 	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
-	std::double_t minFrequency = 1;
-
-	frequencyBands.emplace_back(minFrequency, 600, 1000, 1.00);
-	//frequencyBands.emplace_back(100, 1000, 100, 1.00);
-	//frequencyBands.emplace_back(1000, 3000, 30, 1.00);		
+	std::double_t minFrequency = 10;
+	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
 	FrequencyResponseManager frManager(  ts, frequencyBands, procFunc);
 	std::double_t fo(0.00);
 	std::vector<std::double_t> measurements;
 	std::double_t ttime = frManager.getDuration();
-	bool processed = frManager.process();
+	EXPECT_TRUE(frManager.process());
+
+	auto optResult = frManager.findMeasurementByFrequency(filt_fc, 1);
+	EXPECT_TRUE(optResult != std::nullopt);
+	EXPECT_NEAR(0.71, optResult->magnitude, 0.1 ); //-3dB at Fc
+	
+	std::double_t fr(0.00);
+	size_t nMeas = frManager.getNumberOfMeasurements();
+	for (size_t i = 0; i < nMeas; i++)
+	{
+		fr = frManager.getFrequency(i);
+		freqTp->set(fr);
+		magTp->set(  20.00 + 20.0 * log10( frManager.getMagnitude(i) ));
+		phaseTp->set(frManager.getPhase(i));		
+		tracer.trace();
+	}
  }
 
 

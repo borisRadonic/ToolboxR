@@ -207,10 +207,10 @@
     <ClCompile Include="Source\SineWaveGenerator.cpp">
       <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
-    <ClCompile Include="Source\FrequencyResponseManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\window.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FrequencyResponseManager.cpp">
       <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
   </ItemGroup>

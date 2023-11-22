@@ -1,4 +1,6 @@
 #include "FrequencyResponseManager.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 namespace CntrlLibrary
 {
@@ -9,12 +11,7 @@ namespace CntrlLibrary
                                                            std::function<std::double_t(std::double_t)> function)
             :_samplingPeriod(sampling_period)
             , _freq_bands(freqBands)
-            ,_currentFrequencyIndex(0)
-            ,_currentTime(0.0)
             ,_totalDuration(0.0)
-            , _totTime(0.00)
-            ,_finished(false)
-            ,_nextSequenceTime(0.00)
             ,_process_function(function)
         {
             for (auto band : _freq_bands)
@@ -31,8 +28,7 @@ namespace CntrlLibrary
                         _toMeasure.emplace_back( f, band.signalAmplitude );
                     }
                 }
-            }
-            updateFrequency();
+            }            
         }
 
         std::double_t FrequencyResponseManager::getDuration() const
@@ -42,49 +38,63 @@ namespace CntrlLibrary
 
         bool FrequencyResponseManager::process()
         {
-            if (_finished)
-            {               
-                return true;
-            }
+            bool isMax(false);
+            std::double_t amplitude(0.00);
+            std::double_t freq(0.00);
+            std::double_t sineValue(0.00);
+            std::double_t resValue(0.00);
+            std::double_t max_time(0.00);
+            std::double_t dT(0.00);
+            std::double_t currentTime;
+            std::double_t max_val_pr(0.00);
+            std::double_t max_time_pr(0.00);
+            std::double_t rms_pr(0.00);
+            std::double_t samples(0.00);
 
-            if (_currentFrequencyIndex > _toMeasure.size())
+            for(auto meas: _toMeasure)
             {
-                return true;
+                currentTime = 0.00;
+                amplitude = meas.second;
+                freq = meas.first;
+                dT = 1.00 / freq;
+                rms_pr = 0.00;
+                max_val_pr = 0.00;
+                max_time_pr = 0.00;
+                _generator.setParameters(amplitude, freq, 0.00, _samplingPeriod, "");
+                samples = dT / _samplingPeriod;
+                while (currentTime < dT)
+                {
+                    sineValue = _generator.process(currentTime, isMax);
+                    resValue = _process_function(sineValue);
+                    rms_pr += pow(abs(resValue), 2);
+                    if (resValue > max_val_pr)
+                    {
+                        max_val_pr = resValue;
+                        max_time_pr = currentTime;
+                    }
+                    if (isMax)
+                    {
+                        max_time = currentTime;
+                    }
+                    currentTime += _samplingPeriod;
+                }
+                double phase = -(360.00 * ((max_time_pr - max_time) / dT));
+                rms_pr = sqrt(rms_pr / samples);
+                _measurements.emplace_back( freq, rms_pr / (amplitude * M_SQRT1_2), phase );
             }
-            double sineValue = _generator.process(_currentTime);
-            double resValue = _process_function(sineValue);
-
-            _currentTime += _samplingPeriod;
-
-            _totTime += _samplingPeriod;
-            
-            double amplitude = _toMeasure[_currentFrequencyIndex].second;
-            double freq = _toMeasure[_currentFrequencyIndex].first;
-                        
-
-            if (_currentTime >= _nextSequenceTime)
-            {
-                updateFrequency();
-            }
-
-            _finished = (_currentFrequencyIndex == 0 && _totTime >= _totalDuration);
+            return true;
         }
-
-        void FrequencyResponseManager::updateFrequency()
+        std::optional<FrequencyResponseManager::ResultFrequencyMeasurement> FrequencyResponseManager::findMeasurementByFrequency(double targetFrequency, std::double_t tolerance ) const
         {
-            if (_currentFrequencyIndex < _toMeasure.size() - 1)
+            for (const auto& measurement : _measurements)
             {
-                _currentFrequencyIndex++;
+                if (std::abs(measurement.frequency - targetFrequency) <= tolerance)
+                {
+                    return measurement;
+                }
             }
-            else
-            {
-                // Resets to the first frequency after the last one
-                _currentFrequencyIndex = 0;
-            }
-            _generator.setParameters(_toMeasure[_currentFrequencyIndex].second, _toMeasure[_currentFrequencyIndex].first, 0.00, "");
-            _nextSequenceTime = (1.00 / _toMeasure[_currentFrequencyIndex].first);
-            _currentTime = 0.00;
+            return std::nullopt; // Return an empty optional if not found
         }
-                
+
     }
 }
