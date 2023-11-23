@@ -53,9 +53,8 @@ namespace CntrlLibrary
 			}
 
 			/// <summary>
-			/// Butterworth HP Filter
+			/// Butterworth High-pass Filter
 			/// </summary>
-
 			ButterworthHighPassII::ButterworthHighPassII()
 			{
 			}
@@ -64,8 +63,6 @@ namespace CntrlLibrary
 			{
 			}
 
-			//TODO: High-pass filter verification!!!!!!
-			//
 			void ButterworthHighPassII::setCutoffFrequency(const std::double_t omega_c, const std::double_t ts, const std::string& name)
 			{
 				_omega_c = omega_c;
@@ -75,9 +72,6 @@ namespace CntrlLibrary
 
 					std::double_t f_c = omega_c / (2 * M_PI);
 					std::double_t f_s = 1.00 / ts;
-
-					std::double_t omega_norm = f_c / (f_s / 2.00);
-
 					std::double_t omega_p = 1.00 / tan(M_PI * f_c / f_s);
 
 					std::double_t  omega_p_squ = omega_p * omega_p;
@@ -120,21 +114,27 @@ namespace CntrlLibrary
 				_omega0 = omega0;
 				_bw = bw;
 				_ts = ts;
-				if ((ts > 0.00) && (_omega0 > 0.00))
+
+				if ((ts > 0.00) && (_omega0 > 0.00) && (bw > 0.00))
 				{
-					std::double_t omega_p0 = (2.0 / ts) * tan(omega0 * ts / 2.0);
-					std::double_t omega_pbw = (2.0 / ts) * tan(bw * ts / 2.0);
+					std::double_t f_c = _omega0 / (2 * M_PI);
+					std::double_t f_bw = _bw / (2 * M_PI);
+					std::double_t f_s = 1.00 / ts;
 
-					std::double_t oott = omega_p0 * omega_p0 * ts * ts;
-					std::double_t den = (1 + omega_pbw * ts + oott);
+					std::double_t omega_p = 2.00 / ts * tan(M_PI * f_c / f_s);
+					std::double_t bw_p = 2.00 / ts * tan(M_PI * f_bw / f_s);
 
+					// Band-pass filter coefficients calculation
+					std::double_t r = sqrt(omega_p * omega_p + bw_p * bw_p / 4);
+					std::double_t k1 = sin(omega_p / 2) / cos(omega_p / 2);
+					std::double_t k2 = 1 / (r + bw_p / 2);
 
-					_b0 = (omega_p0 * ts) / den;
-					_b1 = 0.00;
+					_b0 = bw_p / 2 * k2;
+					_b1 = 0.0;
 					_b2 = -_b0;
 
-					_a1 = 2.00 * (1.00 - oott) / den;
-					_a2 = (1.00 - omega_pbw * ts + oott) / den;
+					_a1 = -2 * k2 * k1;
+					_a2 = 2 * k2 * (r - bw_p / 2);
 
 					setName(name);
 					_isParamsSet = true;
@@ -149,7 +149,6 @@ namespace CntrlLibrary
 			/// <summary>
 			/// Butterworth Band-pstop (Notch) Filter
 			/// </summary>
-
 			ButterworthBandStopII::ButterworthBandStopII()
 			{
 			}
@@ -167,22 +166,25 @@ namespace CntrlLibrary
 				_ts = ts;
 				if ((ts > 0.00) && (_omega0 > 0.00))
 				{
-					std::double_t omega_p0 = (2.0 / ts) * tan(omega0 * ts / 2.0);
-					std::double_t omega_pbw = (2.0 / ts) * tan(bw * ts / 2.0);
+					std::double_t f_c = _omega0 / (2 * M_PI); // Center frequency in Hz
+					std::double_t f_bw = _bw / (2 * M_PI); // Bandwidth in Hz
+					std::double_t f_s = 1.00 / ts; // Sampling frequency in Hz
 
-					std::double_t oott = omega_p0 * omega_p0 * ts * ts;
-					std::double_t den = (1 + omega_pbw * ts + oott);
+					// Convert to digital frequencies using the bilinear transform
+					std::double_t omega_p = 2 * tan(M_PI * f_c / f_s);
+					std::double_t bw_p = 2 * tan(M_PI * f_bw / f_s);
 
+					// Band-stop filter coefficients calculation
+					std::double_t r = sqrt(omega_p * omega_p + bw_p * bw_p / 4);
+					std::double_t k1 = sin(omega_p / 2) / cos(omega_p / 2);
+					std::double_t k2 = 1 / (r + bw_p / 2);
 
-					_b0 = (1.00 + oott) / den;
-					_b1 = 2.00 * (1.00 - oott) / den;
-					_b2 = -_b0;
+					_b0 = k2 * r;
+					_b1 = -2 * k2 * k1;
+					_b2 = _b0;
 
-					//This symmetry arises from the fact that the filter has a notch centered at the specified frequency
-					//and rejects that frequency component both in phase and magnitude.
-					_a1 = _b1; 
-
-					_a2 = (1.00 - omega_pbw * ts + oott) / den;
+					_a1 = _b1;
+					_a2 = 2 * k2 * (r - bw_p / 2);
 
 					setName(name);
 					_isParamsSet = true;
