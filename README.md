@@ -92,7 +92,7 @@ The main classes are:
   Includes Hyperbolic Secant Squared, Quintic Polynomial, Heptic Polynomial, Hexic Polynomial, Linear Exponential Decay, Quintic Bezier Curve.
 
   **Models**
-  Covers DC Motor, Friction Model, Permanent Magnet Synchronous Motor (PMSM), PMSM PI Current Controller, PMSM Position Controller.
+  Covers examples like DC Motor, Friction Model, Permanent Magnet Synchronous Motor (PMSM), PMSM PI Current Controller, PMSM Position Controller.
 
 **Trajectory Generation Tools**
 
