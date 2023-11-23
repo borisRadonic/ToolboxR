@@ -40,38 +40,74 @@ Overall, discrete time models provide a valuable framework for understanding and
 
 The main classes are:
 
-  1. **Discrete Time Delay**
-     The Delay class holds and delays its input by the sample period you specify.
+  **Discrete Time Delay**
+  The Delay class holds and delays its input by the sample period you specify.
 
-  2. **Difference**
-     The Difference class outputs the current input value minus the previous input value.
+  **Difference**
+  The Difference class outputs the current input value minus the previous input value.
 
-  3. **Discrete Time Derivative**
+  **Discrete Time Derivative**
   The Discrete Derivative pproximates the derivative of its input.
 
-   4. **Discrete FIR Filter**
-      Discrete FIR Filter class implements a discrete-time finite impulse response (FIR) filter.
+  **Discrete FIR Filter**
+  Discrete FIR Filter class implements a discrete-time finite impulse response (FIR) filter.
 
-   5. **Discrete First-Order IIR Filter**
-      The IIR Filter class implements a discrete first-order infinite impulse response (IIR) filter on the specified input signal.
+  **Discrete First-Order IIR Filter**
+  The IIR Filter class implements a discrete first-order infinite impulse response (IIR) filter on the specified input signal.
 
-   6. **Discrete Second-Order IIR Filter**
-      The IIR Filter class implements a discrete second-order infinite impulse response (IIR) filter on the specified input signal.	
+  **Discrete Second-Order IIR Filter**
+  The IIR Filter class implements a discrete second-order infinite impulse response (IIR) filter on the specified input signal.	
 
-   7. **Discrete IIR Filter**
-      The IIR Filter class implements a discrete-time infinite impulse response (IIR) filter on the specified input signal.
+  **Discrete IIR Filter**
+  The IIR Filter class implements a discrete-time infinite impulse response (IIR) filter on the specified input signal.
 
-   8. **Discrete Integrator**
-      Discrete Integrator class performs discrete-time integration or accumulation of signal. It implements Trapezoidal, Forward Euler and Backward Euler integration methods.
+  **Discrete Second Order Butterworth Filters**
+  Includes Lowpass, Highpass, Bandpass, and Notch filters.
 
-   9. **Discrete PID Controller**
-      The Discrete PID Controller class implements a PID controller (PID, PI, PD only or I only). It includes Output saturation limits and anti-windup mechanism.
+  **Discrete N'th Order IIR Filter**
+   Implements an Nth-order Infinite Impulse Response filter.
 
-   10. **Discrete State-Space**
-       The Discrete State-Space class represents the discrete-time dynamic system in state-space form. A, B, C, and D matrices and intial conditions can be specified. It uses Eigen Library.
+  **Discrete Integrator**
+  Discrete Integrator class performs discrete-time integration or accumulation of signal. It implements Trapezoidal, Forward Euler and Backward Euler integration methods.
+
+  **Discrete PID Controller**
+  The Discrete PID Controller class implements a PID controller (PID, PI, PD only or I only). It includes Output saturation limits and anti-windup mechanism.
+
+  **Discrete State-Space**
+  The Discrete State-Space class represents the discrete-time dynamic system in state-space form. A, B, C, and D matrices and intial conditions can be specified. It uses Eigen Library.
 	
-   12. **Wave Form Tracer**
-      This utility classs can be used to trace selected signals in gnuplot format file.
+  **Wave Form Tracer**
+  This utility classs can be used to trace selected signals in gnuplot format file.
+
+  **Sine Wave Generator**
+  Generates sine waves with specified frequency and amplitude.
+
+  **FFT Utility**
+  Derived from "Numerical Recipes in C" by Cambridge University Press, for Fast Fourier Transform operations.
+
+  **Frequency Response Manager**
+  Manages and analyzes the frequency response of systems.
+
+  **Math Functions**
+  Includes Hyperbolic Secant Squared, Quintic Polynomial, Heptic Polynomial, Hexic Polynomial, Linear Exponential Decay, Quintic Bezier Curve.
+
+  **Models**
+  Covers DC Motor, Friction Model, Permanent Magnet Synchronous Motor (PMSM), PMSM PI Current Controller, PMSM Position Controller.
+
+**Trajectory Generation Tools**
+
+ToolboxR is equipped with a sophisticated suite of Trajectory Generation Tools, offering advanced capabilities for precise and efficient motion planning. These tools are designed to cater to a wide range of applications, enabling users to create and manage complex trajectories with ease. Whether it's for robotics, simulation, or any system requiring detailed motion control, ToolboxR's trajectory generation features stand ready to deliver exceptional performance and flexibility.
+
+   1. **Jerk Limited Trajectory** 
+   The "Jerk Limited Trajectory" tool in ToolboxR is an innovative feature based on a novel algorithm that utilizes Bézier functions. This advanced approach allows users to set initial parameters such as position, velocity, and acceleration, and also define corresponding final values. The precision afforded by Bézier functions ensures that the trajectory is smooth and adheres closely to the specified parameters from start to finish.
+   In addition to this refined control, the tool offers the ability to limit the maximum jerk (rate of change of acceleration), acceleration, and velocity. This is particularly beneficial in scenarios requiring meticulous motion control, as it ensures smooth transitions, enhances system stability, and maintains operational safety.
+   By integrating Bézier functions in its algorithm, the "Jerk Limited Trajectory" tool in ToolboxR stands out for its precision and efficiency in trajectory planning. It is an indispensable tool for any application demanding high-level control over motion dynamics.
+   
+   2. **Quintic Polynomial Trajectory**
+   Generates trajectories based on quintic polynomials with options to limit acceleration and velocity.
+
+   3. **Simple Heptic Polynomial Trajectory**
+   Utilizes heptic polynomials for trajectory generation with similar constraints.
 
 Here are some key aspects of the ToolboxR Fuzzy Control Blocks:
 
