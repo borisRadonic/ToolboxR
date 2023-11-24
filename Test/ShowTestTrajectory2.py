@@ -4,14 +4,14 @@ data = pd.read_csv('TestPMSMPos.dat', sep='\s+', header=0)  # sep='\s+' handles 
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 6))
-plt.plot(data['Time'], 10.00 * data['refIq'], label='refIq x 10')
-plt.plot(data['Time'], 10.00 * data['Iq'], label='Iq x 10')
-plt.plot(data['Time'], data['refVel'], label='refVel')
-plt.plot(data['Time'], data['Vel'], label='Vel')
-plt.plot(data['Time'], data['refPos'], label='refPos')
-plt.plot(data['Time'], data['isPos'], label='isPos')
+# plt.plot(data['Time'], 10.00 * data['refIq'], label='refIq x 10', color='blue')
+# plt.plot(data['Time'], 10.00 * data['Iq'], label='Iq x 10', color='green')
+plt.plot(data['Time'], data['refVel'], label='ref_vel', color='yellow')
+plt.plot(data['Time'], data['Vel'], label='Velocity', color='red')
+plt.plot(data['Time'], data['refPos'], label='ref_pos')
+plt.plot(data['Time'], data['isPos'], label='Position')
 
-plt.plot(data['Time'], 1000 * (data['refPos'] - data['isPos']), label='pos_error [mrad]')
+plt.plot(data['Time'], 1000 * (data['refPos'] - data['isPos']), label='pos_error [mrad]', color='green')
  
 plt.xlabel('Time')
 
