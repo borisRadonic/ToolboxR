@@ -12,6 +12,8 @@ plt.plot(data['Time'], data['refPos'], label='ref_pos')
 plt.plot(data['Time'], data['isPos'], label='Position')
 
 plt.plot(data['Time'], 1000 * (data['refPos'] - data['isPos']), label='pos_error [mrad]', color='green')
+
+plt.plot(data['Time'], data['Jerk'], label='Jerk', color='blue')
  
 plt.xlabel('Time')
 

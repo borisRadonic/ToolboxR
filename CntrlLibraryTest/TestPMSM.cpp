@@ -16,7 +16,7 @@
 #include "PMSMotor.h"
 #include "PMSMPICurrentController.h"
 #include "PMSMPositionController.h".h"
-
+#include "FrictionModelCV.h"
 #include "JerkLimitedTrajectory.h"
 #include "WaveFormTracer.h"
 
@@ -209,17 +209,20 @@ TEST(TestCasePMSM, TestPMSMPosController)
 
 	std::double_t  max_jerk = 5000.0;
 
-	std::double_t ff_jerk_gain = 0.00;
-	
-	std::double_t pos_kp = 35.05;
+	std::double_t  max_accel = 200.0;
 
-	std::double_t vel_kp = 0.36;
-	std::double_t vel_ki = 8.3;
+	std::double_t ff_jerk_gain = 0.2 * max_torque / max_jerk;
+	ff_jerk_gain = 0.00;
+	
+	std::double_t pos_kp = 45.05;
+
+	std::double_t vel_kp = 0.46;
+	std::double_t vel_ki = 5.3;
 
 	std::double_t kd = 0.00;
 	std::double_t kb = 1.00;
 
-	std::double_t Wc_vel = 600.00; //rad/sec
+	std::double_t Wc_vel = 3200; //rad/sec --test
 	
 
 
@@ -297,6 +300,7 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	auto cntrRefPosPtr = tracer.addSignal<std::double_t>("refPos", BaseSignal::SignalType::Double);
 	auto cntrSenPosPtr = tracer.addSignal<std::double_t>("isPos", BaseSignal::SignalType::Double);	
 	auto cntrRefAccelPtr = tracer.addSignal<std::double_t>("RefAccel", BaseSignal::SignalType::Double);
+	auto cntrJerkPtr = tracer.addSignal<std::double_t>("Jerk", BaseSignal::SignalType::Double);
 
 	tracer.writeHeader();
 	std::double_t ref_position(0.00);
@@ -312,19 +316,24 @@ TEST(TestCasePMSM, TestPMSMPosController)
 
 	JerkLimitedTrajectory traj;
 
-	double i_pos = 0.00;
-	double i_vel = 0.00;
-	double i_accel = 0.00;
-	double f_pos = 200.00;
-	double f_vel = 0.00;
-	double f_accel = 0.00;
-	double f_time = 10.0;
+	std::double_t i_pos = 0.00;
+	std::double_t i_vel = 0.00;
+	std::double_t i_accel = 0.00;
+	std::double_t f_pos = 200.00;
+	std::double_t f_vel = 0.00;
+	std::double_t f_accel = 0.00;
+	std::double_t f_time = 10.0;
+	std::double_t fric_tq = 0.00;
 
-	traj.setParameters(max_jerk, 200.0, 100.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
+	traj.setParameters(max_jerk, max_accel, 100.00, 0.00001, 0.001, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
 	traj.setInitialValues(i_pos, i_vel, i_accel);
 	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
 
 	traj.prepare(f_time);
+
+	FrictionModelCSV friction;
+	friction.setParameters(ts, b, Tsf, J);
+
 
 
 	for (double t = 0.00001; t <= f_time + 0.00001; t = t + ts)
@@ -337,6 +346,12 @@ TEST(TestCasePMSM, TestPMSMPosController)
 		}
 		traj.process(t, ref_position, ff_velocity, ff_acceleration, ff_jerk);
  		
+		/*compensate friction*/
+		friction.setInputs(motor.getVel(), motor.getIq() / Kt, ff_acceleration);
+		friction.process();
+		fric_tq = friction.getFrictionTorque();
+		fric_tq = 0.00;
+
 		positionController.process(ref_position,
 			motor.getIq(),
 			motor.getId(),
@@ -345,7 +360,10 @@ TEST(TestCasePMSM, TestPMSMPosController)
 			ff_acceleration,
 			ff_velocity,
 			ff_torque_offset,
-			ff_torque_compensations, ff_jerk);
+			ff_torque_compensations + fric_tq, ff_jerk);
+
+
+		
 
 		refTqPtr->set(positionController.get_refTq() / Kt);
 		motor.setInputs(positionController.getUq(), positionController.getUd(), 0.00);
@@ -360,6 +378,7 @@ TEST(TestCasePMSM, TestPMSMPosController)
 		refVelPtr->set(ff_velocity);
 		cntrRefPosPtr->set(ref_position);
 		cntrSenPosPtr->set(motor.getPos());
+		cntrJerkPtr->set(ff_jerk);
 		tracer.trace();
 	}
 }
