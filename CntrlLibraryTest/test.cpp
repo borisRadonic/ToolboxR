@@ -853,30 +853,7 @@ TEST(TestHexicPolynomial, TestHexicPolynomial1)
 	a5 = vec_x(2)/ tf_5;
 	a6 = 0.00;
 
-	/*
-	Eigen::Matrix3d A;
-
-		A << tf_4, tf_5, tf_6,
-		4.00 * tf_3, 5.00 * tf_4, 6.00 * tf_5,
-		12.00 * tf_2, 20.00 * tf_3, 30.00 * tf_4;
-		
 	
-
-	Eigen::Vector3d b(f_pos - i_pos - i_vel * tf - 0.50 * i_accel * tf * tf,
-		f_vel - i_vel - i_accel * tf,
-		f_accel - i_accel);
-		// Compute the least squares solution
-	Eigen::Vector3d vec_x = A.colPivHouseholderQr().solve(b);
-
-	
-	a3 = 0.00;
-	a4 = vec_x(0);
-	a5 = vec_x(1);
-	a6 = vec_x(2);
-	*/
-
-	
-
 	poly.setParams(a0, a1, a2, a3, a4, a5, a6);
 
 	for (double t = 0.00001; t <= tf+0.1; t = t + 0.001)
@@ -1488,8 +1465,6 @@ TEST(TestCaseFrictionDCMotor, DCMotorFuzzy)
 	std::double_t rateVal = 0.00;
 	Derivative der;
 	der.setParameters(0.0001, 1.0);
-
-
 
 	inError->setValue(0.0);
 	rateVal = der.process(0.0);

@@ -76,6 +76,61 @@ TEST(TestButterworthLowPassI, TestLowPass1)
  }
 
 
+TEST(TestButterworthHighPassI, TestHighPass1)
+{
+	using namespace DiscreteTime;
+	using namespace Filters;
+	using namespace Math;
+
+	auto path = std::filesystem::current_path();
+
+	std::string strpath = path.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/TestHighPass1.dat";
+
+	std::double_t ts = 0.0001;
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
+
+	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
+	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
+	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
+
+	//define filter and main process function
+	ButterworthHighPassI filter;
+	std::double_t filt_fc = 100; //100 Hz
+	filter.setCutoffFrequency(filt_fc * 2.00 * M_PI, ts, "TestHighPassB1"); //100 Hz
+	auto procFunc = [&filter](double val) -> double
+	{
+		return filter.process(val);
+	};
+
+	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
+	std::double_t minFrequency = 10;
+	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
+	FrequencyResponseManager frManager(ts, frequencyBands, procFunc);
+	std::double_t fo(0.00);
+	std::vector<std::double_t> measurements;
+	std::double_t ttime = frManager.getDuration();
+	EXPECT_TRUE(frManager.process());
+
+	auto optResult = frManager.findMeasurementByFrequency(filt_fc, 1);
+	EXPECT_TRUE(optResult != std::nullopt);
+	EXPECT_NEAR(0.71, optResult->magnitude, 0.1); //-3dB at Fc
+
+	std::double_t fr(0.00);
+	size_t nMeas = frManager.getNumberOfMeasurements();
+	for (size_t i = 0; i < nMeas; i++)
+	{
+		fr = frManager.getFrequency(i);
+		freqTp->set(fr);
+		magTp->set(20.00 + 20.0 * log10(frManager.getMagnitude(i)));
+		phaseTp->set(frManager.getPhase(i));
+		tracer.trace();
+	}
+}
+
+
 TEST(TestButterworthLowPassII, TestLowPass2)
 {
 	using namespace DiscreteTime;
@@ -130,7 +185,6 @@ TEST(TestButterworthLowPassII, TestLowPass2)
 		tracer.trace();
 	}
 }
-
 
 TEST(TestButterworthHighPassII, TestHighPass2)
 {
