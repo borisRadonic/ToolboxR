@@ -1,7 +1,8 @@
 # ToolboxR Control Library
 
 
-![](https://github.com/borisRadonic/ToolboxR/blob/master/3p.png)
+![](https://github.com/borisRadonic/ToolboxR/blob/master/Trajectory.png)
+
 
 This library encompasses a broad range of basic time discrete blocks essential for discrete time modeling, as well as advanced components including Fuzzy Control blocks, Finite Impulse Response (FIR) filters, various Models, PID Controllers, and Trajectory Generation tools. These elements provide a comprehensive suite of features and functionalities for the development and implementation of sophisticated control systems based on fuzzy logic and other control strategies.
 
@@ -108,6 +109,8 @@ ToolboxR is equipped with a sophisticated suite of Trajectory Generation Tools, 
 
    3. **Simple Heptic Polynomial Trajectory**
    Utilizes heptic polynomials for trajectory generation with similar constraints.
+
+![](https://github.com/borisRadonic/ToolboxR/blob/master/3p.png)
 
 Here are some key aspects of the ToolboxR Fuzzy Control Blocks:
 
