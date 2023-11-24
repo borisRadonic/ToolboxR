@@ -81,7 +81,7 @@ namespace CntrlLibrary
             */                
             ResultTrajectory prepare( double& in_out_time);
             
-            void process(double t, double& position, double& velocity, double& acceleration);
+            void process(double t, double& position, double& velocity, double& acceleration, double& jerk);
 
         private:
 
@@ -190,7 +190,7 @@ namespace CntrlLibrary
                                         std::shared_ptr<QuinticBezierCurve> fpdp);
             void clearMaps();
 
-            void pathFunc(  double t, PathSegment* pathSegment, FUNC_PARAMS* params, double& a, double& v, double& s );
+            void pathFunc(  double t, PathSegment* pathSegment, FUNC_PARAMS* params, double& a, double& v, double& s, double& j);
 
          private:
 

@@ -130,7 +130,6 @@ TEST(TestButterworthHighPassI, TestHighPass1)
 	}
 }
 
-
 TEST(TestButterworthLowPassII, TestLowPass2)
 {
 	using namespace DiscreteTime;
@@ -241,6 +240,70 @@ TEST(TestButterworthHighPassII, TestHighPass2)
 	}
 }
 
+
+TEST(TestNotchFilter, TestNotchFilter)
+{
+	using namespace DiscreteTime;
+	using namespace Filters;
+	using namespace Math;
+
+	auto path = std::filesystem::current_path();
+
+	std::string strpath = path.generic_string();
+	StringUtil::remove_substring(strpath, "CntrlLibraryTest");
+	std::string fileName1 = strpath + "test/TestNotch.dat";
+
+	std::double_t ts = 0.0001;
+	WaveFormTracer tracer(fileName1, ts);
+	EXPECT_TRUE(tracer.open());
+
+	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
+	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
+	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
+
+	//define filter and main process function
+	IIRSecondOrderFilter filter;
+
+	//Bandstop between 80 Hz - 120 Hz
+	// At 100 Hz gain is about -33dB
+	// coefficients are calculated using Python script
+	//Feedback coefficients(a)
+	std::double_t a1 = -1.97143597;
+	std::double_t a2 = 0.97517788;
+	//Feedforward coefficients (b)
+	std::double_t b0 = 0.98758894;
+	std::double_t b1 = -1.97143597;
+	std::double_t b2 = 0.98758894;
+	filter.setParameters(a1,a2,b0,b1,b2,"");
+	auto procFunc = [&filter](double val) -> double
+	{
+		return filter.process(val);
+	};
+
+	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
+	std::double_t minFrequency = 10;
+	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
+	FrequencyResponseManager frManager(ts, frequencyBands, procFunc);
+	std::double_t fo(0.00);
+	std::vector<std::double_t> measurements;
+	std::double_t ttime = frManager.getDuration();
+	EXPECT_TRUE(frManager.process());
+
+	auto optResult = frManager.findMeasurementByFrequency(100, 1);
+	EXPECT_TRUE(optResult != std::nullopt);
+	EXPECT_NEAR(0.0316, optResult->magnitude, 0.1); //about -33dB at 100Hz
+
+	std::double_t fr(0.00);
+	size_t nMeas = frManager.getNumberOfMeasurements();
+	for (size_t i = 0; i < nMeas; i++)
+	{
+		fr = frManager.getFrequency(i);
+		freqTp->set(fr);
+		magTp->set(40.00 + 20.0 * log10(frManager.getMagnitude(i)));
+		phaseTp->set(frManager.getPhase(i));
+		tracer.trace();
+	}
+}
 
 /*
 

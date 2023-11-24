@@ -1091,7 +1091,7 @@ namespace CntrlLibrary
             return ResultTrajectory::BTrajectory;
         }
 
-        void  JerkLimitedTrajectory::pathFunc(double t, PathSegment* pathSegment, FUNC_PARAMS* params, double& a, double& v, double& s)
+        void  JerkLimitedTrajectory::pathFunc(double t, PathSegment* pathSegment, FUNC_PARAMS* params, double& a, double& v, double& s, double& j)
         {
             if (params->dtime > std::numeric_limits<double>::min())
             {
@@ -1102,12 +1102,16 @@ namespace CntrlLibrary
                     double tau = delta_t * time_scale_factor;
                     if (params->inverseFunc)
                     {
+                        j = pathSegment->getJerk(1.00 - tau);
+
                         a = params->f_accel - params->signA * pathSegment->getAccel(1.00 - tau);
                         v = params->f_vel + params->signVel * pathSegment->getVelocity(1.00 - tau, params->scaleVel1 * params->dtime, params->subtractInitialIntegral);
                         s = params->f_pos - params->signPos * pathSegment->getPosition(1.00 - tau, params->scalePos1 * params->dtime, params->scalePos2 * params->dtime_squared, params->subtractInitialIntegral);
                     }
                     else
                     {
+                        j = params->signA *pathSegment->getJerk(tau);
+
                         a = params->signA * pathSegment->getAccel(tau);
                         v = params->signVel * pathSegment->getVelocity(tau, params->scaleVel1 * params->dtime, params->subtractInitialIntegral);
                         s = params->signPos * pathSegment->getPosition(tau, params->scalePos1 * params->dtime, params->scalePos2 * params->dtime_squared, params->subtractInitialIntegral);
@@ -1115,6 +1119,8 @@ namespace CntrlLibrary
                 }
                 else
                 {
+                    j = params->signA * pathSegment->getJerk(t);
+
                     a = params->signA * pathSegment->getAccel(t);
                     v = params->signVel * pathSegment->getVelocity(t, params->scaleVel1, params->subtractInitialIntegral);
                     s = params->signPos * pathSegment->getPosition(t, params->scalePos1, params->scalePos2, params->subtractInitialIntegral);
@@ -1122,11 +1128,10 @@ namespace CntrlLibrary
             }
         }
 
-        void JerkLimitedTrajectory::process(double t, double& position, double& velocity, double& acceleration)
+        void JerkLimitedTrajectory::process(double t, double& position, double& velocity, double& acceleration, double& jerk)
         {
             if (_use_quinticPoly)
-            {
-                double jerk(0.00);
+            {              
                 _quinticPolyTrajectory.calculateValuesForTime(t, position, velocity, acceleration, jerk);
             }
             else
@@ -1142,7 +1147,7 @@ namespace CntrlLibrary
                         PathSegment* segment = _ptrSegments[si].get();
                         if (segment != nullptr)
                         {
-                            pathFunc(t, segment, _funcParams[si].get(), acceleration, velocity, position);
+                            pathFunc(t, segment, _funcParams[si].get(), acceleration, velocity, position, jerk);
                             return;
                         }
                     }

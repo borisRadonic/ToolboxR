@@ -63,60 +63,6 @@ namespace CntrlLibrary
 				std::double_t  _omega_c = 0.00;
 				std::double_t _ts = 1.00;
 			};
-
-
-
-			//Discrete time second order Band-Pass (BP) Butterworth filter 
-			//
-			class ButterworthBandPassII : public IIRSecondOrderFilter
-			{
-			public:
-
-				ButterworthBandPassII();
-
-				virtual ~ButterworthBandPassII();
-
-				// omega_c - cutoff frequency in rad/s (radians per second)
-				// bw - bandwidth rad/s (radians per second)
-				void setBandPassParameters(const std::double_t omega_c, const std::double_t bw, const std::double_t ts, const std::string& name);
-
-				const std::double_t getCutoffFrequency() const
-				{
-					return _omega0;
-				}
-
-			protected:
-
-				std::double_t  _omega0 = 0.00;
-				std::double_t  _bw = 0.00;
-				std::double_t _ts = 1.00;
-			};
-
-			//Discrete time second order Band-Stop (Notch) Butterworth filter 
-			//
-			class ButterworthBandStopII : public IIRSecondOrderFilter
-			{
-			public:
-
-				ButterworthBandStopII();
-
-				virtual ~ButterworthBandStopII();
-
-				// omega_c - cutoff frequency in rad/s (radians per second)
-				// bw - bandwidth rad/s (radians per second)
-				void setBandStopParameters(const std::double_t omega_c, const std::double_t bw, const std::double_t ts, const std::string& name);
-
-				const std::double_t getCutoffFrequency() const
-				{
-					return _omega0;
-				}
-
-			protected:
-
-				std::double_t  _omega0 = 0.00;
-				std::double_t  _bw = 0.00;
-				std::double_t _ts = 1.00;
-			};
 		}
 	}
 }

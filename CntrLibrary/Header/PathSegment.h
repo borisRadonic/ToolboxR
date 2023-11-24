@@ -41,6 +41,15 @@ namespace CntrlLibrary
                 _created = true;
             }
 
+            double getJerk(double t)
+            {
+                if (_created)
+                {
+                    return (_mathFunction->firstDerivative(getLocalTime(t)));
+                }
+                return 0.00;
+            }
+
             double getAccel(double t)
             {
                 if (_created)
@@ -48,7 +57,7 @@ namespace CntrlLibrary
                     return (_startAccel + _mathFunction->compute(getLocalTime(t)));
                 }
                 return 0.00;
-            }
+            }            
 
             double getVelocity(double t, double scaleInt = 1.00, bool subtractInitialIntegral = false )
             {

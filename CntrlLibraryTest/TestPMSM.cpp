@@ -204,29 +204,32 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	std::double_t max_torque = 12.00; //torque limit
 	
 	std::double_t ff_vel_gain = 1.00; //in this case 1.00
-	std::double_t ff_accel_gain = J; // to convert acceleration to Feed Forward Torque
-	
-	std::double_t pos_kp = 0.35;
+	std::double_t ff_accel_gain = 1.00 * J; // to convert acceleration to Feed Forward Torque
 
-	std::double_t vel_kp = 0.46;
+
+	std::double_t  max_jerk = 5000.0;
+
+	std::double_t ff_jerk_gain = 0.00;
+	
+	std::double_t pos_kp = 35.05;
+
+	std::double_t vel_kp = 0.36;
 	std::double_t vel_ki = 8.3;
 
 	std::double_t kd = 0.00;
 	std::double_t kb = 1.00;
 
 	std::double_t Wc_vel = 600.00; //rad/sec
-
-	//std::double_t Wc_notch = 1800; //for example we want to have notch filter at 1800 rad/sec
-	//std::double_t bw_notch = 100; //nandwith of 100 rad/sec
+	
 
 
 	PMSMPositionController positionController;
 	positionController.setSamplinkPeriod(0.0001);
 	positionController.setLimitParameters( posLimitNeg, posLimitPos, max_vel, max_torque);
-	positionController.setFeedForwardParameters(ff_vel_gain, ff_accel_gain);
+	positionController.setFeedForwardParameters(ff_vel_gain, ff_accel_gain, ff_jerk_gain);
 	positionController.setPosVelControllerParameters(pos_kp, vel_kp, vel_ki, Wc_vel, Kt);
 	//if we do not use notch filter, we simply do not set filter parameters
-	//positionController.setNotchFilterParameters(Wc_notch, bw_notch); 
+	//positionController.setNotchFilterParameters(...); 
 	
 	
 	//max bandwith is dependant from motor electrical constant
@@ -243,7 +246,7 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	std::double_t iirPreFlt_b0 = 1 - alpha_q;
 	std::double_t iirPreFlt_b1 = 0.00;
 
-	std::double_t kp_q = 15.0;
+	std::double_t kp_q = 20.0;
 	std::double_t ki_q = kp_q / 0.001;
 	std::double_t kd_q = 0.00;
 	std::double_t kb_q = 1.00;
@@ -305,7 +308,7 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	std::double_t ff_velocity(0.00);
 	std::double_t ff_torque_offset = 0.00; //no offset
 	std::double_t ff_torque_compensations = 0.00; //no compensation in this Test case
-
+	std::double_t ff_jerk = 0.00;
 
 	JerkLimitedTrajectory traj;
 
@@ -317,7 +320,7 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	double f_accel = 0.00;
 	double f_time = 10.0;
 
-	traj.setParameters(5000.0, 200.0, 100.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
+	traj.setParameters(max_jerk, 200.0, 100.00, 0.00001, 0.01, 0.1); // Max jerk, Max. acceleration, Max. velocity, max. pos. error, max vel. error and max. accel. error
 	traj.setInitialValues(i_pos, i_vel, i_accel);
 	traj.setFinalValues(f_pos, f_vel, f_accel);  // Target position, Target velocity, Target acceleration
 
@@ -332,7 +335,7 @@ TEST(TestCasePMSM, TestPMSMPosController)
 			int a = 0;
 			a++;
 		}
-		traj.process(t, ref_position, ff_velocity, ff_acceleration);
+		traj.process(t, ref_position, ff_velocity, ff_acceleration, ff_jerk);
  		
 		positionController.process(ref_position,
 			motor.getIq(),
@@ -342,7 +345,7 @@ TEST(TestCasePMSM, TestPMSMPosController)
 			ff_acceleration,
 			ff_velocity,
 			ff_torque_offset,
-			ff_torque_compensations);
+			ff_torque_compensations, ff_jerk);
 
 		refTqPtr->set(positionController.get_refTq() / Kt);
 		motor.setInputs(positionController.getUq(), positionController.getUd(), 0.00);

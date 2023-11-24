@@ -208,10 +208,10 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectorySmallDistance)
 
 	traj.prepare(f_time);
 
-	double pos(0.00), vel(0.00), accel(0.00);
+	double pos(0.00), vel(0.00), accel(0.00), jerk(0.00);
 	for (double t = 0.00001; t <= f_time + 0.00001; t = t + 0.001)
 	{
-		traj.process(t, pos, vel, accel);
+		traj.process(t, pos, vel, accel, jerk);
 		acceleration->set(accel);
 		velocity->set(vel);
 		position->set(pos);
@@ -263,10 +263,10 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTrapezoidalPro
 
 	traj.prepare(f_time);
 
-	double pos(0.00), vel(0.00), accel(0.00);
+	double pos(0.00), vel(0.00), accel(0.00), jerk(0.00);
 	for (double t = 0.00001; t <= f_time + 0.00001; t = t + 0.001)
 	{
-		traj.process(t, pos, vel, accel);
+		traj.process(t, pos, vel, accel, jerk);
 		acceleration->set(accel);
 		velocity->set(vel);
 		position->set(pos);
@@ -314,10 +314,10 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTriangularProf
 
 	traj.prepare(f_time);
 
-	double pos(0.00), vel(0.00), accel(0.00);
+	double pos(0.00), vel(0.00), accel(0.00), jerk(0.00);
 	for (double t = 0.00001; t <= f_time + 0.00001; t = t + 0.001)
 	{
-		traj.process(t, pos, vel, accel);
+		traj.process(t, pos, vel, accel, jerk);
 		acceleration->set(accel);
 		velocity->set(vel);
 		position->set(pos);
@@ -364,10 +364,10 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectorySafetyStop)
 
 	traj.prepare(f_time);
 
-	double pos(0.00), vel(0.00), accel(0.00);
+	double pos(0.00), vel(0.00), accel(0.00), jerk(0.00);
 	for (double t = 0.00001; t <= f_time + 0.00001; t = t + 0.001)
 	{
-		traj.process(t, pos, vel, accel);
+		traj.process(t, pos, vel, accel, jerk);
 		acceleration->set(accel);
 		velocity->set(vel);
 		position->set(pos);

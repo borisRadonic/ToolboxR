@@ -56,10 +56,11 @@ namespace CntrlLibrary
 			}
 
 
-			void setFeedForwardParameters(std::double_t ff_vel_gain, std::double_t ff_accel_gain)
+			void setFeedForwardParameters(std::double_t ff_vel_gain, std::double_t ff_accel_gain, std::double_t ff_jerk_gain)
 			{
 				_ff_vel_gain = ff_vel_gain;
 				_ff_accel_gain = ff_accel_gain;
+				_ff_jerk_gain = ff_jerk_gain;
 				_isFFParametersSet = true;
 			}
 
@@ -67,7 +68,7 @@ namespace CntrlLibrary
 			void setPosVelControllerParameters(	std::double_t pos_kp, std::double_t vel_kp, std::double_t vel_ki, std::double_t vel_cntrl_pre_filt_frequency, std::double_t Ktq);
 
 
-			void setNotchFilterParameters(const std::double_t omega_c, const std::double_t bw);
+			void setNotchFilterParameters(const std::double_t a1, const std::double_t a2, const std::double_t b0, const std::double_t b1, const std::double_t b2);
 
 			
 			/**
@@ -126,7 +127,8 @@ namespace CntrlLibrary
 				std::double_t ff_acceleration,
 				std::double_t ff_velocity,
 				std::double_t ff_torque_offset,
-				std::double_t ff_torque_compensations);
+				std::double_t ff_torque_compensations,
+				std::double_t ff_jerk);
 
 			void reset();
 
@@ -201,6 +203,7 @@ namespace CntrlLibrary
 			bool _isFFParametersSet = false;
 			std::double_t _ff_vel_gain = 1.00;
 			std::double_t _ff_accel_gain = 1.00;
+			std::double_t _ff_jerk_gain = 0.00;
 			bool _isPosVelControllerParametersSet = false;
 			bool is_CurrentControllerParameters = false;
 
@@ -208,7 +211,7 @@ namespace CntrlLibrary
 			std::unique_ptr<PIDController> _pPosController; /**< Pointer to the PID controller for position. */
 			std::unique_ptr<PIDController> _pVelController; /**< Pointer to the PID controller for d-axis. */
 			std::unique_ptr<Filters::ButterworthLowPassII> _pIRFltVel; /**< Pointer to the IIR filter for velocity controller. */
-			std::unique_ptr<Filters::ButterworthBandStopII> _pIRFltNotch; /**< Torque Notch filter. */
+			std::unique_ptr<Filters::IIRSecondOrderFilter> _pIRFltNotch; /**< Torque Notch filter. */
 		};
 	}
 }
