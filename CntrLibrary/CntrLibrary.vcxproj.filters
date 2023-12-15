@@ -213,6 +213,12 @@
     <ClCompile Include="Source\FrequencyResponseManager.cpp">
       <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PMSMotorWithFlexibleCoupling.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SOSystem.cpp">
+      <Filter>Source Files\DiscreteTime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\framework.h">
@@ -426,6 +432,12 @@
       <Filter>Header Files\DiscreteTime</Filter>
     </ClInclude>
     <ClInclude Include="Header\window.h">
+      <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PMSMotorWithFlexibleCoupling.h">
+      <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SOSystem.h">
       <Filter>Header Files\DiscreteTime</Filter>
     </ClInclude>
   </ItemGroup>

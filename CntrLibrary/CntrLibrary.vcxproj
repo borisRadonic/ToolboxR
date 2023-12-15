@@ -155,6 +155,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\PMSMotorWithFlexibleCoupling.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\PMSMPICurrentController.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -192,6 +196,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\SmallFuzzySet.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\SOSystem.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -283,6 +291,7 @@
     <ClInclude Include="Header\PIDController.h" />
     <ClInclude Include="Header\PiShapedFuzzySet.h" />
     <ClInclude Include="Header\PMSMotor.h" />
+    <ClInclude Include="Header\PMSMotorWithFlexibleCoupling.h" />
     <ClInclude Include="Header\PMSMPICurrentController.h" />
     <ClInclude Include="Header\PMSMPositionController.h" />
     <ClInclude Include="Header\QuinticBezierCurve.h" />
@@ -297,6 +306,7 @@
     <ClInclude Include="Header\SineWaveGenerator.h" />
     <ClInclude Include="Header\SingletonFuzzySet.h" />
     <ClInclude Include="Header\SmallFuzzySet.h" />
+    <ClInclude Include="Header\SOSystem.h" />
     <ClInclude Include="Header\SShapedFuzzySet.h" />
     <ClInclude Include="Header\StateSpace.h" />
     <ClInclude Include="Header\StringUtil.h" />

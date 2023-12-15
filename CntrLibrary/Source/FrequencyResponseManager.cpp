@@ -35,11 +35,13 @@ namespace CntrlLibrary
     {
         FrequencyResponseManager::FrequencyResponseManager(std::double_t sampling_period,
                                                            const std::vector<FrequencyBand>& freqBands,
-                                                           std::function<std::double_t(std::double_t)> function)
+                                                           std::function<std::double_t(std::double_t)> process_function,
+                                                           std::function<void(void)> reset_function)
             :_samplingPeriod(sampling_period)
             , _freq_bands(freqBands)
             ,_totalDuration(0.0)
-            ,_process_function(function)
+            ,_process_function(process_function)
+            ,_reset_function(reset_function)
         {
             for (auto band : _freq_bands)
             {
@@ -89,6 +91,8 @@ namespace CntrlLibrary
                 max_time_pr = 0.00;
                 _generator.setParameters(amplitude, freq, 0.00, _samplingPeriod, "");
                 samples = dT / _samplingPeriod;
+                int smpl = 0;
+                _reset_function();
                 while (currentTime < dT)
                 {
                     sineValue = _generator.process(currentTime, isMax);
@@ -104,9 +108,10 @@ namespace CntrlLibrary
                         max_time = currentTime;
                     }
                     currentTime += _samplingPeriod;
+                    smpl++;
                 }
                 double phase = -(360.00 * ((max_time_pr - max_time) / dT));
-                rms_pr = sqrt(rms_pr / samples);
+                rms_pr = sqrt(rms_pr / (double)smpl);
                 _measurements.emplace_back( freq, rms_pr / (amplitude * M_SQRT1_2), phase );
             }
             return true;
@@ -122,6 +127,5 @@ namespace CntrlLibrary
             }
             return std::nullopt; // Return an empty optional if not found
         }
-
     }
 }

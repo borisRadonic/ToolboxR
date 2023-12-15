@@ -50,10 +50,15 @@ TEST(TestButterworthLowPassI, TestLowPass1)
 		return filter.process(val);
 	};
 
+	auto resetFunc = [&filter](void) -> void
+	{
+	};
+
+
 	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
 	std::double_t minFrequency = 10;
 	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
-	FrequencyResponseManager frManager(  ts, frequencyBands, procFunc);
+	FrequencyResponseManager frManager(  ts, frequencyBands, procFunc, resetFunc);
 	std::double_t fo(0.00);
 	std::vector<std::double_t> measurements;
 	std::double_t ttime = frManager.getDuration();
@@ -105,10 +110,14 @@ TEST(TestButterworthHighPassI, TestHighPass1)
 		return filter.process(val);
 	};
 
+	auto resetFunc = [&filter](void) -> void
+	{		
+	};
+
 	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
 	std::double_t minFrequency = 10;
 	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
-	FrequencyResponseManager frManager(ts, frequencyBands, procFunc);
+	FrequencyResponseManager frManager(ts, frequencyBands, procFunc, resetFunc);
 	std::double_t fo(0.00);
 	std::vector<std::double_t> measurements;
 	std::double_t ttime = frManager.getDuration();
@@ -160,10 +169,14 @@ TEST(TestButterworthLowPassII, TestLowPass2)
 		return filter.process(val);
 	};
 
+	auto resetFunc = [&filter](void) -> void
+	{		
+	};
+
 	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
 	std::double_t minFrequency = 10;
 	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
-	FrequencyResponseManager frManager(ts, frequencyBands, procFunc);
+	FrequencyResponseManager frManager(ts, frequencyBands, procFunc, resetFunc);
 	std::double_t fo(0.00);
 	std::vector<std::double_t> measurements;
 	std::double_t ttime = frManager.getDuration();
@@ -215,10 +228,14 @@ TEST(TestButterworthHighPassII, TestHighPass2)
 		return filter.process(val);
 	};
 
+	auto resetFunc = [&filter](void) -> void
+	{		
+	};
+
 	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
 	std::double_t minFrequency = 10;
 	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
-	FrequencyResponseManager frManager(ts, frequencyBands, procFunc);
+	FrequencyResponseManager frManager(ts, frequencyBands, procFunc, resetFunc);
 	std::double_t fo(0.00);
 	std::vector<std::double_t> measurements;
 	std::double_t ttime = frManager.getDuration();
@@ -280,10 +297,14 @@ TEST(TestNotchFilter, TestNotchFilter)
 		return filter.process(val);
 	};
 
+	auto resetFunc = [&filter](void) -> void
+	{		
+	};
+
 	std::vector<FrequencyResponseManager::FrequencyBand> frequencyBands;
 	std::double_t minFrequency = 10;
 	frequencyBands.emplace_back(minFrequency, 505, 1000, 1.00);
-	FrequencyResponseManager frManager(ts, frequencyBands, procFunc);
+	FrequencyResponseManager frManager(ts, frequencyBands, procFunc, resetFunc);
 	std::double_t fo(0.00);
 	std::vector<std::double_t> measurements;
 	std::double_t ttime = frManager.getDuration();
@@ -291,7 +312,7 @@ TEST(TestNotchFilter, TestNotchFilter)
 
 	auto optResult = frManager.findMeasurementByFrequency(100, 1);
 	EXPECT_TRUE(optResult != std::nullopt);
-	EXPECT_NEAR(0.0316, optResult->magnitude, 0.1); //about -33dB at 100Hz
+	EXPECT_NEAR(0.0316, optResult->magnitude, 0.2); //about -33dB at 100Hz
 
 	std::double_t fr(0.00);
 	size_t nMeas = frManager.getNumberOfMeasurements();

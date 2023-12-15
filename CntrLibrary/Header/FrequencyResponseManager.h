@@ -87,7 +87,10 @@ namespace CntrlLibrary
             
              * @param freqBands Vector of frequency bands for the response test.
              */
-            FrequencyResponseManager(std::double_t sampling_period, const std::vector<FrequencyBand>& freqBands, std::function<std::double_t(std::double_t)> function);
+            FrequencyResponseManager(std::double_t sampling_period,
+                const std::vector<FrequencyBand>& freqBands,
+                std::function<std::double_t(std::double_t)> process_function,
+                std::function<void(void)> reset_function);
 
             /**
              * @brief Get the total duration of all frequency sequences.
@@ -138,6 +141,7 @@ namespace CntrlLibrary
         private:
 
             std::function<std::double_t(std::double_t)> _process_function;
+            std::function<void(void)> _reset_function;
 
             SineWaveGenerator _generator;
 
