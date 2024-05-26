@@ -47,8 +47,9 @@ namespace CntrlLibrary
 		{
 		}
 
-		void SOSystem::setParameters(const std::double_t a1, const std::double_t a2, const std::double_t b0, const std::double_t b1, const std::double_t b2, const std::string& name)
+		void SOSystem::setParameters(const std::double_t k, const std::double_t a1, const std::double_t a2, const std::double_t b0, const std::double_t b1, const std::double_t b2, const std::string& name)
 		{
+			_k = k;
 			_a1 = a1;
 			_a2 = a2;
 			_b0 = b0;
@@ -74,9 +75,8 @@ namespace CntrlLibrary
 			if (_isParamsSet)
 			{
 				_x0 = u;
-				_y0 = (_b0 * u) + (_b1 * _x1) + (_b2 * _x2) - (_a1 * _y1) - (_a2 * _y2);
+				_y0 = _k * _b0 * u + _k * _b1 * _x1 + _k * _b2 * _x2 - _a1 * _y1 - _a2 * _y2;
 				_x0 = u;
-				
 				_y2 = _y1;
 				_y1 = _y0;
 				_x2 = _x1;

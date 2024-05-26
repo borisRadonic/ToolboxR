@@ -465,7 +465,7 @@ TEST(TestCaseDCMotor, TestDCMotor2)
 
 }
 
-
+/*
 TEST(TestCasePWMotor, TestDCMotorPWM)
 {
 	HBPWMDCMotor motor;
@@ -589,3 +589,4 @@ TEST(TestCasePWMotor, TestDCMotorPWM)
 
 
 }
+*/

@@ -50,7 +50,7 @@ namespace CntrlLibrary
 			//p - Number of pole pairs
 			//b  - Combined friction of rotor and load
 			//Kemf - Back EMF constant is the peak voltage induced by the permanent magnet in the per-unit rotational speed of each of the phases. The relationship between the peak permanent magnet flux linkage and the back EMF is: k e = N ψ m )
-		 	//J  - Moment of inertia
+		 	//J  -  Combined moment of inertia of rotor and load
 			//Rs  - Stator resistance in [Ohm]
 			//Lq  - Inductance of stator in dq frame (q part) in [H]
 			//Ld  - Inductance of stator in dq frame (d part) in [H]
@@ -59,7 +59,7 @@ namespace CntrlLibrary
 
 			void setParameters(std::double_t ts, std::uint16_t p, std::double_t b, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq, std::double_t Tsf);
 
-			void reset();
+			virtual void reset();
 
 			//uq  - Inpult voltage (q part)
 			//ud  - Inpult voltage (d part)
@@ -115,6 +115,10 @@ namespace CntrlLibrary
 						
 			std::double_t _uq = 0.00;
 			std::double_t _ud = 0.00;
+
+			//Ts - static friction
+			std::double_t  _static_friction = 0.00;
+
 			std::double_t _lt = 0.00; //load torque
 
 			std::double_t _tE = 0.00; //torque

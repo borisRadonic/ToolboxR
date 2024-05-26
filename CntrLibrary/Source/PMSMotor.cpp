@@ -30,6 +30,7 @@ SOFTWARE.
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+
 namespace CntrlLibrary
 {
 	using namespace DiscreteTime;
@@ -83,6 +84,7 @@ namespace CntrlLibrary
 			_tE = 0.00;
 			_uq = 0.00;
 			_ud = 0.00;
+			_static_friction = 0.00;
 		}
 
 		void PMSMotor::setInputs(std::double_t uq, std::double_t ud, std::double_t lt)
@@ -100,13 +102,12 @@ namespace CntrlLibrary
 				std::double_t iq_der = _invLq * ( _uq - (_R * _iq1) - _wM * (_polePairs * _Ld * _id1 + _Kemf) );
 				_id = _pIntegratorId->process(id_der);
 				_iq = _pIntegratorIq->process(iq_der);
+							
 				
-				
-				//Ts - static friction
 				//Tc - Coulomb or kinetic friction
 				
 				std::double_t  tc = 0.00;				
-				std::double_t  ts = 0.00;
+				
 				std::double_t  signW = 1.00;
 				std::double_t  signT = 1.00;
 
@@ -124,35 +125,34 @@ namespace CntrlLibrary
 
 				if (std::abs(_aM) < std::numeric_limits<std::double_t>::min())
 				{
-					//acceleration is != 0
+					// acceleration is nearly zero
 					if (abs( (_iq * _Ktq) - ( (1.00/ _invJ) * _aM)) < _Tsf)
 					{
-						ts = _iq * _Ktq;
+						_static_friction = _iq * _Ktq;
 					}
 					else
 					{
-						ts = _Tsf * signW;
+						_static_friction = _Tsf * signW;
 					}
 				}
 				else
 				{
 					if (abs(_iq * _Ktq) < _Tsf)
 					{
-						ts = _iq * _Ktq;
+						_static_friction = _iq * _Ktq;
 					}
 					else
 					{
-						ts = _Tsf * signT;
+						_static_friction = _Tsf * signT;
 					}
 				}
 
 				if (std::abs(_wM) >= std::numeric_limits<std::double_t>::min())
 				{
-					ts = 0.00;
+					_static_friction = 0.00;
 				}
 				
-				_aM = _invJ * (_Ktq * _iq - ts - _B * _wM1 - _lt);
-
+				_aM = _invJ * (_Ktq * _iq - _static_friction - _B * _wM1 - _lt);
 
 				_wM = _pIntegratorW->process(_aM);
 				_angleM = _pIntegratorR->process(_wM);

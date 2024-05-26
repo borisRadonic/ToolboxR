@@ -27,7 +27,9 @@ SOFTWARE.
 
 #pragma once
 #include "PMSMotor.h"
-/*
+#include "SOSystem.h"
+
+
 namespace CntrlLibrary
 {
 	namespace Models
@@ -35,6 +37,7 @@ namespace CntrlLibrary
 		
 		class PMSMotorWithFlexibleCoupling : public PMSMotor
 		{
+		public:
 
 			PMSMotorWithFlexibleCoupling();
 
@@ -42,19 +45,34 @@ namespace CntrlLibrary
 
 			
 			//Jload - Moment of inertia of the load
-			//d_c - Damping coefficient
-			//k_t - Torsional stiffness 
-
-			void setLoadAndCouplingParameters(std::double_t Jload, std::double_t d_c, std::double_t k_t);
-						
-
-			void setLoadParameters(std::double_t Jload, std::double_t Kemf, std::double_t J, std::double_t Rs, std::double_t Lq, std::double_t Ld, std::double_t Ktq, std::double_t Tsf);
+			//c_damp - Damping coefficient
+			//c_tor_stif - Torsional stiffness
+			void setLoadAndCouplingParameters(std::double_t c_damp, std::double_t c_tor_stif);
+			
+			virtual void reset();
 
 			virtual void process();
 
 		private:
+			std::unique_ptr<SOSystem> _pSOsys;
 
+			std::double_t _c_damp = 0.00;
+			std::double_t _c_tor_stif = 0.00;
+
+			std::double_t _D = 0.00;// Damping  = _c_damp/ ( 2 * (Jmot+ Jload) );
+			std::double_t _omega0 = 0.00; //Frequency  = sqrt( _c_tor_stif/(Jmot+ Jload) );
+
+			std::double_t _aL = 0.00; //load acceleration in rad/sec^2
+			std::double_t _wL = 0.00; //load velocity in rad/sec
+			std::double_t _angleL = 0.00;//load position
+
+			bool _isCouplingParamsSet = false;
+
+			std::unique_ptr<Integrator> _pIntegratorLW;
+			std::unique_ptr<Integrator> _pIntegratorLR;
+
+		
 		};
 	}
 }
-*/
+
