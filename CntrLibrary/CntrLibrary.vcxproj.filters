@@ -219,6 +219,9 @@
     <ClCompile Include="Source\SOSystem.cpp">
       <Filter>Source Files\DiscreteTime</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LRCircuit.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\framework.h">
@@ -439,6 +442,9 @@
     </ClInclude>
     <ClInclude Include="Header\SOSystem.h">
       <Filter>Header Files\DiscreteTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\LRCircuit.h">
+      <Filter>Header Files\Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

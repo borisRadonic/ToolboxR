@@ -143,6 +143,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\LRCircuit.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\PIDController.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -286,6 +290,7 @@
     <ClInclude Include="Header\LinearExponentialDecay.h" />
     <ClInclude Include="Header\LinearFunction.h" />
     <ClInclude Include="Header\LinguisticVariable.h" />
+    <ClInclude Include="Header\LRCircuit.h" />
     <ClInclude Include="Header\MathFunctionBase.h" />
     <ClInclude Include="Header\PathSegment.h" />
     <ClInclude Include="Header\PIDController.h" />

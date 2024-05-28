@@ -26,59 +26,61 @@ SOFTWARE.
 ******************************************************************************/
 
 #pragma once
-#include <string>
+
 #include <cmath>
 #include <memory>
 #include "Integrator.h"
-#include "Derivative.h"
 
 namespace CntrlLibrary
 {
-	namespace DiscreteTime
+	namespace Models
 	{
+		using namespace DiscreteTime;
 
-		class PIDController : public Block
+		class LRCircuit
 		{
 		public:
 
-			PIDController();
+			/*Basic Simulation of LR circuit*/
+			LRCircuit();
 
-			PIDController(std::double_t kp, std::double_t ki, std::double_t kd, std::double_t kb, std::double_t ts, std::double_t upSaturation);
+			virtual ~LRCircuit();
 
-			~PIDController();
+			//Ts - Sample time			
+			//L  - Inductance  in [H]			
+			//R - Resistance in [Ohm]
 
-			void setParameters(std::double_t kp, std::double_t ki, std::double_t kd, std::double_t kb, std::double_t ts, std::double_t saturation);
+			void setParameters(std::double_t ts, std::double_t L , std::double_t R);
 
-			void setParameters(std::double_t kp, std::double_t ki, std::double_t kd, std::double_t kb, std::double_t ts, std::double_t upsat, std::double_t losat);
+			virtual void reset();
 
-			void reset();
+			//u  - Inpult voltage
+			void setInput(std::double_t u);
 
-			double process(std::double_t error);
-
-		private:
-
-			std::shared_ptr<Signal<std::double_t>> _ptrIn;
-			std::shared_ptr<Signal<std::double_t>> _ptrOut;
-
-			std::double_t _Kp = 0.00; //proportional gain coefficient
-			std::double_t _Ki = 0.00; //integral gain coefficient
-			std::double_t _Kd = 0.00; //differencial gain coefficient
-			std::double_t _Kb = 0.00; //anti-windup gain coefficient.
-			std::double_t _Ts = 1.00; //sampling period
-			std::double_t _upSat = 0.00; //Output saturation upper limit
-			std::double_t _loSat = 0.00; //Output saturation lower limit
+			virtual void process();
 
 
+			std::double_t getI() const { return _i; };
 
-			std::double_t _du1 = 0.00;
 
+		protected:
+
+			std::double_t _Ts = 1.00; //sampling period		
+			std::double_t _R = 1.00; //Stator resistance in [Ohm]
+			std::double_t _L = 1.00; //Inductance in [H]
+			
 			bool _isParamsSet = false;
 
-			std::double_t iii = 0.00;
-
-			std::unique_ptr<Integrator> _pIntegrator;
-			std::unique_ptr<Derivative> _pDerivative;
-
+			std::double_t _i1 = 0.00; //Current at n-1
+			
+		
+			std::double_t _i = 0.00; //Current
+			
+			std::double_t _u = 0.00;
+			
+			std::unique_ptr<Integrator> _pIntegratorI;
+			
 		};
 	}
 }
+
