@@ -94,6 +94,7 @@ TEST(TestCaseLR, TestLRController)
 	WaveFormTracer tracer(fileName1, 0.0001);
 	EXPECT_TRUE(tracer.open());
 
+
 	auto lrIshPtr = tracer.addSignal<std::double_t>("I", BaseSignal::SignalType::Double);
 	auto refIShPtr = tracer.addSignal<std::double_t>("refI", BaseSignal::SignalType::Double);
 	auto measIShPtr = tracer.addSignal<std::double_t>("Iadc", BaseSignal::SignalType::Double);

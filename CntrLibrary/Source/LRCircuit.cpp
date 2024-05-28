@@ -30,7 +30,6 @@ SOFTWARE.
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-
 namespace CntrlLibrary
 {
 	using namespace DiscreteTime;

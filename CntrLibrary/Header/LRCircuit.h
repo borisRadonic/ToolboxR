@@ -59,7 +59,6 @@ namespace CntrlLibrary
 
 			virtual void process();
 
-
 			std::double_t getI() const { return _i; };
 
 
