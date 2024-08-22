@@ -41,7 +41,7 @@ namespace CntrlLibrary
 
 			Difference();
 
-			~Difference();
+			~Difference() = default;
 
 			inline void setInitialConditions(std::double_t old)
 			{

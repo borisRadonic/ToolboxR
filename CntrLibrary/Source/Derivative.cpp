@@ -46,9 +46,6 @@ namespace CntrlLibrary
 			this->addOutput(_ptrOut);
 		}
 
-		Derivative::~Derivative()
-		{
-		}
 
 		void Derivative::setParameters(std::double_t ts, std::double_t gain, const std::string& name)
 		{

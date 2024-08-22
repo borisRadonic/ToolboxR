@@ -40,10 +40,7 @@ namespace CntrlLibrary
 			this->addInput(_ptrIn);
 			this->addOutput(_ptrOut);
 		}
-
-		FIRFilter::~FIRFilter()
-		{
-		}
+			
 
 		void FIRFilter::setParameters(const std::vector<std::double_t>& coefficients, const std::string& name)
 		{

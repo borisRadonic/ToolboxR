@@ -42,11 +42,7 @@ namespace CntrlLibrary
 			this->addInput(_ptrIn);
 			this->addOutput(_ptrOut);
 		}
-
-		Difference::~Difference()
-		{
-		}
-
+				
 		double Difference::process(std::double_t u)
 		{
 			_y = u - _old;

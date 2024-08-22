@@ -56,7 +56,7 @@ namespace CntrlLibrary
 			/**
 			* Destructor
 			*/
-			~Derivative();
+			~Derivative() = default;
 
 			void setParameters(std::double_t ts, std::double_t gain, const std::string& name = "");
 

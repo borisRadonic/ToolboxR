@@ -41,7 +41,7 @@ namespace CntrlLibrary
 
 			FIRFilter();
 
-			~FIRFilter();
+			~FIRFilter() = default;
 
 			void setParameters(const std::vector<std::double_t>& coefficients, const std::string& name = "");
 
