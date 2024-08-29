@@ -107,10 +107,25 @@ TEST(TestCaseQuanticPolyTrajectory, TestCaseQuanticPolyTrajectoryBasic)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto jerk = tracer.addSignal<std::double_t>("jerk", BaseSignal::SignalType::Double);
-	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
-	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
-	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
+	
+
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> jerk;
+	jerk.create("jerk", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(jerk.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> acceleration;
+	acceleration.create("acceleration", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(acceleration.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> velocity;
+	velocity.create("vel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(velocity.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> position;
+	position.create("position", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(position.operator->()));
+
 
 	double i_pos = -20.00;
 	double i_vel = 10.00;
@@ -185,9 +200,19 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectorySmallDistance)
 	EXPECT_TRUE(tracer.open());
 
 
-	auto acceleration	= tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
-	auto velocity		= tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
-	auto position		= tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> acceleration;
+	acceleration.create("acceleration", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(acceleration.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> velocity;
+	velocity.create("vel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(velocity.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> position;
+	position.create("position", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(position.operator->()));
+
 	 
 
 	JerkLimitedTrajectory traj;  
@@ -235,11 +260,21 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTrapezoidalPro
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 	
-	
-	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
-	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
-	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
-	auto iposition = tracer.addSignal<std::double_t>("Iposition", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> acceleration;
+	acceleration.create("acceleration", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(acceleration.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> velocity;
+	velocity.create("vel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(velocity.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> position;
+	position.create("position", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(position.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> iposition;
+	iposition.create("Iposition", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(iposition.operator->()));
 
 
 	JerkLimitedTrajectory traj;
@@ -292,9 +327,18 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectoryTriangularProf
 	EXPECT_TRUE(tracer.open());
 
 
-	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
-	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
-	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> acceleration;
+	acceleration.create("acceleration", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(acceleration.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> velocity;
+	velocity.create("vel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(velocity.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> position;
+	position.create("position", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(position.operator->()));
+
 
 
 	JerkLimitedTrajectory traj;
@@ -341,10 +385,17 @@ TEST(TestCaseJerkLimitedTrajectory, TestBasicJerkLimitedTrajectorySafetyStop)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> acceleration;
+	acceleration.create("accel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(acceleration.operator->()));
 
-	auto acceleration = tracer.addSignal<std::double_t>("accel", BaseSignal::SignalType::Double);
-	auto velocity = tracer.addSignal<std::double_t>("vel", BaseSignal::SignalType::Double);
-	auto position = tracer.addSignal<std::double_t>("position", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> velocity;
+	velocity.create("vel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(velocity.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> position;
+	position.create("position", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(position.operator->()));
 
 
 	JerkLimitedTrajectory traj;
@@ -439,11 +490,13 @@ TEST(TestCaseDCMotor, TestDCMotor2)
 	EXPECT_TRUE(tracer.open());
 		
 
-	tracer.addBlockSignal(piVel.getInputSignal(0));
-	tracer.addBlockSignal(piVel.getOutputSignal(0));
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> refVelShPtr;
+	refVelShPtr.create("refVel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(refVelShPtr.operator->()));
 
-	auto refVelShPtr = tracer.addSignal<std::double_t>("refVel", BaseSignal::SignalType::Double);
-	auto motorVelShPtr = tracer.addSignal<std::double_t>("Vel", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> motorVelShPtr;
+	motorVelShPtr.create("Vel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(motorVelShPtr.operator->()));
 
 	tracer.writeHeader();
 

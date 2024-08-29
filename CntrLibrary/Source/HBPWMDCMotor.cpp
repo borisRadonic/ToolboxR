@@ -40,8 +40,8 @@ namespace CntrlLibrary
 
 		HBPWMDCMotor::HBPWMDCMotor()
 		{
-			_pIntegratorI = std::make_unique<Integrator>();
-			_pIntegratorW = std::make_unique<Integrator>();
+			_pIntegratorI.create();
+			_pIntegratorW.create();
 		}
 
 		HBPWMDCMotor::~HBPWMDCMotor()

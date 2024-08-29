@@ -156,14 +156,36 @@ TEST(TestCasePMSM, TestPMSMVelCurrentCntr)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto motorIdShPtr = tracer.addSignal<std::double_t>("Id", BaseSignal::SignalType::Double);
-	auto refTqShPtr = tracer.addSignal<std::double_t>("refIq", BaseSignal::SignalType::Double);
-	auto motorIqShPtr = tracer.addSignal<std::double_t>("Iq", BaseSignal::SignalType::Double);
-	auto refVelShPtr = tracer.addSignal<std::double_t>("refVel", BaseSignal::SignalType::Double);
-	auto motorVelShPtr = tracer.addSignal<std::double_t>("Vel", BaseSignal::SignalType::Double);
-	auto cntrValphaPtr = tracer.addSignal<std::double_t>("V_alpha", BaseSignal::SignalType::Double);
-	auto cntrVbetaPtr = tracer.addSignal<std::double_t>("V_beta", BaseSignal::SignalType::Double);
-		
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> motorIdShPtr;
+	motorIdShPtr.create("Id", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(motorIdShPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> refTqShPtr;
+	refTqShPtr.create("refIq", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(refTqShPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> motorIqShPtr;
+	motorIqShPtr.create("Iq", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(motorIqShPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> motorVelShPtr;
+	motorVelShPtr.create("Vel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(motorVelShPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> refVelShPtr;
+	refVelShPtr.create("refVel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(refVelShPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrValphaPtr;
+	cntrValphaPtr.create("V_alpha", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrValphaPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrVbetaPtr;
+	cntrVbetaPtr.create("V_beta", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrVbetaPtr.operator->()));
+
+
 
 	tracer.writeHeader();
 
@@ -317,17 +339,51 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto motorIdPtr = tracer.addSignal<std::double_t>("Id", BaseSignal::SignalType::Double);
-	auto refTqPtr = tracer.addSignal<std::double_t>("refIq", BaseSignal::SignalType::Double);
-	auto motorIqPtr = tracer.addSignal<std::double_t>("Iq", BaseSignal::SignalType::Double);
-	auto refVelPtr = tracer.addSignal<std::double_t>("refVel", BaseSignal::SignalType::Double);
-	auto motorVelPtr = tracer.addSignal<std::double_t>("Vel", BaseSignal::SignalType::Double);
-	auto cntrValphaPtr = tracer.addSignal<std::double_t>("V_alpha", BaseSignal::SignalType::Double);
-	auto cntrVbetaPtr = tracer.addSignal<std::double_t>("V_beta", BaseSignal::SignalType::Double);	
-	auto cntrRefPosPtr = tracer.addSignal<std::double_t>("refPos", BaseSignal::SignalType::Double);
-	auto cntrSenPosPtr = tracer.addSignal<std::double_t>("isPos", BaseSignal::SignalType::Double);	
-	auto cntrRefAccelPtr = tracer.addSignal<std::double_t>("RefAccel", BaseSignal::SignalType::Double);
-	auto cntrJerkPtr = tracer.addSignal<std::double_t>("Jerk", BaseSignal::SignalType::Double);
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> motorIdPtr;
+	motorIdPtr.create("Id", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(motorIdPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> refTqPtr;
+	refTqPtr.create("refIq", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(refTqPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> motorIqPtr;
+	motorIqPtr.create("Iq", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(motorIqPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> refVelPtr;
+	refVelPtr.create("refVel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(refVelPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> motorVelPtr;
+	motorVelPtr.create("Vel.", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(motorVelPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrValphaPtr;
+	cntrValphaPtr.create("V_alpha", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrValphaPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrVbetaPtr;
+	cntrVbetaPtr.create("V_beta", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrVbetaPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrRefPosPtr;
+	cntrRefPosPtr.create("refPos", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrRefPosPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrSenPosPtr;
+	cntrSenPosPtr.create("isPos", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrSenPosPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrRefAccelPtr;
+	cntrRefAccelPtr.create("RefAccel", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrRefAccelPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrJerkPtr;
+	cntrJerkPtr.create("Jerk", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrJerkPtr.operator->()));
+	
 
 	tracer.writeHeader();
 	std::double_t ref_position(0.00);

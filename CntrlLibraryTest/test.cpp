@@ -31,6 +31,8 @@
 #include "ConstFunction.h"
 #include "PathSegment.h"
 
+#include "FlexPointers.h"
+
 #include <Eigen/Dense>
 
 using namespace CntrlLibrary;
@@ -60,13 +62,13 @@ void pathFunc(PathSegment& pathSegment,
 				Integrator& integral2,
 				WaveFormTracer& tracer1,
 				WaveFormTracer& tracer2,
-				std::shared_ptr<Signal<std::double_t>>& trA,
-				std::shared_ptr<Signal<std::double_t>>& trV,
-				std::shared_ptr<Signal<std::double_t>>& trS,
-				std::shared_ptr<Signal<std::double_t>>& trVI,
-				std::shared_ptr<Signal<std::double_t>>& trSI,
-				std::shared_ptr<Signal<std::double_t>>& trErrV,
-				std::shared_ptr<Signal<std::double_t>>& trErrS,
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>>& trA,
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>>& trV,
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>>& trS,
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>>& trVI,
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>>& trSI,
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>>& trErrV,
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>>& trErrS,
 				double startTime,
 				double endTime,
 				double& a,
@@ -145,17 +147,35 @@ TEST(TestQuanticBezierCurve, TestQuanticBezierCurve1)
 	EXPECT_TRUE(tracer2.open());
 
 	
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> trS;
+	trS.create("x", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>( trS.operator->()) );
+		
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> trSI;
+	trSI.create("SI", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(trSI.operator->()));
 
-	auto trS = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
-	auto trSI = tracer.addSignal<std::double_t>("xI", BaseSignal::SignalType::Double);
-	auto trV = tracer.addSignal<std::double_t>("v", BaseSignal::SignalType::Double);
-	auto trVI = tracer.addSignal<std::double_t>("vI", BaseSignal::SignalType::Double);
-	auto trA = tracer.addSignal<std::double_t>("a", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> trV; 
+	trV.create("V", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(trV.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> trVI;
+	trVI.create("VI", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(trVI.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> trA;
+	trA.create("A", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(trA.operator->()));
 
 
-	auto trErrV = tracer2.addSignal<std::double_t>("Error v", BaseSignal::SignalType::Double);
-	auto trErrS = tracer2.addSignal<std::double_t>("Error x", BaseSignal::SignalType::Double);
-	
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> trErrV;
+	trErrV.create("ErrV", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(trErrV.operator->()));
+
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> trErrS;
+	trErrS.create("ErrV", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(trErrS.operator->()));
 
 	double a = 0.00;
 	double v = 0.00;
@@ -716,10 +736,22 @@ TEST(TestHepticPolynomial, TestHepticPolynomial1)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto xt = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
-	auto x1t = tracer.addSignal<std::double_t>("x_der_1", BaseSignal::SignalType::Double);
-	auto x2t = tracer.addSignal<std::double_t>("x_der_2", BaseSignal::SignalType::Double);
-	auto x3t = tracer.addSignal<std::double_t>("x_der_3", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> xt;
+	xt.create("x", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(xt.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> x1t;
+	x1t.create("x_der_1", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(x1t.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> x2t;
+	x2t.create("x_der_2", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(x2t.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> x3t;
+	x3t.create("x_der_3", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(x3t.operator->()));
+
 
 	double x = 0.00;
 	double x1 = 0.00;
@@ -776,10 +808,22 @@ TEST(TestHexicPolynomial, TestHexicPolynomial1)
 	EXPECT_TRUE(tracer.open());
 
 
-	auto xt = tracer.addSignal<std::double_t>("x", BaseSignal::SignalType::Double);
-	auto x1t = tracer.addSignal<std::double_t>("x_der_1", BaseSignal::SignalType::Double);
-	auto x2t = tracer.addSignal<std::double_t>("x_der_2", BaseSignal::SignalType::Double);
-	auto x3t = tracer.addSignal<std::double_t>("x_der_3", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> xt;
+	xt.create("x", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(xt.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> x1t;
+	x1t.create("x_der_1", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(x1t.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> x2t;
+	x2t.create("x_der_2", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(x2t.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> x3t;
+	x3t.create("x_der_3", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(x3t.operator->()));
+
 
 	double x = 0.00;
 	double x1 = 0.00;

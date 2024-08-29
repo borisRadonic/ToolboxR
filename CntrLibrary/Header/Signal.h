@@ -32,6 +32,7 @@ SOFTWARE.
 #include <string>
 #include <fstream>
 #include <sstream>
+#include "FlexPointers.h"
 
 namespace CntrlLibrary
 {
@@ -81,9 +82,20 @@ namespace CntrlLibrary
 					
 		struct Factory
 		{
+			/*
 			static std::shared_ptr<Signal<T>> NewSignal(const std::string& name, SignalType type)
 			{
 				return std::make_shared <Signal<T>>(name, type);
+			}
+			*/
+
+			static Signal<T>* NewSignal(const std::string& name, SignalType type)
+			{
+				static FlexPointers::FlexibleSharedPtr<T> shp;
+				shp.create(name, type);
+				
+				//
+				return shp;
 			}
 		};
 

@@ -95,10 +95,18 @@ TEST(TestCaseLR, TestLRController)
 	EXPECT_TRUE(tracer.open());
 
 
-	auto lrIshPtr = tracer.addSignal<std::double_t>("I", BaseSignal::SignalType::Double);
-	auto refIShPtr = tracer.addSignal<std::double_t>("refI", BaseSignal::SignalType::Double);
-	auto measIShPtr = tracer.addSignal<std::double_t>("Iadc", BaseSignal::SignalType::Double);
-	
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> lrIshPtr;
+	lrIshPtr.create("I", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(lrIshPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> refIShPtr;
+	refIShPtr.create("refI", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(refIShPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> measIShPtr;
+	measIShPtr.create("Iadc", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(measIShPtr.operator->()));
+
 
 	refIShPtr->set(1.00);  // 1000 mA
 

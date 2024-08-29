@@ -123,10 +123,10 @@ namespace CntrlLibrary
 
 			std::double_t _tE = 0.00; //torque
 
-			std::unique_ptr<Integrator> _pIntegratorIq;
-			std::unique_ptr<Integrator> _pIntegratorId;			
-			std::unique_ptr<Integrator> _pIntegratorW;
-			std::unique_ptr<Integrator> _pIntegratorR;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorIq;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorId;			
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorW;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorR;
 
 		};
 	}

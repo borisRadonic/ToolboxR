@@ -232,11 +232,11 @@ namespace CntrlLibrary
 			bool _isPosVelControllerParametersSet = false;
 			bool is_CurrentControllerParameters = false;
 
-			std::unique_ptr<PMSMPICurrentController> _pCurrentController; /**< Pointer to the PMSMPICurrentController */
-			std::unique_ptr<PIDController> _pPosController; /**< Pointer to the PID controller for position. */
-			std::unique_ptr<PIDController> _pVelController; /**< Pointer to the PID controller for d-axis. */
-			std::unique_ptr<Filters::ButterworthLowPassII> _pIRFltVel; /**< Pointer to the IIR filter for velocity controller. */
-			std::unique_ptr<Filters::IIRSecondOrderFilter> _pIRFltNotch; /**< Torque Notch filter. */
+			FlexPointers::FlexUniquePtr<PMSMPICurrentController> _pCurrentController; /**< Pointer to the PMSMPICurrentController */
+			FlexPointers::FlexUniquePtr<PIDController> _pPosController; /**< Pointer to the PID controller for position. */
+			FlexPointers::FlexUniquePtr<PIDController> _pVelController; /**< Pointer to the PID controller for d-axis. */
+			FlexPointers::FlexUniquePtr<Filters::ButterworthLowPassII> _pIRFltVel; /**< Pointer to the IIR filter for velocity controller. */
+			FlexPointers::FlexUniquePtr<Filters::IIRSecondOrderFilter> _pIRFltNotch; /**< Torque Notch filter. */
 		};
 	}
 }

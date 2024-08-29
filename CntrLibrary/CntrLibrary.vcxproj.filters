@@ -446,5 +446,17 @@
     <ClInclude Include="Header\LRCircuit.h">
       <Filter>Header Files\Models</Filter>
     </ClInclude>
+    <ClInclude Include="Header\StaticPointers.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MemUtilities.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\StaticMemAllocHelper.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FlexPointers.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

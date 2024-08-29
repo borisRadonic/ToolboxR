@@ -35,11 +35,11 @@ namespace CntrlLibrary
 		// Constructor: Initialize the unique pointers for the filters and controllers.
 		PMSMPositionController::PMSMPositionController() :Block()
 		{
-			_pCurrentController = std::make_unique<PMSMPICurrentController>();
-			_pPosController = std::make_unique<PIDController>();
-			_pVelController = std::make_unique<PIDController>();
-			_pIRFltVel = std::make_unique<Filters::ButterworthLowPassII>();
-			_pIRFltNotch = std::make_unique<Filters::IIRSecondOrderFilter>();
+			_pCurrentController.create();
+			_pPosController.create();
+			_pVelController.create();
+			_pIRFltVel.create();
+			_pIRFltNotch.create();
 		}
 
 		void PMSMPositionController::setPosVelControllerParameters(std::double_t pos_kp, std::double_t vel_kp, std::double_t vel_ki, std::double_t vel_cntrl_pre_filt_frequency, std::double_t Ktq)

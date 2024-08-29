@@ -57,8 +57,8 @@ namespace CntrlLibrary
 
 		private:
 
-			std::shared_ptr<Signal<std::double_t>> _ptrIn;
-			std::shared_ptr<Signal<std::double_t>> _ptrOut;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrIn;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrOut;
 
 			std::double_t _Kp = 0.00; //proportional gain coefficient
 			std::double_t _Ki = 0.00; //integral gain coefficient
@@ -76,8 +76,9 @@ namespace CntrlLibrary
 
 			std::double_t iii = 0.00;
 
-			std::unique_ptr<Integrator> _pIntegrator;
-			std::unique_ptr<Derivative> _pDerivative;
+			
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegrator;
+			FlexPointers::FlexUniquePtr<Derivative> _pDerivative;
 
 		};
 	}

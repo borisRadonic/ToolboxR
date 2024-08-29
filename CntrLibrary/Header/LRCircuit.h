@@ -77,7 +77,7 @@ namespace CntrlLibrary
 			
 			std::double_t _u = 0.00;
 			
-			std::unique_ptr<Integrator> _pIntegratorI;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorI;
 			
 		};
 	}

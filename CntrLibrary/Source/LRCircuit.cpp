@@ -38,7 +38,7 @@ namespace CntrlLibrary
 	{
 		LRCircuit::LRCircuit()
 		{
-			_pIntegratorI = std::make_unique<Integrator>();
+			_pIntegratorI.create();
 		}
 
 		LRCircuit::~LRCircuit()

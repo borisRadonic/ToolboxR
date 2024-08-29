@@ -31,6 +31,7 @@ SOFTWARE.
 #include <queue>
 #include "Block.h"
 
+
 namespace CntrlLibrary
 {
 	namespace DiscreteTime
@@ -58,8 +59,8 @@ namespace CntrlLibrary
 
 		private:
 
-			std::shared_ptr<Signal<std::double_t>> _ptrIn;
-			std::shared_ptr<Signal<std::double_t>> _ptrOut;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrIn;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrOut;
 
 			bool _isParamsSet = false;
 

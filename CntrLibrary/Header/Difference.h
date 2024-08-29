@@ -52,8 +52,8 @@ namespace CntrlLibrary
 
 		private:
 
-			std::shared_ptr<Signal<std::double_t>> _ptrIn;
-			std::shared_ptr<Signal<std::double_t>> _ptrOut;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrIn;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrOut;
 
 			std::double_t _old = 0.00;
 			std::double_t _y = 0.00;

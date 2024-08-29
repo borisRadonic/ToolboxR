@@ -121,8 +121,8 @@ namespace CntrlLibrary
 			bool _sw14ON = false;
 			bool _sw23ON = false;
 
-			std::unique_ptr<Integrator> _pIntegratorI;
-			std::unique_ptr<Integrator> _pIntegratorW;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorI;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorW;
 		};
 	}
 }

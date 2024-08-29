@@ -78,8 +78,8 @@ namespace CntrlLibrary
 
 			protected:
 
-				std::shared_ptr<Signal<std::double_t>> _ptrIn;
-				std::shared_ptr<Signal<std::double_t>> _ptrOut;
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrIn;
+				FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrOut;
 
 				std::double_t  _a1 = 1.00;       //denominator for z^(-1)
 				std::double_t  _a2 = 1.00;       //denominator for z^(-2)

@@ -39,10 +39,10 @@ namespace CntrlLibrary
 	{
 		PMSMotor::PMSMotor()
 		{
-			_pIntegratorIq = std::make_unique<Integrator>();
-			_pIntegratorId = std::make_unique<Integrator>();
-			_pIntegratorW = std::make_unique<Integrator>();
-			_pIntegratorR = std::make_unique<Integrator>();
+			_pIntegratorIq.create();
+			_pIntegratorId.create();
+			_pIntegratorW.create();
+			_pIntegratorR.create();
 		}
 
 		PMSMotor::~PMSMotor()

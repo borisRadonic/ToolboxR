@@ -40,12 +40,11 @@ namespace CntrlLibrary
 			_phaseOffset(0),
 			_isParamsSet(false)
 		{
-			/*create input and aouput*/
-			_ptrIn = Signal<std::double_t>::Factory::NewSignal("in1", BaseSignal::SignalType::Double);
-			_ptrOut = Signal<std::double_t>::Factory::NewSignal("out1", BaseSignal::SignalType::Double);
+			_ptrIn.create("in1", BaseSignal::SignalType::Double);
+			_ptrOut.create("out1", BaseSignal::SignalType::Double);
 
-			this->addInput(_ptrIn);
-			this->addOutput(_ptrOut);
+			this->addInput(static_cast<BaseSignal*>(_ptrIn.operator->()));
+			this->addOutput(static_cast<BaseSignal*>(_ptrOut.operator->()));
 		}
 
 		SineWaveGenerator::~SineWaveGenerator()

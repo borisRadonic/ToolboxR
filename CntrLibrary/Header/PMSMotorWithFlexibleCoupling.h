@@ -54,7 +54,7 @@ namespace CntrlLibrary
 			virtual void process();
 
 		private:
-			std::unique_ptr<SOSystem> _pSOsys;
+			FlexPointers::FlexUniquePtr<SOSystem> _pSOsys;
 
 			std::double_t _c_damp = 0.00;
 			std::double_t _c_tor_stif = 0.00;
@@ -68,8 +68,8 @@ namespace CntrlLibrary
 
 			bool _isCouplingParamsSet = false;
 
-			std::unique_ptr<Integrator> _pIntegratorLW;
-			std::unique_ptr<Integrator> _pIntegratorLR;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorLW;
+			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorLR;
 
 		
 		};

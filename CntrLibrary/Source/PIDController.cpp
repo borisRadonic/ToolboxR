@@ -34,15 +34,14 @@ namespace CntrlLibrary
 	{
 		PIDController::PIDController():Block()
 		{
-			_pIntegrator = std::make_unique<Integrator>();
-			_pDerivative = std::make_unique<Derivative>();
+			_pIntegrator.create();
+			_pDerivative.create();
 
-			/*create input and aouput*/
-			_ptrIn = Signal<std::double_t>::Factory::NewSignal("PIDin", BaseSignal::SignalType::Double);
-			_ptrOut = Signal<std::double_t>::Factory::NewSignal("PIDout", BaseSignal::SignalType::Double);
+			_ptrIn.create("in1", BaseSignal::SignalType::Double);
+			_ptrOut.create("out1", BaseSignal::SignalType::Double);
 
-			this->addInput(_ptrIn);
-			this->addOutput(_ptrOut);
+			this->addInput(static_cast<BaseSignal*>(_ptrIn.operator->()));
+			this->addOutput(static_cast<BaseSignal*>(_ptrOut.operator->()));
 		}
 
 		PIDController::PIDController(std::double_t kp, std::double_t ki, std::double_t kd, std::double_t kb, std::double_t ts, std::double_t upSaturation)

@@ -107,9 +107,8 @@ namespace CntrlLibrary
 
 		private:
 
-
-			std::shared_ptr<Signal<Eigen::Vector<double, M>>> _ptrIn;
-			std::shared_ptr<Signal<Eigen::Vector<double, R>>> _ptrOut;
+			FlexPointers::FlexibleSharedPtr<Signal<Eigen::Vector<double, M>>> _ptrIn;
+			FlexPointers::FlexibleSharedPtr<Signal<Eigen::Vector<double, M>>> _ptrOut;
 
 
 			Eigen::Vector<double, N> _X;

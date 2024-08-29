@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include "Signal.h"
 #include "FuzzyInput.h"
+#include "FlexPointers.h"
 
 #include <string>
 #include <vector>
@@ -37,7 +38,8 @@ SOFTWARE.
 
 namespace CntrlLibrary
 {
-	using SignalPtr	= std::vector<std::shared_ptr<BaseSignal>>;
+		
+	using SignalPtr	= std::vector<BaseSignal*>;
 
 	/*! \brief Block is a base class for all blocks. Block is an atomic unit.
 	 *         with parameters, inputs and outputs.
@@ -73,9 +75,9 @@ namespace CntrlLibrary
 			return _name;
 		}
 
-		std::shared_ptr<BaseSignal> getInputSignal(const std::uint32_t index);
+		BaseSignal* getInputSignal(const std::uint32_t index);
 		
-		std::shared_ptr<BaseSignal> getOutputSignal(const std::uint32_t index);
+		BaseSignal* getOutputSignal(const std::uint32_t index);
 
 		inline std::size_t getNumberOfInputs() const
 		{
@@ -93,9 +95,9 @@ namespace CntrlLibrary
 		/*!
 		\param input a name of the block
 		*/
-		void addInput(std::shared_ptr<BaseSignal> input);
+		void addInput(BaseSignal* input);
 
-		void addOutput(std::shared_ptr<BaseSignal> output);
+		void addOutput(BaseSignal* output);
 
 		
 

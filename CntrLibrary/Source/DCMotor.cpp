@@ -36,8 +36,8 @@ namespace CntrlLibrary
 	{
 		DCMotor::DCMotor()
 		{
-			_pIntegratorI = std::make_unique<Integrator>();
-			_pIntegratorW = std::make_unique<Integrator>();
+			_pIntegratorI.create();
+			_pIntegratorW.create();
 		}
 
 		DCMotor::~DCMotor()

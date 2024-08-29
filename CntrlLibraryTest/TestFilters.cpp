@@ -37,9 +37,20 @@ TEST(TestButterworthLowPassI, TestLowPass1)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
-	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
-	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> freqTp;
+	freqTp.create("frequency", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(freqTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> magTp;
+	magTp.create("magnitude", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(magTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> phaseTp;
+	phaseTp.create("phase", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(phaseTp.operator->()));
+	
+
 	
 	//define filter and main process function
 	ButterworthLowPassI filter;
@@ -96,10 +107,19 @@ TEST(TestButterworthHighPassI, TestHighPass1)
 	std::double_t ts = 0.0001;
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
+		
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> freqTp;
+	freqTp.create("frequency", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(freqTp.operator->()));
 
-	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
-	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
-	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> magTp;
+	magTp.create("magnitude", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(magTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> phaseTp;
+	phaseTp.create("phase", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(phaseTp.operator->()));
+
 
 	//define filter and main process function
 	ButterworthHighPassI filter;
@@ -156,9 +176,17 @@ TEST(TestButterworthLowPassII, TestLowPass2)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
-	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
-	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> freqTp;
+	freqTp.create("frequency", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(freqTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> magTp;
+	magTp.create("magnitude", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(magTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> phaseTp;
+	phaseTp.create("phase", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(phaseTp.operator->()));
 
 	//define filter and main process function
 	ButterworthLowPassII filter;
@@ -215,9 +243,17 @@ TEST(TestButterworthHighPassII, TestHighPass2)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
-	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
-	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> freqTp;
+	freqTp.create("frequency", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(freqTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> magTp;
+	magTp.create("magnitude", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(magTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> phaseTp;
+	phaseTp.create("phase", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(phaseTp.operator->()));
 
 	//define filter and main process function
 	ButterworthHighPassII filter;
@@ -274,9 +310,17 @@ TEST(TestNotchFilter, TestNotchFilter)
 	WaveFormTracer tracer(fileName1, ts);
 	EXPECT_TRUE(tracer.open());
 
-	auto freqTp = tracer.addSignal<std::double_t>("frequency", BaseSignal::SignalType::Double);
-	auto magTp = tracer.addSignal<std::double_t>("magnitude", BaseSignal::SignalType::Double);
-	auto phaseTp = tracer.addSignal<std::double_t>("phase", BaseSignal::SignalType::Double);
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> freqTp;
+	freqTp.create("frequency", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(freqTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> magTp;
+	magTp.create("magnitude", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(magTp.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> phaseTp;
+	phaseTp.create("phase", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(phaseTp.operator->()));
 
 	//define filter and main process function
 	IIRSecondOrderFilter filter;

@@ -27,6 +27,7 @@ SOFTWARE.
 
 #pragma once
 
+#include "FlexPointers.h"
 #include <string>
 #include "Block.h"
 
@@ -86,8 +87,8 @@ namespace CntrlLibrary
 
 		private:
 
-			std::shared_ptr<Signal<std::double_t>> _ptrIn;
-			std::shared_ptr<Signal<std::double_t>> _ptrOut;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrIn;
+			FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> _ptrOut;
 
 			std::double_t _gain = 1.00; //value to multiply with integrator input
 			std::double_t _Ts = 1.00; //sampling period

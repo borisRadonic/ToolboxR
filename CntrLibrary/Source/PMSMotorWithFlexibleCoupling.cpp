@@ -38,9 +38,9 @@ namespace CntrlLibrary
 	{
 		PMSMotorWithFlexibleCoupling::PMSMotorWithFlexibleCoupling():PMSMotor()
 		{
-			_pSOsys = std::make_unique<SOSystem>();
-			_pIntegratorLW = std::make_unique<Integrator>();
-			_pIntegratorLR = std::make_unique<Integrator>();
+			_pSOsys.create();
+			_pIntegratorLW.create();
+			_pIntegratorLR.create();
 		}
 
 		PMSMotorWithFlexibleCoupling::~PMSMotorWithFlexibleCoupling()
