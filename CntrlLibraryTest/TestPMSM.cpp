@@ -185,6 +185,26 @@ TEST(TestCasePMSM, TestPMSMVelCurrentCntr)
 	cntrVbetaPtr.create("V_beta", BaseSignal::SignalType::Double);
 	tracer.addSignal(static_cast<BaseSignal*>(cntrVbetaPtr.operator->()));
 
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrEMFalphaPtr;
+	cntrEMFalphaPtr.create("EMF_alpha", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrEMFalphaPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrEMFbetaPtr;
+	cntrEMFbetaPtr.create("EMF_beta", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrEMFbetaPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrIalphaPtr;
+	cntrIalphaPtr.create("I_alpha", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrIalphaPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrIbetaPtr;
+	cntrIbetaPtr.create("I_beta", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrIbetaPtr.operator->()));
+
+	FlexPointers::FlexibleSharedPtr<Signal<std::double_t>> cntrIal_p_bePtr;
+	cntrIal_p_bePtr.create("I_alpha+beta", BaseSignal::SignalType::Double);
+	tracer.addSignal(static_cast<BaseSignal*>(cntrIal_p_bePtr.operator->()));
+
 
 
 	tracer.writeHeader();
@@ -212,12 +232,30 @@ TEST(TestCasePMSM, TestPMSMVelCurrentCntr)
 		}
 		motor.setInputs(tqController.getUq(), tqController.getUd(), 0.00);
 		motor.process();
-		
+
 		motorIdShPtr->set(motor.getId());
 		motorVelShPtr->set(motor.getVel());
 		motorIqShPtr->set(motor.getIq());
 		cntrValphaPtr->set(tqController.get_v_alpha());
 		cntrVbetaPtr->set(tqController.get_v_beta());
+
+		cntrEMFalphaPtr->set(motor.getEalpha());
+		cntrEMFbetaPtr->set(motor.getEbeta());
+		cntrIalphaPtr->set(motor.getIalpha());
+		cntrIbetaPtr->set(motor.getIbeta());
+		cntrIal_p_bePtr->set(motor.getIalpha() + motor.getIbeta());
+
+
+		if (motor.getVel() > 0.1 && motor.isSamplePointEMF())
+		{
+			double calcAngle = atan2( motor.getEbeta(),  motor.getEalpha()) + M_PI_2;
+			double normalizedAngle = fmod(calcAngle + 2 * M_PI, 2 * M_PI);
+			double elAngle = motor.getElPos();
+			double diff = normalizedAngle - elAngle;
+			diff = 0.00;
+		}
+
+
 		tracer.trace();
 	}
 }
@@ -417,8 +455,6 @@ TEST(TestCasePMSM, TestPMSMPosController)
 	FrictionModelCSV friction;
 	friction.setParameters(ts, b, Tsf, J);
 
-
-
 	for (double t = 0.00001; t <= f_time + 0.00001; t = t + ts)
 	{
 
@@ -459,6 +495,8 @@ TEST(TestCasePMSM, TestPMSMPosController)
 		cntrRefPosPtr->set(ref_position);
 		cntrSenPosPtr->set(motor.getPos());
 		cntrJerkPtr->set(ff_jerk);
+
+
 		tracer.trace();
 	}
 }

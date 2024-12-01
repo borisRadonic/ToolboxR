@@ -12,10 +12,10 @@ set ylabel "Value"
 set key outside top left
 
 # Plot the data
-plot "TestPMSM.dat" using 1:7 with lines title "V_alpha" lc "blue", \
-     "TestPMSM.dat" using 1:8 with lines title "V_beta" lc "red", \
+plot "TestPMSM.dat" using 1:9 with lines title "EMF_alpha" lc "blue", \
+     "TestPMSM.dat" using 1:10 with lines title "EMF_beta" lc "red", \
+	 "TestPMSM.dat" using 1:13 with lines title "Ialpha+Ibeta", \
      "TestPMSM.dat" using 1:6 with lines title "Vel" lc "green"
-        
 
 # Pause (for terminals that close immediately after displaying the plot)
 pause -1 "Press any key to continue"

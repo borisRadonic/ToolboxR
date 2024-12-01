@@ -21,7 +21,6 @@ using namespace CntrlLibrary;
 
 int main()
 {
-
 	/*define input variables */
 
 	std::unique_ptr<FuzzyInput> temperature = std::make_unique<FuzzyInput>(-80.00, 80.00, "Temperature" );

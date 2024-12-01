@@ -31,6 +31,10 @@ SOFTWARE.
 #include <memory>
 #include "Integrator.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <numbers> // For mathematical constants like pi
+
 namespace CntrlLibrary
 {
 	namespace Models
@@ -76,12 +80,42 @@ namespace CntrlLibrary
 			//returns rotor angle
 			std::double_t getPos() const { return _angleM; };
 
+			//returns normalized el. rotor angle
+			std::double_t getElPos() const
+			{
+				const float two_pi = 2.0 * M_PI;
+				std::double_t angle = fmod(_angleE, two_pi);
+
+				// Handle negative angles
+				if (angle < 0)
+				{
+					angle += two_pi;
+				}
+				return angle;
+			};
+			
 			std::double_t getAccell() const { return _aM; };
 
 			std::double_t getVel() const { return _wM; };
 
 			std::double_t getTorque() const { return _tE; };
 
+			std::double_t getEa() const { return Ea; };
+
+			std::double_t getEb() const { return Eb; };
+
+			std::double_t getEc() const { return Ec; };
+
+			std::double_t getEalpha() const { return Ealpha; };
+			
+			std::double_t getEbeta() const { return Ebeta; };
+
+			std::double_t getIalpha() const { return Ialpha; };
+
+			std::double_t getIbeta() const { return Ibeta; };
+
+			bool isSamplePointEMF() const { return emfSamplePoint; };
+		
 		protected:
 
 			std::double_t _Ts = 1.00; //sampling period
@@ -122,6 +156,24 @@ namespace CntrlLibrary
 			std::double_t _lt = 0.00; //load torque
 
 			std::double_t _tE = 0.00; //torque
+
+
+			/*EMFs*/
+			std::double_t Ea = 0.00;
+			std::double_t Eb = 0.00;
+			std::double_t Ec = 0.00;
+
+			std::double_t Ealpha = 0.00;
+			std::double_t Ebeta = 0.00;
+
+			//currents from q-d reverted back to Alpha-Beta
+			std::double_t Ialpha = 0.00;
+			std::double_t Ibeta = 0.00;
+
+			std::double_t sumIalphaIbeta = 0.00;
+
+			bool emfSamplePoint{ false };
+
 
 			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorIq;
 			FlexPointers::FlexUniquePtr<Integrator> _pIntegratorId;			

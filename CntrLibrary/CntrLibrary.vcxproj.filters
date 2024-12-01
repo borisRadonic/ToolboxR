@@ -49,6 +49,9 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{53b77fae-e12e-4e00-a854-cebe9ec3c74e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\FixPointMath">
+      <UniqueIdentifier>{f198b1af-4c94-4328-b12a-aac8218f0c54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Block.cpp">
@@ -457,6 +460,24 @@
     </ClInclude>
     <ClInclude Include="Header\FlexPointers.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SHA256.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FixedPoint.h">
+      <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\ParkClarke.h">
+      <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\TrigFunctions.h">
+      <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MathFunctions.h">
+      <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\LUObserver.h">
+      <Filter>Header Files\FixPointMath</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

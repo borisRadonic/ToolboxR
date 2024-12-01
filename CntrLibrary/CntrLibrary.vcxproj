@@ -262,6 +262,7 @@
     <ClInclude Include="Header\FIRFilter.h" />
     <ClInclude Include="Header\FisFileExport.h" />
     <ClInclude Include="Header\FisFileImport.h" />
+    <ClInclude Include="Header\FixedPoint.h" />
     <ClInclude Include="Header\FlexPointers.h" />
     <ClInclude Include="Header\framework.h" />
     <ClInclude Include="Header\FrequencyResponseManager.h" />
@@ -292,7 +293,11 @@
     <ClInclude Include="Header\LinearFunction.h" />
     <ClInclude Include="Header\LinguisticVariable.h" />
     <ClInclude Include="Header\LRCircuit.h" />
+    <ClInclude Include="Header\LUObserver.h" />
     <ClInclude Include="Header\MathFunctionBase.h" />
+    <ClInclude Include="Header\MathFunctions.h" />
+    <ClInclude Include="Header\ParkClarke.h" />
+    <ClInclude Include="Header\SHA256.h" />
     <ClInclude Include="Header\StaticPointers.h" />
     <ClInclude Include="Header\MemUtilities.h" />
     <ClInclude Include="Header\PathSegment.h" />
@@ -324,6 +329,7 @@
     <ClInclude Include="Header\TrapezoidalIFuzzySetInfL.h" />
     <ClInclude Include="Header\TrapezoidalIFuzzySetInfR.h" />
     <ClInclude Include="Header\TriangularFuzzySet.h" />
+    <ClInclude Include="Header\TrigFunctions.h" />
     <ClInclude Include="Header\WaveFormTracer.h" />
     <ClInclude Include="Header\window.h" />
     <ClInclude Include="Header\ZShapedFuzzySet.h" />

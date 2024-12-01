@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 The MIT License(MIT)
 
 ToolboxR Control Library
@@ -27,8 +27,6 @@ SOFTWARE.
 
 #include "PMSMotor.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 
 namespace CntrlLibrary
@@ -162,6 +160,48 @@ namespace CntrlLibrary
 				_id1 = _id;
 				_wM1 = _wM;
 				_tE = _Ktq * _iq;
+
+
+				Ea = _wM * _Kemf * sin(angleE);
+				Eb = _wM * _Kemf * sin(angleE - ((2.00 * std::numbers::pi) / 3.00));;
+				Ec = _wM * _Kemf * sin(angleE - ((4.00 * std::numbers::pi) / 3.00));
+
+				Ealpha = Ea;
+				Ebeta = std::numbers::inv_sqrt3 * (Ea + 2 * Eb);
+
+
+				// inverse Park transformation reverts the currents from the rotating dd - qq frame to the stationary alpha-beta frame using the rotor angle 
+				Ialpha = _id * cos(angleE) - _iq * sin(angleE);
+				Ibeta = _id * sin(angleE) - _iq * cos(angleE);
+
+				//Back EMF sampling is critical for estimating the rotor position in sensorless control.
+				//At the poind where the sum of Ialpha and Ibeta is nearly zero the contribution of the resistive voltage drop and inductive reactance may cancel
+				//or become minimal, allowing a cleaner measurement of the back EMF.
+				//Sampling at Ialpha + Ibeta = 0 minimizes distortions from the current's influence, leading to more accurate estimation of EMFalpha​ and EMFbeta​.
+				double newSumIalphaIbeta = Ialpha + Ibeta;				
+				if (sumIalphaIbeta < 0.00)
+				{
+					if (newSumIalphaIbeta > 0.001)
+					{
+						emfSamplePoint = true;
+					}
+					else
+					{
+						emfSamplePoint = false;
+					}
+				}
+				else
+				{
+					if (newSumIalphaIbeta < -0.001)
+					{
+						emfSamplePoint = true;
+					}
+					else
+					{
+						emfSamplePoint = false;
+					}
+				}
+				sumIalphaIbeta = newSumIalphaIbeta;
 			}
 		}
 	}

@@ -1185,7 +1185,22 @@ TEST(TestImportExport, TestSugenoImportExport1)
 
 }
 
+#include "SHA256.h"
+TEST(TestSHA256, Test1)
+{
+	SHA256 sha256;
+	const char* input = "Hello, World!";
+	sha256.update(reinterpret_cast<const uint8_t*>(input), std::strlen(input));
 
+	std::array<uint8_t, 32> hash = sha256.digest();
+
+	std::cout << "SHA-256: ";
+	for (const auto& byte : hash)
+	{
+		std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
+	}
+	std::cout << std::endl;
+}
 
 
 TEST(TestImportExport, TestInput1)
