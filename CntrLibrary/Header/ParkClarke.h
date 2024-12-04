@@ -32,56 +32,59 @@ SOFTWARE.
 #define PARK_CLARKE_H
 
 #include <cstdint>
+#include <numbers>
 
 #include "MathFunctions.h"
 #include "TrigFunctions.h"
 
+
 namespace CntrlLibrary
 {
-       
 
 
     // Input structure for stator values in ab_t format
+    template <typename T>
     struct AB_t
     {
         AB_t() = default;
 
-        Q15 a{ 0.0f }; // Stator value along axis 'a'
-        Q15 b{ 0.0f }; // Stator value along axis 'b'
+        T a{ 0 }; // Stator value along axis 'a'
+        T b{ 0 }; // Stator value along axis 'b'
+
+        constexpr bool operator==(const T& other) const
+        {
+            return ( (a == other.a) && (b == other.b) );
+        }
+
     };
 
 
-    // Input structure for stator values in abc_t format
-    struct ABC_t
-    {
-        ABC_t() = default;
-
-        Q15 a{ 0.0f }; // Stator value along axis 'a'
-        Q15 b{ 0.0f }; // Stator value along axis 'b'
-        Q15 c{ 0.0f }; // Stator value along axis 'c'
-    };
-
+   
     // Output structure for values in alphabeta_t format
+    template <typename T>
     struct AlphaBeta_t
     {
         AlphaBeta_t() = default;
 
-        Q15 alpha{ 0.0f }; // Transformed value along alpha axis
-        Q15 beta{ 0.0f };  // Transformed value along beta axis
+        T alpha{ 0 }; // Transformed value along alpha axis
+        T beta{ 0 };  // Transformed value along beta axis
     };
 
     // Output structure for q-d values
+    template <typename T>
     struct QD_t
     {
-        Q15 q{ 0.0f }; // q-axis value
-        Q15 d{ 0.0f }; // d-axis value
+        QD_t() = default;
+
+        T q{0}; // q-axis value
+        T d{0}; // d-axis value
     };
 
 
+    template <typename T>
     class ParkClarke
     {
     public:
-        static constexpr Q15 SQRT3_DIV = Q15( 1.0f / 1.73205080757f ); // 1/sqrt(3)
 
         /**
          * @brief  Perform Clarke transformation: converts stator values 'a' and 'b'
@@ -89,53 +92,31 @@ namespace CntrlLibrary
          * @param  input: Stator values in AB_t format (a and b).
          * @retval AlphaBeta_t: Stator values in alpha-beta stationary frame.
          */
-        static AlphaBeta_t Clarke(const AB_t& input)
+        
+        static AlphaBeta_t<T> Clarke(const AB_t<T>& input)
         {
-            AlphaBeta_t output;
-
-            // alpha = a
+            AlphaBeta_t<T> output{};
             output.alpha = input.a;
-
-            // beta = -(2*b + a)/sqrt(3)
-            Q15 a_divSQRT3 = input.a * SQRT3_DIV;
-            Q15 b_divSQRT3 = input.b * SQRT3_DIV;
-            Q15 beta = Q15(0.0f) - (a_divSQRT3 + (b_divSQRT3 * Q15(2.0f)));
-
-            // Saturate beta to q1.15 range
-            output.beta = saturate(beta);
-
-            // Ensure beta is not -32768
-            if (output.beta.raw() == Q15::MinValue)
-            {
-                output.beta = Q15( Q15::MinValue) + Q15(1.0f / 32768.0f); // Set to -32767
-            }
-
+            T temp1 = input.a * T(std::numbers::inv_sqrt3_v<float>);
+            T temp2 = input.b * T(2.0f * std::numbers::inv_sqrt3_v<float>);                
+            output.beta = T(FixedPointUtils<q31_t>::QADD(temp1.raw(), temp2.raw()));
             return output;
         }
-
-
+      
         /**
         * @brief  Perform Inverse Clarke Transformation: converts stationary reference
         *         frame values 'alpha' and 'beta' back into three-phase stator values 'a', 'b', and 'c'.
         * @param  input: AlphaBeta_t input with alpha and beta values.
         * @retval ABCT_t: Stator values in three-phase system (a, b, c).
         */
-        static ABC_t InverseClarke(const AlphaBeta_t& input)
+        static AB_t<T> InverseClarke(const AlphaBeta_t<T>& input)
         {
-            ABC_t output;
-
+            AB_t<T> output;            
             // a = alpha
             output.a = input.alpha;
-
-            // b = -alpha/2 + sqrt(3)/2 * beta
-            Q15 alpha_neg_half = input.alpha * Q15(-0.5f);
-            Q15 beta_sqrt3_half = input.beta * Q15(0.86602540378f); // sqrt(3)/2
-            output.b = alpha_neg_half + beta_sqrt3_half;
-
-            // c = -alpha/2 - sqrt(3)/2 * beta
-            Q15 beta_neg_sqrt3_half = input.beta * Q15(-0.86602540378f); // -sqrt(3)/2
-            output.c = alpha_neg_half + beta_neg_sqrt3_half;
-
+            T temp1 = input.alpha * T( -1.0f / 2.0f);
+            T temp2 = input.beta  * T(std::numbers::sqrt3_v<float> / 2.0f);
+            output.b = T(FixedPointUtils<q31_t>::QADD(temp1.raw(), temp2.raw()));
             return output;
         }
 
@@ -144,37 +125,19 @@ namespace CntrlLibrary
         * @brief Perform Park Transformation: converts alpha-beta stationary reference frame
         *        values to a rotating d-q synchronous reference frame.
         * @param  input: AlphaBeta_t input with alpha and beta values.
-        * @param  theta: Rotation angle in q1.15 fixed-point format (Q15).
+        * @param  trigComp:Sin and Cos components of electrical angle in q1.15 fixed-point format (Q15).
         * @retval QD_t: Transformed values in d-q reference frame.
         */
-        static QD_t Park(const AlphaBeta_t& input, Q15 theta)
+        static QD_t<T> Park(const AlphaBeta_t<T>& input, TrigComponents trigComp )
         {
-            QD_t output;
-            // Compute sin and cos components
-            TrigComponents trig = TrigFunctions::TrigFuncs(theta);
+            QD_t<T> output;
+            T temp1 = input.alpha * T(trigComp.hCos);
+            T temp2 = input.beta * T(trigComp.hSin);
+            T temp3 = input.alpha * T(trigComp.hSin);
+            T temp4 = input.beta * T(trigComp.hCos);
+            output.d = T(FixedPointUtils<q31_t>::QADD(temp1.raw(), temp2.raw()));
+            output.q = T(FixedPointUtils<q31_t>::QSUB(temp4.raw(), temp3.raw()));
 
-            // Compute q component
-            Q15 qTmp1 = input.alpha * trig.hCos;
-            Q15 qTmp2 = input.beta * trig.hSin;
-            Q15 resQ = qTmp1 - qTmp2;
-            output.q = saturate(resQ);
-
-            // Ensure q is not -32768
-            if (output.q.raw() == Q15::MinValue)
-            {
-                output.q = Q15( Q15::MinValue ) + Q15( static_cast<std::int32_t>(1) );
-            }
-                     
-            Q15 dTmp1 = input.alpha * trig.hSin;
-            Q15 dTmp2 = input.beta * trig.hCos;
-            Q15 resD = dTmp1 - dTmp2;
-            output.d = saturate(resD);
-
-            // Ensure q is not -32768
-            if (output.d.raw() == Q15::MinValue)
-            {
-                output.d = Q15(Q15::MinValue) + Q15(static_cast<std::int32_t>(1));
-            }
             return output;
         }
 
@@ -182,25 +145,18 @@ namespace CntrlLibrary
         * @brief Perform Reverse Park Transformation: converts q-d rotating reference
         *        frame values to a stationary alpha-beta reference frame.
         * @param  input: QD_t input with q and d values.
-        * @param  theta: Rotation angle in q1.15 fixed-point format (Q15).
+        * @param  trigComp:Sin and Cos components of electrical angle in q1.15 fixed-point format (Q15).
         * @retval AlphaBeta_t: Transformed values in alpha-beta stationary frame.
         */
-        AlphaBeta_t InvPark(QD_t input, Q15 theta)
+        static AlphaBeta_t<T> InvPark(QD_t<T> input, TrigComponents trigComp)
         {
-
-            TrigComponents trig = TrigFunctions::TrigFuncs(theta);;
-            AlphaBeta_t output;
-
-            Q15 alpha_tmp1 = input.q * trig.hCos;
-            Q15 alpha_tmp2 = input.d * trig.hSin;
-
-            output.alpha = saturate(alpha_tmp1 + alpha_tmp2);
-
-            Q15 beta_tmp1 = input.q * trig.hSin;
-            Q15 beta_tmp2 = input.d * trig.hCos;
-
-            output.beta = saturate(beta_tmp1 + beta_tmp2);
-
+            AlphaBeta_t<T> output{};
+            T temp1 = input.d * trigComp.hCos;
+            T temp2 = input.q * trigComp.hSin;
+            T temp3 = input.d * trigComp.hSin;
+            T temp4 = input.q * trigComp.hCos;
+            output.alpha = T(FixedPointUtils<q31_t>::QSUB(temp1.raw(), temp2.raw()));
+            output.beta  = T(FixedPointUtils<q31_t>::QADD(temp4.raw(), temp3.raw()));
             return output;
         }
 
@@ -214,8 +170,6 @@ namespace CntrlLibrary
         {
             return Q15( Q15::saturate( static_cast<std::int32_t>(value.raw())) );
         }
-               
-
     };
 }
 

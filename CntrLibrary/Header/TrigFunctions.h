@@ -5,7 +5,7 @@ The MIT License(MIT)
 ToolboxR Control Library
 https://github.com/borisRadonic/ToolboxR
 
-Copyright(c) 2023 Boris Radonic
+Copyright(c) 2024 Boris Radonic
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files(the "Software"), to deal
@@ -69,8 +69,8 @@ namespace CntrlLibrary
                 return (CosSin.Components); //cstat !UNION-type-punning
     #else
                 TrigComponents components;
-                components.hCos = Q15(cos(hAngle.toFloat() * static_cast<float>(std::numbers::pi)));
-                components.hSin = Q15(sin(hAngle.toFloat() * static_cast<float>(std::numbers::pi)));
+                components.hCos = Q15(cos(hAngle.toFloat() * std::numbers::pi_v<float>));
+                components.hSin = Q15(sin(hAngle.toFloat() * std::numbers::pi_v<float>));
                 return components;
     #endif
             }
