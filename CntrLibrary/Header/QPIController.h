@@ -42,17 +42,16 @@ SOFTWARE.
 
 namespace CntrlLibrary
 {
-	template <typename TYPE_OUT, typename TYPE_IN, typename TYPE_KP, typename TYPE_KI, typename TYPE_KB>
+	template <typename TYPE_IN_OUT, typename TYPE_KP, typename TYPE_KI, typename TYPE_KB>
 	class QPIController
 	{
 		public:
 
-			explicit QPIController(float kp, float ki, float kb, float ts, float upsat)
+			explicit QPIController(float kp, float ki, float kb, float upsat)
 				:Kp(kp)
 				,Kb(kb)
-				,Ts(ts)
 				,upSat(upsat)
-				,integrator(ts,ki, -upsat, upsat)
+				,integrator(ki, -upsat, upsat)
 			{
 			}
 
@@ -65,49 +64,36 @@ namespace CntrlLibrary
 				integrator.reset();
 			}
 
-			TYPE_OUT process(TYPE_IN error)
+			TYPE_IN_OUT process(TYPE_IN_OUT error)
 			{
-				
 				auto propPart = FixedPointOps::mul(Kp, error);
 				auto inputI = FixedPointOps::add(error, FixedPointOps::mul(Kb, du1) );
 
-				using ResultType = decltype(inputI);
-								
-				
-				FixedPoint< ResultType::IntegerBitsValue,
-							ResultType::FractionalBitsValue,
-							typename ResultType::UnderlyingType,
-							typename ResultType::MultiplierType> resultI;
-				
-
-				//auto resultI;
-				TYPE_OUT inputInt;
+				TYPE_IN_OUT inputInt;
 				FixedPointOps::convert(inputI, inputInt);
 				auto intPart = integrator.process(inputInt);
-				TYPE_OUT intPartO;
+				TYPE_IN_OUT intPartO;
 				FixedPointOps::convert(intPart, intPartO);
 
-				TYPE_OUT propPartO;
+				TYPE_IN_OUT propPartO;
 				FixedPointOps::convert(propPart, propPartO);
 
 				auto uout = intPartO + propPartO;
 
-				TYPE_OUT u;
+				TYPE_IN_OUT u;
 				FixedPointOps::convert(uout, u);
 				
-				TYPE_OUT uSat = u;
+				TYPE_IN_OUT uSat = u;
 				
-				if (uSat >= TYPE_OUT(0.0f) )
+				if (uSat >= TYPE_IN_OUT(0.0f) )
 				{
-					uSat = std::min<TYPE_OUT>(u, upSat);
+					uSat = std::min<TYPE_IN_OUT>(u, upSat);
 				}
 				else
 				{
-					uSat = std::max<TYPE_OUT>(u, TYPE_OUT(0.0f) - upSat);
+					uSat = std::max<TYPE_IN_OUT>(u, TYPE_IN_OUT(0.0f) - upSat);
 				}
 				du1 = uSat - u;
-				
-				FixedPointOps::convert(error, du1);
 				return uSat;
 			}
 
@@ -115,11 +101,10 @@ namespace CntrlLibrary
 
 			TYPE_KP Kp{}; //proportional gain coefficient
 			TYPE_KB Kb{}; //anti-windup gain coefficient.
-			std::int32_t Ts{}; //sampling period
-			TYPE_OUT upSat{}; //Output saturation upper limit
-			TYPE_OUT du1{0.0f};
+			TYPE_IN_OUT upSat{}; //Output saturation upper limit
+			TYPE_IN_OUT du1{0.0f};
 
-			QIntegrator<Q10_22, TYPE_KI> integrator;
+			QIntegrator<TYPE_IN_OUT, TYPE_KI> integrator;
 	};
 }
 #endif

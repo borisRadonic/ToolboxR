@@ -38,20 +38,20 @@ SOFTWARE.
 
 namespace CntrlLibrary
 {
-	template <typename TYPE_OUT, typename TYPE_KI>
+	template <typename TYPE_IN_OUT, typename TYPE_KI>
 	class QIntegrator
 	{
 	public:
 
 
-		explicit QIntegrator(float ts, float ki, float min, float max):mult_ts_ki(ts*ki), outMin(min), outMax(max)
+		explicit QIntegrator(float ki, float min, float max):Ki(ki), outMin(min), outMax(max)
 		{			
 		}
 
 		~QIntegrator() = default;
 
 		
-		void setInitialConditions(TYPE_OUT ic)
+		void setInitialConditions(TYPE_IN_OUT ic)
 		{
 			this->ic = ic;
 			this->x = ic;
@@ -61,46 +61,27 @@ namespace CntrlLibrary
 		
 		void reset()
 		{
-			this->ic = TYPE_OUT(0.0f);
+			this->ic = TYPE_IN_OUT(0.0f);
 		}
 
 		auto process(auto u)
 		{
-			
-
-			auto val1 = FixedPointOps::mul(u1, mult_ts_ki);
-
+			auto val1 = FixedPointOps::mul(u1, Ki);
 			auto val2 = FixedPointOps::add(val1, x);
-
-			using ResultType = decltype(val2);
-						
-			
 			FixedPointOps::convert(val2, x);
-			
 			FixedPointOps::convert(u, u1);
-
 			return x;
 		}
 
 	private:
-		
 
-				
-		Q24 mult_ts_ki{};
-
-		TYPE_OUT outMin{}; //Output saturation limit
-		TYPE_OUT outMax{}; //Output saturation limit
-
+		TYPE_KI Ki{0.0f};
+		TYPE_IN_OUT outMin{}; //Output saturation limit
+		TYPE_IN_OUT outMax{}; //Output saturation limit
 		bool isUseSaturation{ false };
-		
-
-		TYPE_OUT ic{ 0 }; //initial conditions
-		TYPE_OUT x{ 0 };
-
-		TYPE_OUT u1{ 0 };
-				
-		//std::int32_t u1{ 0 };
-
+		TYPE_IN_OUT ic{ 0.0f }; //initial conditions
+		TYPE_IN_OUT x{ 0.0f };
+		TYPE_IN_OUT u1{ 0.0f };
 	};
 }
 #endif

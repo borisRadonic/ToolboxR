@@ -499,9 +499,12 @@ namespace CntrlLibrary
     using Q15 = FixedPoint<1, 15, int32_t, int32_t>; // q1.15 fixed-point format
     using Q18 = FixedPoint<1, 18, int32_t, int32_t>; // q1.18 fixed-point format
     
-    using Q24 = FixedPoint<1, 23, int64_t, int32_t>; // q1.23 fixed-point format
+    using Q24 = FixedPoint<1, 23, int32_t, int32_t>; // q1.23 fixed-point format
 
-    using Q9_23 = FixedPoint<9, 23, int64_t, int32_t>; // q1.23 fixed-point format
+    using Q9_7  = FixedPoint<9, 7, int32_t, int32_t>; // q9.7 fixed-point format
+    using Q4_12 = FixedPoint<4, 12, int32_t, int32_t>; // q4.12 fixed-point format
+
+   
 
     using Q31 = FixedPoint<1, 31, int64_t, int64_t>; // q1.31 fixed-point format
 
@@ -511,7 +514,7 @@ namespace CntrlLibrary
     using Q10_7 = FixedPoint<10, 7, int32_t, int32_t>; // q10.7 fixed-point format
     using Q10_9 = FixedPoint<10, 9, int32_t, int32_t>; // q10.9 fixed-point format
 
-    using Q10_22 = FixedPoint<10, 22, int32_t, int64_t>; // q10.22 fixed-point format
+    using Q10_22 = FixedPoint<10, 22, int64_t, int64_t>; // q10.22 fixed-point format
 
   
     constexpr std::array<Q15, 256> generateSinTable()

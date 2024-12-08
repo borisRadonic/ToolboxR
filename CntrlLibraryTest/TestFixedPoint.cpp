@@ -13,6 +13,33 @@
 using namespace CntrlLibrary;
 
 
+int16_t PI_Controller(int32_t wProcessVarError)
+{
+	int16_t returnValue;
+
+	static int32_t wIntegralTermOld = 0.00;
+	
+	int32_t wIntegral_Term;
+	int32_t wOutput_32;
+	int32_t wIntegral_sum_temp;
+	int32_t wDischarge = 0;
+	int16_t hUpperOutputLimit = (int32_t)(INT16_MAX * 4096);
+	int16_t hLowerOutputLimit = (int32_t)(-INT16_MAX * 4096);
+
+	int16_t    hDefKpGain = (int16_t)2312;
+	int16_t    hDefKiGain = (int16_t)2158;
+
+	uint16_t hKpDivisorPOW2 = (uint16_t)7;
+	uint16_t hKiDivisorPOW2 = (uint16_t)12;
+
+	int32_t wProportional_Term = hDefKpGain * wProcessVarError;
+	wIntegral_Term = hDefKiGain * wProcessVarError + wIntegralTermOld;
+	wOutput_32 = (wProportional_Term >> hKpDivisorPOW2) + (wIntegralTermOld >> hKiDivisorPOW2);
+	wIntegralTermOld = wIntegral_Term;
+	returnValue = (int16_t)wOutput_32;
+	return (returnValue);
+}
+
 TEST(TestQNumbers, TestMathOperations)
 {
 	Q15 a(0.5f);
@@ -205,65 +232,69 @@ TEST(TestQNumbers, TestMathOperations)
 	Q9_7 current(210.5f);
 	auto rt1 = FixedPointOps::mul( tes97,  current);
 	float ttt = rt1.toFloat();
-	
 
 	Q9_7 sc(15.23f);
 	Q10_9 dst;
 	FixedPointOps::convert(sc, dst);
 	float dstR = dst.toFloat();
 
+	float kp = 18.0625f;
+	Q9_7 tttt(kp);
+	float sfdddf = tttt.toFloat();
 
-
-	Q9_7 Kp(1.5f);
-	float kp = 2.0f;
-	float ki = 1000.12f;
+	float ki = 0.525685f;
 	float kb = 1.1f;
-	float ts = 0.0001f;
+	
 	float upsat = 120.0f;
-	QPIController< Q9_23,Q9_7, Q10_7, Q9_7, Q9_7> piController( kp, ki, kb, ts, upsat);
-	DiscreteTime::PIDController pidFp(kp, ki, 0.0f, kb, ts, upsat);
+	QPIController< Q10_22,Q9_7, Q4_12, Q10_22> piController( kp, ki, kb, upsat);
+	DiscreteTime::PIDController pidFp(kp, ki, 0.0f, kb, 1.0f, upsat);
 
 	float ferr = 0.5f;
-	Q9_7 error( ferr);
-	Q9_23 piout = piController.process(error);
+	Q10_22 error( ferr);
+	Q10_22 piout = piController.process(error);
 	float fResPi = piout.toFloat();
 	float fresPidF = pidFp.process(ferr);
 
-	piout = piController.process(error);
-	fResPi = piout.toFloat();
-	fresPidF = pidFp.process(ferr);
+ 	int16_t i16Res = PI_Controller(65536/128);
 
 	piout = piController.process(error);
 	fResPi = piout.toFloat();
 	fresPidF = pidFp.process(ferr);
+	i16Res = PI_Controller(65536 / 128);
 
 	piout = piController.process(error);
 	fResPi = piout.toFloat();
 	fresPidF = pidFp.process(ferr);
+	i16Res = PI_Controller(65536 / 128);
 
 	piout = piController.process(error);
 	fResPi = piout.toFloat();
 	fresPidF = pidFp.process(ferr);
+	i16Res = PI_Controller(65536 / 128);
 
 	piout = piController.process(error);
 	fResPi = piout.toFloat();
 	fresPidF = pidFp.process(ferr);
-
-
-	piout = piController.process(error);
-	fResPi = piout.toFloat();
-	fresPidF = pidFp.process(ferr);
+	i16Res = PI_Controller(65536 / 128);
 
 	piout = piController.process(error);
 	fResPi = piout.toFloat();
 	fresPidF = pidFp.process(ferr);
+	i16Res = PI_Controller(65536 / 128);
 
 	piout = piController.process(error);
 	fResPi = piout.toFloat();
 	fresPidF = pidFp.process(ferr);
-	
+	i16Res = PI_Controller(error.raw());
 
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+	i16Res = PI_Controller(error.raw());
 
-
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+	i16Res = PI_Controller(error.raw());	
 
 }
