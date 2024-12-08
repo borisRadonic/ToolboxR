@@ -253,6 +253,7 @@
     <ClInclude Include="Header\BasicNumMethods.h" />
     <ClInclude Include="Header\BellShapedFuzzySet.h" />
     <ClInclude Include="Header\Block.h" />
+    <ClInclude Include="Header\CircleLimitation .h" />
     <ClInclude Include="Header\ConstFunction.h" />
     <ClInclude Include="Header\DCMotor.h" />
     <ClInclude Include="Header\Derivative.h" />
@@ -297,6 +298,8 @@
     <ClInclude Include="Header\MathFunctionBase.h" />
     <ClInclude Include="Header\MathFunctions.h" />
     <ClInclude Include="Header\ParkClarke.h" />
+    <ClInclude Include="Header\QIntegrator.h" />
+    <ClInclude Include="Header\QPIController.h" />
     <ClInclude Include="Header\SHA256.h" />
     <ClInclude Include="Header\StaticPointers.h" />
     <ClInclude Include="Header\MemUtilities.h" />

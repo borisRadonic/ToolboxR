@@ -479,5 +479,14 @@
     <ClInclude Include="Header\LUObserver.h">
       <Filter>Header Files\FixPointMath</Filter>
     </ClInclude>
+    <ClInclude Include="Header\CircleLimitation .h">
+      <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\QPIController.h">
+      <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\QIntegrator.h">
+      <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

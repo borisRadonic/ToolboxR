@@ -40,8 +40,6 @@ SOFTWARE.
 
 namespace CntrlLibrary
 {
-
-
     // Input structure for stator values in ab_t format
     template <typename T>
     struct AB_t
@@ -57,7 +55,6 @@ namespace CntrlLibrary
         }
 
     };
-
 
    
     // Output structure for values in alphabeta_t format
@@ -75,6 +72,22 @@ namespace CntrlLibrary
     struct QD_t
     {
         QD_t() = default;
+
+
+        QD_t(const QD_t& other)
+        {
+            *this = other; // Use assignment operator
+        }
+
+        QD_t& operator=(const QD_t& other)
+        {
+            if (this != &other) { // Check for self-assignment
+                this->q = other.q;
+                this->d = other.d;
+            }
+            return *this; // Return *this to allow chaining
+        }
+
 
         T q{0}; // q-axis value
         T d{0}; // d-axis value

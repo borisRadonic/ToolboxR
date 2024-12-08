@@ -3,6 +3,9 @@
 
 #include "FixedPoint.h"
 #include "ParkClarke.h"
+#include "CircleLimitation .h"
+#include "QPIController.h"
+#include "PIDController.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -158,6 +161,108 @@ TEST(TestQNumbers, TestMathOperations)
 	res = ParkClarke<Q15>::InvPark(qd, trig);
 	EXPECT_NEAR(res.alpha.raw(), alphaBeta.alpha.raw(), 2);
 	EXPECT_NEAR(res.beta.raw(), alphaBeta.beta.raw(), 2);
+
+	CircleLimitation<Q15> limiter(Q15(1.0f), Q15(0.95f));
+	QD_t<Q15> testLimitValue;
+	testLimitValue.q = Q15(0.9f);
+	testLimitValue.d = Q15(0.9f);
+	float unMax = sqrt(testLimitValue.q.toFloat() * testLimitValue.q.toFloat() + testLimitValue.d.toFloat() * testLimitValue.d.toFloat());
+	QD_t<Q15>  limited = limiter.calculateSaturation(testLimitValue);
+	float fLimQ = limited.q.toFloat();
+	float fLimD = limited.d.toFloat();
+	float unLimited = sqrt(fLimQ * fLimQ + fLimD * fLimD);
+	EXPECT_NEAR(unLimited, 1.00, 0.02);
+
+	testLimitValue.q = Q15(-0.9f);
+	testLimitValue.d = Q15(-0.9f);
+	unMax = sqrt(testLimitValue.q.toFloat() * testLimitValue.q.toFloat() + testLimitValue.d.toFloat() * testLimitValue.d.toFloat());
+	limited = limiter.calculateSaturation(testLimitValue);
+	fLimQ = limited.q.toFloat();
+	fLimD = limited.d.toFloat();
+	unLimited = sqrt(fLimQ * fLimQ + fLimD * fLimD);
+	EXPECT_NEAR(unLimited, 1.00, 0.02);
+
+	testLimitValue.q = Q15(0.9f);
+	testLimitValue.d = Q15(1.0f);
+	unMax = sqrt(testLimitValue.q.toFloat() * testLimitValue.q.toFloat() + testLimitValue.d.toFloat() * testLimitValue.d.toFloat());
+	limited = limiter.calculateSaturation(testLimitValue);
+	fLimQ = limited.q.toFloat();
+	fLimD = limited.d.toFloat();
+	unLimited = sqrt(fLimQ * fLimQ + fLimD * fLimD);
+	EXPECT_NEAR(unLimited, 1.00, 0.02);
+
+
+	testLimitValue.q = Q15(-0.9f);
+	testLimitValue.d = Q15(-1.0f);
+	unMax = sqrt(testLimitValue.q.toFloat() * testLimitValue.q.toFloat() + testLimitValue.d.toFloat() * testLimitValue.d.toFloat());
+	limited = limiter.calculateSaturation(testLimitValue);
+	fLimQ = limited.q.toFloat();
+	fLimD = limited.d.toFloat();
+	unLimited = sqrt(fLimQ * fLimQ + fLimD * fLimD);
+	EXPECT_NEAR(unLimited, 1.00, 0.02);
+
+	Q9_7 tes97(200.15f);
+	Q9_7 current(210.5f);
+	auto rt1 = FixedPointOps::mul( tes97,  current);
+	float ttt = rt1.toFloat();
+	
+
+	Q9_7 sc(15.23f);
+	Q10_9 dst;
+	FixedPointOps::convert(sc, dst);
+	float dstR = dst.toFloat();
+
+
+
+	Q9_7 Kp(1.5f);
+	float kp = 2.0f;
+	float ki = 1000.12f;
+	float kb = 1.1f;
+	float ts = 0.0001f;
+	float upsat = 120.0f;
+	QPIController< Q9_23,Q9_7, Q10_7, Q9_7, Q9_7> piController( kp, ki, kb, ts, upsat);
+	DiscreteTime::PIDController pidFp(kp, ki, 0.0f, kb, ts, upsat);
+
+	float ferr = 0.5f;
+	Q9_7 error( ferr);
+	Q9_23 piout = piController.process(error);
+	float fResPi = piout.toFloat();
+	float fresPidF = pidFp.process(ferr);
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+
+	piout = piController.process(error);
+	fResPi = piout.toFloat();
+	fresPidF = pidFp.process(ferr);
+	
+
 
 
 

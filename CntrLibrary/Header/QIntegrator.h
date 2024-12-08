@@ -26,57 +26,81 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ******************************************************************************/
 
-#pragma once
+#ifndef QINTEGRATOR_H
+#define QINTEGRATOR_H
 
+#include <cstdint>
+#include <algorithm> // For std::min etc.
+#include <cmath>
+#include <limits>
 #include "FixedPoint.h"
 
-#include <cstdint>
-#include <cstdint>
-#include <cmath>
-#include <numbers>
 
 namespace CntrlLibrary
 {
-    
-    class MathFunctions
-    {
-    public:
-
-        constexpr static int log2(uint16_t x)
-        {
-            return (x == 1) ? 0 : 1 + log2(x >> 1);
-        }
+	template <typename TYPE_OUT, typename TYPE_KI>
+	class QIntegrator
+	{
+	public:
 
 
-        static std::int32_t sqrt(int32_t input)
-        {
-            if (input > 0u)
-            {
-#ifdef HAS_ST32_CORDIC
-                uint32_t retVal{};
-                /* Disable Irq*/
-                __disable_irq();
-                /* Configure CORDIC */
-                WRITE_REG(CORDIC->CSR, CORDIC_CONFIG_SQRT);
-                LL_CORDIC_WriteData(CORDIC, ((uint32_t)input));
-                /* Read sqrt and return */
-                retVal = (LL_CORDIC_ReadData(CORDIC)) >> 15U;
-                retVal = (LL_CORDIC_ReadData(CORDIC)) / 32768U;
-                wtemprootnew = static_cast<int32_t>(retVal);
-                __enable_irq();
+		explicit QIntegrator(float ts, float ki, float min, float max):mult_ts_ki(ts*ki), outMin(min), outMax(max)
+		{			
+		}
 
-#else           
+		~QIntegrator() = default;
 
-                double d = std::sqrt(static_cast<double>(input));
-                float f = static_cast<float>(d);
-                std::int32_t i = static_cast<std::int32_t>(f);
-                return  i;
-#endif
-            }
-            return 0u;
-           
-            
+		
+		void setInitialConditions(TYPE_OUT ic)
+		{
+			this->ic = ic;
+			this->x = ic;
+			this->y = ic;
+		}
 
-        }
-    };
+		
+		void reset()
+		{
+			this->ic = TYPE_OUT(0.0f);
+		}
+
+		auto process(auto u)
+		{
+			
+
+			auto val1 = FixedPointOps::mul(u1, mult_ts_ki);
+
+			auto val2 = FixedPointOps::add(val1, x);
+
+			using ResultType = decltype(val2);
+						
+			
+			FixedPointOps::convert(val2, x);
+			
+			FixedPointOps::convert(u, u1);
+
+			return x;
+		}
+
+	private:
+		
+
+				
+		Q24 mult_ts_ki{};
+
+		TYPE_OUT outMin{}; //Output saturation limit
+		TYPE_OUT outMax{}; //Output saturation limit
+
+		bool isUseSaturation{ false };
+		
+
+		TYPE_OUT ic{ 0 }; //initial conditions
+		TYPE_OUT x{ 0 };
+
+		TYPE_OUT u1{ 0 };
+				
+		//std::int32_t u1{ 0 };
+
+	};
 }
+#endif

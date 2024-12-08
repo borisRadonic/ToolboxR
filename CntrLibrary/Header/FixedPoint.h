@@ -124,21 +124,42 @@ namespace CntrlLibrary
 	}
 
     template <int IntegerBits, int FractionalBits, typename U, typename M>
+    struct FixedPointTraits
+    {
+        static constexpr int IntegerBitsValue = IntegerBits;   // Number of integer bits
+        static constexpr int FractionalBitsValue = FractionalBits; // Number of fractional bits
+        using UnderlyingType = U;    // Type for storage (e.g., int32_t)
+        using MultiplierType = M;    // Type for multiplication (e.g., int64_t)
+        static constexpr int TotalBits = IntegerBits + FractionalBits; // Total bits
+    };
+
+    template <int IntegerBits, int FractionalBits, typename U, typename M>
     class FixedPoint
     {
     
-        static_assert(IntegerBits + FractionalBits <= 32, "Only up to 32-bit fixed-point numbers are supported.");
+        static_assert(IntegerBits + FractionalBits <= 64, "Only up to 64-bit fixed-point numbers are supported.");
         
         static_assert(IntegerBits > 0 && FractionalBits > 0, "IntegerBits and FractionalBits must be greater than 0.");
 
 
     public:
+                 
 
-        using UnderlyingType = U; // Use n-bit signed integer for storage
+        using Traits = FixedPointTraits<IntegerBits, FractionalBits, U, M>;
+        using UnderlyingType = typename Traits::UnderlyingType;
+        using MultiplierType = typename Traits::MultiplierType;
+        static constexpr int IntegerBitsValue = Traits::IntegerBitsValue;
+        static constexpr int FractionalBitsValue = Traits::FractionalBitsValue;
+        static constexpr int TotalBits = Traits::TotalBits;
         
-        // Maximum and minimum values for this fixed-point type
-        static constexpr UnderlyingType MaxValue = (1 << (IntegerBits + FractionalBits - 1)) - 1;
-        static constexpr UnderlyingType MinValue = -(1 << (IntegerBits + FractionalBits - 1));
+        static_assert(IntegerBits + FractionalBits - 1 < (sizeof(UnderlyingType) * 8), "Shift exceeds type width.");
+
+        static constexpr UnderlyingType MaxValue = static_cast<UnderlyingType>((1ULL << (IntegerBits + FractionalBits - 1)) - 1);
+
+        static constexpr UnderlyingType MinValue = static_cast<UnderlyingType>(-(1LL << (IntegerBits + FractionalBits - 1)));
+               
+
+      
 
         // Constructors
 
@@ -150,7 +171,9 @@ namespace CntrlLibrary
         {            
             if constexpr (std::is_same_v<U, std::int32_t>)
             {
+                static_assert(FractionalBits > 0 && FractionalBits < sizeof(U) * 8, "FractionalBits must be within valid range.");
                 constexpr auto ScaleFactor = static_cast<std::uint32_t>(1U << FractionalBits);
+
                 // Clamp the input value to the representable range
                 if (fValue > (static_cast<float>(std::numeric_limits<UnderlyingType>::max()) / ScaleFactor))
                 {
@@ -160,11 +183,8 @@ namespace CntrlLibrary
                 {
                     fValue = static_cast<float>(std::numeric_limits<UnderlyingType>::min()) / ScaleFactor;
                 }
-                value = static_cast<UnderlyingType>(abs(fValue) * ScaleFactor);
-                if (fValue < 0.0f)
-                {
-                    value = value * (-1);
-                }
+                value = static_cast<UnderlyingType>(fValue * ScaleFactor);
+                
             }
             else if constexpr (std::is_same_v<U, std::int64_t>)
             {
@@ -340,14 +360,51 @@ namespace CntrlLibrary
 
     namespace FixedPointOps
     {
+        template <int IntBitsSrc, int FracBitsSrc, typename USrc, typename MSrc,
+            int IntBitsDst, int FracBitsDst, typename UDst, typename MDst>
+        constexpr void convert(const FixedPoint<IntBitsSrc, FracBitsSrc, USrc, MSrc>& src,
+            FixedPoint<IntBitsDst, FracBitsDst, UDst, MDst>& dst) {
+            using SourceType = FixedPoint<IntBitsSrc, FracBitsSrc, USrc, MSrc>;
+            using DestType = FixedPoint<IntBitsDst, FracBitsDst, UDst, MDst>;
+
+            constexpr int FracBitsDiff = FracBitsDst - FracBitsSrc; // Difference in fractional bits
+            constexpr int IntBitsDiff = IntBitsDst - IntBitsSrc;    // Difference in integer bits
+
+            // Get the raw value from the source FixedPoint number
+            auto rawSrc = src.raw();
+            typename DestType::UnderlyingType rawDst = static_cast<typename DestType::UnderlyingType>(rawSrc);
+
+            // Adjust fractional bits
+            if constexpr (FracBitsDiff > 0)
+            {
+                rawDst <<= FracBitsDiff;  // Add fractional precision
+            }
+            else if constexpr (FracBitsDiff < 0)
+            {
+                // Reduce fractional precision with rounding
+                constexpr auto RoundingOffset = static_cast<typename SourceType::UnderlyingType>(1) << (-FracBitsDiff - 1);
+                rawDst = (rawDst + RoundingOffset) >> -FracBitsDiff;
+            }
+
+            // Adjust integer bits
+            if constexpr (IntBitsDiff < 0)
+            {
+                // Reduce integer range with saturation
+                constexpr auto MaxValue = DestType::MaxValue;
+                constexpr auto MinValue = DestType::MinValue;
+
+                rawDst = std::clamp(rawDst, MinValue, MaxValue);
+            }
+            dst = DestType::fromRaw(rawDst);
+        }
+
         template <int IntBitsA, int FracBitsA, typename UA, typename MA,
             int IntBitsB, int FracBitsB, typename UB, typename MB,
             typename Op>
         constexpr auto performOperation(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
             const FixedPoint<IntBitsB, FracBitsB, UB, MB>& b,
-            Op operation)
+            Op operation) 
         {
-            // Determine common fractional bits
             constexpr int CommonFractionalBits = (FracBitsA > FracBitsB) ? FracBitsA : FracBitsB;
             constexpr int CommonIntegerBits = (IntBitsA > IntBitsB) ? IntBitsA : IntBitsB;
 
@@ -399,12 +456,64 @@ namespace CntrlLibrary
                 return aAligned - bAligned;
                 });
         }
+
+        // Cross-type multiplication operator
+        template <int IntBitsA, int FracBitsA, typename UA, typename MA,
+            int IntBitsB, int FracBitsB, typename UB, typename MB>
+        constexpr auto mul(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
+            const FixedPoint<IntBitsB, FracBitsB, UB, MB>& b) {
+            using ResultUnderlyingType = std::common_type_t<UA, UB>; // Common type for underlying storage
+            using ResultMultiplierType = std::common_type_t<MA, MB>; // Common type for multiplication
+
+            constexpr int ResultIntBits = IntBitsA + IntBitsB;       // Combined integer bits
+            constexpr int ResultFracBits = FracBitsA + FracBitsB;    // Combined fractional bits
+
+            // Dynamically determine target fractional bits
+            const int TargetFracBits = (FracBitsA > FracBitsB ? FracBitsA : FracBitsB);
+
+            // Perform multiplication in the larger type
+            ResultMultiplierType result = static_cast<ResultMultiplierType>(a.raw()) *
+                static_cast<ResultMultiplierType>(b.raw());
+
+            // Calculate the number of bits to scale down
+            const int BitsToScaleDown = ResultFracBits - TargetFracBits;
+
+            // Apply rounding if scaling down is necessary
+            if (BitsToScaleDown > 0)
+            {
+                const ResultMultiplierType RoundingOffset = static_cast<ResultMultiplierType>(1) << (9  - 1);
+                //result += RoundingOffset;  // Add rounding offset for proper rounding
+
+                // Scale down to the target fractional bits
+                result >>= BitsToScaleDown;
+            }
+
+            // Return as a new FixedPoint type with adjusted fractional bits
+            return FixedPoint<ResultIntBits, TargetFracBits, ResultUnderlyingType, ResultMultiplierType>::fromRaw(static_cast<ResultUnderlyingType>(result));
+        }
+
+
     }
 
     // Define Q-format types
     using Q15 = FixedPoint<1, 15, int32_t, int32_t>; // q1.15 fixed-point format
+    using Q18 = FixedPoint<1, 18, int32_t, int32_t>; // q1.18 fixed-point format
+    
+    using Q24 = FixedPoint<1, 23, int64_t, int32_t>; // q1.23 fixed-point format
+
+    using Q9_23 = FixedPoint<9, 23, int64_t, int32_t>; // q1.23 fixed-point format
+
     using Q31 = FixedPoint<1, 31, int64_t, int64_t>; // q1.31 fixed-point format
 
+    using Q9_7  = FixedPoint<9, 7, int32_t, int32_t>; // q9.7 fixed-point format
+    using Q9_6 = FixedPoint<9, 6, int32_t, int32_t>; // q9.6 fixed-point format
+
+    using Q10_7 = FixedPoint<10, 7, int32_t, int32_t>; // q10.7 fixed-point format
+    using Q10_9 = FixedPoint<10, 9, int32_t, int32_t>; // q10.9 fixed-point format
+
+    using Q10_22 = FixedPoint<10, 22, int32_t, int64_t>; // q10.22 fixed-point format
+
+  
     constexpr std::array<Q15, 256> generateSinTable()
     {
         std::array<Q15, 256> table{};
