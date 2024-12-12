@@ -27,6 +27,7 @@ SOFTWARE.
 ******************************************************************************/
 
 #pragma once
+
 #include <cstdint>
 #include <algorithm> // For std::clamp
 #include <array>
@@ -34,6 +35,7 @@ SOFTWARE.
 #include <limits>
 #include <numbers>
 #include <type_traits>
+#include "CompPlatform.h"
 
 namespace CntrlLibrary
 {
@@ -46,13 +48,13 @@ namespace CntrlLibrary
     public:
         // Adds two fixed-point values with saturation
       
-        static T QADD(T x, T y)
+        __FORCEINLINE static T QADD(T x, T y)
         {
             static_assert(std::is_same<T, int32_t>::value, "QADD only supports 32-bit fixed-point arithmetic.");
             return static_cast<T>(clip<T>(static_cast<int64_t>(x) + static_cast<int64_t>(y), std::numeric_limits<T>::min(), std::numeric_limits<T>::max()));
         }
 
-        static T QSUB( T x, T y)
+        __FORCEINLINE static T QSUB( T x, T y)
         {
             static_assert(std::is_same<T, int32_t>::value, "QSUB only supports 32-bit fixed-point arithmetic.");
             return static_cast<T>(clip<T>(static_cast<int64_t>(x) - static_cast<int64_t>(y), std::numeric_limits<T>::min(), std::numeric_limits<T>::max()));
@@ -61,13 +63,13 @@ namespace CntrlLibrary
 
         // Clips a value to the range of the given fixed-point type
         template <typename U>
-        static U clip(U x, U minValue, U maxValue)
+        __FORCEINLINE static U clip(U x, U minValue, U maxValue)
         {
             return (x > maxValue) ? maxValue : (x < minValue ? minValue : x);
         }
 
         // Clips from a higher type to the current fixed-point range
-        static T clipFromHigherType(int64_t x)
+        __FORCEINLINE static T clipFromHigherType(int64_t x)
         {
             return clip(x, std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
         }
@@ -242,7 +244,7 @@ namespace CntrlLibrary
         }
 
         // Get raw value
-        constexpr UnderlyingType raw() const
+        __FORCEINLINE constexpr UnderlyingType raw() const
         {
             return value;
         }
@@ -362,7 +364,7 @@ namespace CntrlLibrary
     {
         template <int IntBitsSrc, int FracBitsSrc, typename USrc, typename MSrc,
             int IntBitsDst, int FracBitsDst, typename UDst, typename MDst>
-        constexpr void convert(const FixedPoint<IntBitsSrc, FracBitsSrc, USrc, MSrc>& src,
+        __FORCEINLINE constexpr void convert(const FixedPoint<IntBitsSrc, FracBitsSrc, USrc, MSrc>& src,
             FixedPoint<IntBitsDst, FracBitsDst, UDst, MDst>& dst) {
             using SourceType = FixedPoint<IntBitsSrc, FracBitsSrc, USrc, MSrc>;
             using DestType = FixedPoint<IntBitsDst, FracBitsDst, UDst, MDst>;
@@ -401,7 +403,7 @@ namespace CntrlLibrary
         template <int IntBitsA, int FracBitsA, typename UA, typename MA,
             int IntBitsB, int FracBitsB, typename UB, typename MB,
             typename Op>
-        constexpr auto performOperation(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
+        __FORCEINLINE constexpr auto performOperation(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
             const FixedPoint<IntBitsB, FracBitsB, UB, MB>& b,
             Op operation) 
         {
@@ -449,7 +451,7 @@ namespace CntrlLibrary
         // Subtraction function
         template <int IntBitsA, int FracBitsA, typename UA, typename MA,
             int IntBitsB, int FracBitsB, typename UB, typename MB>
-        constexpr auto sub(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
+        __FORCEINLINE constexpr auto sub(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
             const FixedPoint<IntBitsB, FracBitsB, UB, MB>& b)
         {
             return performOperation(a, b, [](auto aAligned, auto bAligned) {
@@ -460,7 +462,7 @@ namespace CntrlLibrary
         // Cross-type multiplication operator
         template <int IntBitsA, int FracBitsA, typename UA, typename MA,
             int IntBitsB, int FracBitsB, typename UB, typename MB>
-        constexpr auto mul(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
+        __FORCEINLINE constexpr auto mul(const FixedPoint<IntBitsA, FracBitsA, UA, MA>& a,
             const FixedPoint<IntBitsB, FracBitsB, UB, MB>& b) {
             using ResultUnderlyingType = std::common_type_t<UA, UB>; // Common type for underlying storage
             using ResultMultiplierType = std::common_type_t<MA, MB>; // Common type for multiplication
@@ -516,7 +518,7 @@ namespace CntrlLibrary
 
     using Q10_22 = FixedPoint<10, 22, int64_t, int64_t>; // q10.22 fixed-point format
 
-  
+  /*
     constexpr std::array<Q15, 256> generateSinTable()
     {
         std::array<Q15, 256> table{};
@@ -527,4 +529,5 @@ namespace CntrlLibrary
         }
         return table;
     }
+    */
 }

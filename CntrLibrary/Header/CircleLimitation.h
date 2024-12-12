@@ -30,9 +30,9 @@ SOFTWARE.
 #ifndef CIRCLE_LIMITATION_H
 #define CIRCLE_LIMITATION_H
 
+#include "CompPlatform.h"
 #include <cstdint>
 #include "ParkClarke.h"
-#include "TrigFunctions.h"
 #include "MathFunctions.h"
 #include "FixedPoint.h"
 
@@ -57,7 +57,7 @@ namespace CntrlLibrary
         }
 
         // Method to calculate the saturated values
-        QD_t<T> calculateSaturation( QD_t<T> vqd) const
+        __FORCEINLINE QD_t<T> calculateSaturation( QD_t<T> vqd) const
         {
             QD_t<T> result = vqd;           
             std::int64_t squareQ = vqd.q.raw() * vqd.q.raw();
@@ -72,7 +72,7 @@ namespace CntrlLibrary
                     T a = T(MathFunctions::sqrt(temp));
                     if (sign(vqd.q) < 0)
                     {
-                        result.q = T(0) - a;
+                        result.q = T(0.0f) - a;
                         result.d = vqd.d;
                     }
                     else
@@ -85,7 +85,7 @@ namespace CntrlLibrary
                 {
                     if (sign(vqd.d) < 0)
                     {
-                        result.d = T(0) - T(maxVd.raw());
+                        result.d = T(0.0f) - T(maxVd.raw());
                     }
                     else
                     {
@@ -94,7 +94,7 @@ namespace CntrlLibrary
                     std::int32_t temp = maxModuleSquared - maxVdSquared;
                     if (sign(vqd.q) < 0)
                     {
-                        result.q = T(0) - T(MathFunctions::sqrt(temp));
+                        result.q = T(0.0f) - T(MathFunctions::sqrt(temp));
 
                     }
                     else
@@ -106,22 +106,22 @@ namespace CntrlLibrary
             return result;
         }
 
-        T getMaxModule() const
+        __FORCEINLINE T getMaxModule() const
         {
             return maxModule;
         }
 
-        T getMaxVd() const
+        __FORCEINLINE T getMaxVd() const
         {
             return maxVd;
         }
 
-        void setMaxModule(T maxMdlValue)
+        __FORCEINLINE void setMaxModule(T maxMdlValue)
         {
             maxModule = maxMdlValue;
         }
         
-        void setMaxVd(T maxVdValue)
+        __FORCEINLINE void setMaxVd(T maxVdValue)
         {
             maxVd = maxVdValue;
         }
@@ -134,7 +134,7 @@ namespace CntrlLibrary
         T maxVd{};
         std::int64_t maxVdSquared{};
 
-        static int sign(T value)
+        static __FORCEINLINE int sign(T value)
         {
             return (value.raw() < 0) ? -1 : 1;
         }

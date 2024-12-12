@@ -27,17 +27,26 @@ SOFTWARE.
 ******************************************************************************/
 
 #pragma once
-
+#include "CompPlatform.h"
 #include "FixedPoint.h"
 
-#include <cstdint>
+#ifdef HAS_ST32_CORDIC
+#include "stm32g4xx_ll_cordic.h"
+
+
+/* CORDIC FUNCTION: MODULUS q1.15 */
+#define CORDIC_CONFIG_MODULUS   (LL_CORDIC_FUNCTION_MODULUS | LL_CORDIC_PRECISION_6CYCLES | LL_CORDIC_SCALE_0 |\
+LL_CORDIC_NBWRITE_1 | LL_CORDIC_NBREAD_1 |\
+LL_CORDIC_INSIZE_16BITS | LL_CORDIC_OUTSIZE_16BITS)
+#endif
+
+
 #include <cstdint>
 #include <cmath>
-#include <numbers>
+
 
 namespace CntrlLibrary
 {
-    
     class MathFunctions
     {
     public:
@@ -47,36 +56,30 @@ namespace CntrlLibrary
             return (x == 1) ? 0 : 1 + log2(x >> 1);
         }
 
-
-        static std::int32_t sqrt(int32_t input)
+        static std::int32_t sqrt(std::int32_t input)
         {
+#ifdef HAS_ST32_CORDIC
             if (input > 0u)
             {
-#ifdef HAS_ST32_CORDIC
-                uint32_t retVal{};
+                std::uint32_t retVal{};
                 /* Disable Irq*/
                 __disable_irq();
                 /* Configure CORDIC */
                 WRITE_REG(CORDIC->CSR, CORDIC_CONFIG_SQRT);
-                LL_CORDIC_WriteData(CORDIC, ((uint32_t)input));
+                LL_CORDIC_WriteData(CORDIC, ((std::uint32_t)input));
                 /* Read sqrt and return */
                 retVal = (LL_CORDIC_ReadData(CORDIC)) >> 15U;
-                retVal = (LL_CORDIC_ReadData(CORDIC)) / 32768U;
-                wtemprootnew = static_cast<int32_t>(retVal);
                 __enable_irq();
-
-#else           
+                return static_cast<std::int32_t>(retVal);
+            }
+#else
 
                 double d = std::sqrt(static_cast<double>(input));
                 float f = static_cast<float>(d);
                 std::int32_t i = static_cast<std::int32_t>(f);
                 return  i;
 #endif
-            }
             return 0u;
-           
-            
-
-        }
+         }
     };
 }

@@ -29,10 +29,11 @@ SOFTWARE.
 #ifndef QPICONTROLLER_H
 #define QPICONTROLLER_H
 
+#include "FixedPoint.h"
 #include "QIntegrator.h"
-#include "MathFunctions.h"
 
 #include <cstdint>
+#include "CompPlatform.h"
 #include <algorithm> // For std::min etc.
 #include <array>
 #include <cmath>
@@ -64,7 +65,7 @@ namespace CntrlLibrary
 				integrator.reset();
 			}
 
-			TYPE_IN_OUT process(TYPE_IN_OUT error)
+			__FORCEINLINE TYPE_IN_OUT process(TYPE_IN_OUT error)
 			{
 				auto propPart = FixedPointOps::mul(Kp, error);
 				auto inputI = FixedPointOps::add(error, FixedPointOps::mul(Kb, du1) );

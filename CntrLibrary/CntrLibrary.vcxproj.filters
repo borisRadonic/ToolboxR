@@ -479,7 +479,7 @@
     <ClInclude Include="Header\LUObserver.h">
       <Filter>Header Files\FixPointMath</Filter>
     </ClInclude>
-    <ClInclude Include="Header\CircleLimitation .h">
+    <ClInclude Include="Header\CircleLimitation.h">
       <Filter>Header Files\FixPointMath</Filter>
     </ClInclude>
     <ClInclude Include="Header\QPIController.h">
@@ -487,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="Header\QIntegrator.h">
       <Filter>Header Files\FixPointMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\CompPlatform.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

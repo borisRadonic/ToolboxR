@@ -253,7 +253,8 @@
     <ClInclude Include="Header\BasicNumMethods.h" />
     <ClInclude Include="Header\BellShapedFuzzySet.h" />
     <ClInclude Include="Header\Block.h" />
-    <ClInclude Include="Header\CircleLimitation .h" />
+    <ClInclude Include="Header\CircleLimitation.h" />
+    <ClInclude Include="Header\CompPlatform.h" />
     <ClInclude Include="Header\ConstFunction.h" />
     <ClInclude Include="Header\DCMotor.h" />
     <ClInclude Include="Header\Derivative.h" />

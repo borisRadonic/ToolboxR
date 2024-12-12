@@ -31,6 +31,7 @@ SOFTWARE.
 #ifndef PARK_CLARKE_H
 #define PARK_CLARKE_H
 
+#include "CompPlatform.h"
 #include <cstdint>
 #include <numbers>
 
@@ -46,8 +47,8 @@ namespace CntrlLibrary
     {
         AB_t() = default;
 
-        T a{ 0 }; // Stator value along axis 'a'
-        T b{ 0 }; // Stator value along axis 'b'
+        T a{ 0.0f }; // Stator value along axis 'a'
+        T b{ 0.0f }; // Stator value along axis 'b'
 
         constexpr bool operator==(const T& other) const
         {
@@ -63,8 +64,8 @@ namespace CntrlLibrary
     {
         AlphaBeta_t() = default;
 
-        T alpha{ 0 }; // Transformed value along alpha axis
-        T beta{ 0 };  // Transformed value along beta axis
+        T alpha{ 0.0f }; // Transformed value along alpha axis
+        T beta{ 0.0f };  // Transformed value along beta axis
     };
 
     // Output structure for q-d values
@@ -89,10 +90,9 @@ namespace CntrlLibrary
         }
 
 
-        T q{0}; // q-axis value
-        T d{0}; // d-axis value
+        T q{0.0f}; // q-axis value
+        T d{0.0f}; // d-axis value
     };
-
 
     template <typename T>
     class ParkClarke
@@ -105,8 +105,7 @@ namespace CntrlLibrary
          * @param  input: Stator values in AB_t format (a and b).
          * @retval AlphaBeta_t: Stator values in alpha-beta stationary frame.
          */
-        
-        static AlphaBeta_t<T> Clarke(const AB_t<T>& input)
+        __FORCEINLINE static AlphaBeta_t<T> Clarke(const AB_t<T>& input)
         {
             AlphaBeta_t<T> output{};
             output.alpha = input.a;
@@ -122,7 +121,7 @@ namespace CntrlLibrary
         * @param  input: AlphaBeta_t input with alpha and beta values.
         * @retval ABCT_t: Stator values in three-phase system (a, b, c).
         */
-        static AB_t<T> InverseClarke(const AlphaBeta_t<T>& input)
+        __FORCEINLINE static AB_t<T> InverseClarke(const AlphaBeta_t<T>& input)
         {
             AB_t<T> output;            
             // a = alpha
@@ -141,7 +140,7 @@ namespace CntrlLibrary
         * @param  trigComp:Sin and Cos components of electrical angle in q1.15 fixed-point format (Q15).
         * @retval QD_t: Transformed values in d-q reference frame.
         */
-        static QD_t<T> Park(const AlphaBeta_t<T>& input, TrigComponents trigComp )
+        __FORCEINLINE static QD_t<T> Park(const AlphaBeta_t<T>& input, TrigComponents trigComp )
         {
             QD_t<T> output;
             T temp1 = input.alpha * T(trigComp.hCos);
@@ -161,7 +160,7 @@ namespace CntrlLibrary
         * @param  trigComp:Sin and Cos components of electrical angle in q1.15 fixed-point format (Q15).
         * @retval AlphaBeta_t: Transformed values in alpha-beta stationary frame.
         */
-        static AlphaBeta_t<T> InvPark(QD_t<T> input, TrigComponents trigComp)
+        __FORCEINLINE static AlphaBeta_t<T> InvPark(QD_t<T> input, TrigComponents trigComp)
         {
             AlphaBeta_t<T> output{};
             T temp1 = input.d * trigComp.hCos;

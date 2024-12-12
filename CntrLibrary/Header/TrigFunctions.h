@@ -33,12 +33,42 @@ SOFTWARE.
 #include <cstdint>
 #include <cstdint>
 #include <cmath>
+#include "CompPlatform.h"
 #include <numbers>
+#include "MathFunctions.h"
+
+#ifdef HAS_ST32_CORDIC
+#include "stm32g4xx_ll_cordic.h"
+
+
+/* CORDIC FUNCTION: PHASE q1.31 (Electrical Angle computation) */
+#define CORDIC_CONFIG_PHASE     (LL_CORDIC_FUNCTION_PHASE | LL_CORDIC_PRECISION_6CYCLES | LL_CORDIC_SCALE_0 |\
+LL_CORDIC_NBWRITE_2 | LL_CORDIC_NBREAD_1 |\
+LL_CORDIC_INSIZE_32BITS | LL_CORDIC_OUTSIZE_32BITS)
+
+
+/* CORDIC FUNCTION: COSINE q1.15 */
+#define CORDIC_CONFIG_COSINE    (LL_CORDIC_FUNCTION_COSINE | LL_CORDIC_PRECISION_6CYCLES | LL_CORDIC_SCALE_0 |\
+LL_CORDIC_NBWRITE_1 | LL_CORDIC_NBREAD_1 |\
+LL_CORDIC_INSIZE_16BITS | LL_CORDIC_OUTSIZE_16BITS)
+
+#endif
 
 namespace CntrlLibrary
 {
     struct TrigComponents
     {
+        TrigComponents()
+        {
+        }
+
+        TrigComponents(const std::uint32_t data)
+        {
+            // Extract the lower 16 bits for hCos
+            this->hCos = Q15( static_cast<std::int32_t>(static_cast<std::int16_t>(data & 0xFFFF)));
+            // Extract the upper 16 bits for hSin
+            this->hSin = Q15( static_cast<std::int32_t>(static_cast<std::int16_t>((data >> 16) & 0xFFFF)));
+        }
         Q15 hCos{0.0f};
         Q15 hSin{0.0f};
     };
@@ -46,27 +76,13 @@ namespace CntrlLibrary
     class TrigFunctions
     {
         public:
-            /*normed to 1*/
-            static TrigComponents TrigFuncs(Q15 hAngle)
+            static __FORCEINLINE TrigComponents TrigFuncs(Q15 hAngle)
             {
-            
-    #ifdef HAS_ST32_CORDIC 
-                /* MISRAC2012-violation Rule 19.2. The union keyword should not be used.
-               * This needs to be determined:
-               * Padding — how much padding is inserted at the end of the union;
-               * Alignment — how are members of any structures within the union aligned;
-               * Endianness — is the most significant byte of a word stored at the lowest or highest memory address;
-               * Bit-order — how are bits numbered within bytes and how are bits allocated to bit fields.
-               * Low. Use of union (u32toi16x2). */
-                union u32toi16x2
-                {
-                    uint32_t CordicRdata;
-                    TrigComponents Components;
-                } CosSin;
+    #ifdef HAS_ST32_CORDIC
                 WRITE_REG(CORDIC->CSR, CORDIC_CONFIG_COSINE);
-                LL_CORDIC_WriteData(CORDIC, ((uint32_t)0x7FFF0000) + (static_cast<uint32_t>(hAngle.raw()));
-                CosSin.CordicRdata = LL_CORDIC_ReadData(CORDIC);
-                return (CosSin.Components); //cstat !UNION-type-punning
+                LL_CORDIC_WriteData(CORDIC, ((uint32_t)0x7FFF0000) + (static_cast<uint32_t>(hAngle.raw())));
+                std::uint32_t data = LL_CORDIC_ReadData(CORDIC);
+                return TrigComponents(data);
     #else
                 TrigComponents components;
                 components.hCos = Q15(cos(hAngle.toFloat() * std::numbers::pi_v<float>));
