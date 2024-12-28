@@ -47,8 +47,9 @@ namespace CntrlLibrary
     {
         AB_t() = default;
 
-        T a{ 0.0f }; // Stator value along axis 'a'
-        T b{ 0.0f }; // Stator value along axis 'b'
+
+        T a{ static_cast<std::uint16_t>(0) }; // Stator value along axis 'a'
+        T b{ static_cast<std::uint16_t>(0) }; // Stator value along axis 'b'
 
         constexpr bool operator==(const T& other) const
         {
@@ -64,8 +65,8 @@ namespace CntrlLibrary
     {
         AlphaBeta_t() = default;
 
-        T alpha{ 0.0f }; // Transformed value along alpha axis
-        T beta{ 0.0f };  // Transformed value along beta axis
+        T alpha{ static_cast<std::uint16_t>(0) }; // Transformed value along alpha axis
+        T beta{ static_cast<std::uint16_t>(0) };  // Transformed value along beta axis
     };
 
     // Output structure for q-d values
@@ -90,8 +91,8 @@ namespace CntrlLibrary
         }
 
 
-        T q{0.0f}; // q-axis value
-        T d{0.0f}; // d-axis value
+        T q{static_cast<std::uint16_t>(0)}; // q-axis value
+        T d{static_cast<std::uint16_t>(0)}; // d-axis value
     };
 
     template <typename T>

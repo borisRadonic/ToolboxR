@@ -160,16 +160,13 @@ namespace CntrlLibrary
 
         static constexpr UnderlyingType MinValue = static_cast<UnderlyingType>(-(1LL << (IntegerBits + FractionalBits - 1)));
                
-
-      
-
-        // Constructors
+       // Constructors
 
         constexpr FixedPoint() : value(0)
         {
         }
 
-        constexpr explicit FixedPoint(float fValue)
+        constexpr FixedPoint(float fValue)
         {            
             if constexpr (std::is_same_v<U, std::int32_t>)
             {
@@ -213,8 +210,13 @@ namespace CntrlLibrary
                 static_assert(std::is_same_v<U, std::int32_t> || std::is_same_v<U, std::int64_t>, "U must be either std::int32_t or std::int64_t");
             }
         }
-               
-        constexpr explicit FixedPoint(UnderlyingType raw) : value(raw)
+
+
+        constexpr FixedPoint( std::uint16_t val ):value(static_cast<UnderlyingType>(val))
+        {
+        }
+
+        constexpr FixedPoint( UnderlyingType val ):value(val)
         {
         }
 
@@ -257,7 +259,7 @@ namespace CntrlLibrary
         // Arithmetic operators
         constexpr FixedPoint operator + (const FixedPoint& other) const
         {
-            return FixedPoint(value + other.value);
+            return FixedPoint(static_cast<UnderlyingType>(value) + static_cast<UnderlyingType>(other.value));
         }
 
         constexpr FixedPoint operator - (const FixedPoint& other) const
@@ -515,8 +517,11 @@ namespace CntrlLibrary
 
     using Q10_7 = FixedPoint<10, 7, int32_t, int32_t>; // q10.7 fixed-point format
     using Q10_9 = FixedPoint<10, 9, int32_t, int32_t>; // q10.9 fixed-point format
+    using Q15_0 = FixedPoint<16, 0, int32_t, int32_t>; // q1.15 fixed-point format
 
     using Q10_22 = FixedPoint<10, 22, int64_t, int64_t>; // q10.22 fixed-point format
+
+    using Q17_15 = FixedPoint<17, 15, int64_t, int64_t>;
 
   /*
     constexpr std::array<Q15, 256> generateSinTable()

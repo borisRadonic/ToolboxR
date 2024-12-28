@@ -179,6 +179,30 @@ TEST(TestQNumbers, TestMathOperations)
 
 	alphaBeta.alpha = Q15(1.0f);
 	alphaBeta.beta = Q15(-1.0f);
+
+	Q15 testJump = alphaBeta.alpha - alphaBeta.beta;
+	float ftestJump = testJump.toFloat();
+	Q15 testJump2(2.0f);
+	float ftestJump2 = testJump2.toFloat();
+
+	Q15 previousAngle(0.99f);
+	Q15 rotorAngle(-0.99f);
+	auto deltaAngle = rotorAngle - previousAngle;
+
+	// Normalize the angle difference to handle wraparound
+	if (deltaAngle > Q15(1.0f))
+	{
+		deltaAngle -= Q15(2.0f); // Correct for jump from -1 to 1
+	}
+	else if (deltaAngle < Q15(-1.0f))
+	{
+		deltaAngle += Q15(2.0f); // Correct for jump from 1 to -1
+	}
+	float fdeltaAngle = deltaAngle.toFloat();
+
+
+
+
 	trig.hSin = Q15(sin(-3.14f / 4.0f));
 	trig.hCos = Q15(cos(-3.14f / 4.0f));
 
@@ -246,12 +270,12 @@ TEST(TestQNumbers, TestMathOperations)
 	float kb = 1.1f;
 	
 	float upsat = 120.0f;
-	QPIController< Q10_22,Q9_7, Q4_12, Q10_22> piController( kp, ki, kb, upsat);
+	QPIController< Q9_7,Q9_7, Q4_12, Q9_7> piController( kp, ki, kb, upsat);
 	DiscreteTime::PIDController pidFp(kp, ki, 0.0f, kb, 1.0f, upsat);
 
 	float ferr = 0.5f;
-	Q10_22 error( ferr);
-	Q10_22 piout = piController.process(error);
+	Q9_7 error( ferr);
+	Q9_7 piout = piController.process(error);
 	float fResPi = piout.toFloat();
 	float fresPidF = pidFp.process(ferr);
 

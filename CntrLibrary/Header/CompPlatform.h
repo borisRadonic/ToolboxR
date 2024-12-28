@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined (__CC_ARM) || defined(__GNUC__)
-#include "cmsis_gcc.h"
+//#include "cmsis_gcc.h"
 #ifndef   __FORCEINLINE                 
 #define __FORCEINLINE                   __attribute__((always_inline)) inline
 #endif
