@@ -1,4 +1,4 @@
-# ToolboxR Control Library
+# ToolboxR - Modern C++ Control Engineering Framework
 
 
 ![](https://github.com/borisRadonic/ToolboxR/blob/master/Trajectory.png)
